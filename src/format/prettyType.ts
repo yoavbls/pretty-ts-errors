@@ -12,7 +12,7 @@ export const prettyType = (prefix: string, type: string) => {
 
   if (
     type.match(
-      /^((void|null|undefined|any|number|string|bigint|symbol)(\[\])?)$/
+      /^((void|null|undefined|any|number|string|bigint|symbol|readonly|typeof)(\[\])?)$/
     )
   ) {
     return `${prefix} ${inlineCodeBlock(type, "type")}`;

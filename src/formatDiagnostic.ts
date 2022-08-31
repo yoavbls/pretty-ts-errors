@@ -56,15 +56,11 @@ export const formatDiagnostic = (diagnostic: Diagnostic) => {
       formatTypeOrModuleBlock
     )
     // Format reversed types
-    // .replaceAll(
-    //   / '(.*?)' (type|return type|file|module)[\.]?/gi,
-    //   (_: string, p1: string, p2: string) =>
-    //     ` ${formatTypeOrModuleBlock(_, p2, p1)} ${p2}`
-    // )
-    // Format module names without "module" prefix - in simple strings
-    // .replaceAll(/()'(\".*?\")'[\.]?/g, (_: string, p1: string, p2: string) =>
-    //   prettyType(p1, p2)
-    // )
+    .replaceAll(
+      /(.*)'([^>]*)' (type|interface|return type|file|module)/gi,
+      (_: string, p1: string, p2: string, p3: string) =>
+        `${p1}${formatTypeOrModuleBlock(_, "", p2)} ${p3}`
+    )
     // Format simple types that didn't captured before
     .replaceAll(
       /'((void|null|undefined|any|boolean|string|number|bigint|symbol)(\[\])?)'/g,

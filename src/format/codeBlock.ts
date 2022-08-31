@@ -14,11 +14,6 @@ ${code}
 
 </span>`;
 
-/** Ends the previous span, embed code block and open new span */
-export const wrappedCodeBlock = (code: string, language: string) => `</span>
-${codeBlock(code, language)}
-<span>`;
-
 export const multiLineCodeBlock = (code: string, language: string) => {
   const maxLineChars = Math.max(...code.split("\n").map((line) => line.length));
   // codicon class align the code to the center so we must padd it with spaces
@@ -27,8 +22,14 @@ export const multiLineCodeBlock = (code: string, language: string) => {
     .map((line) => line.padEnd(maxLineChars + 2))
     .join("\n");
 
-  return `${littleLine}${wrappedCodeBlock(paddedCode, language)}${littleLine}`;
+  return `</span>
+${littleLine}
+${codeBlock(paddedCode, language)}
+${littleLine}
+<span>`;
 };
 
 export const inlineCodeBlock = (code: string, language: string) =>
-  wrappedCodeBlock(` ${code} `, language);
+  `</span>
+${codeBlock(` ${code} `, language)}
+<span>`;
