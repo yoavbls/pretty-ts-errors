@@ -40,6 +40,8 @@ export const prettyType = (prefix: string, type: string) => {
 
 const convertToValidType = (type: string) =>
   `type x = ${type
+    // Change `(...): return` which is invalid to `(...) => return`
+    .replace(/^(\(.*\)): /, (_, p1) => `${p1} =>`)
     // Try to fix cuuted types
     .replace(/(\w+\.\.\.$)/, (_, p1) =>
       type[0] === "{" ? "}" : type[0] === "<" ? ">" : ""

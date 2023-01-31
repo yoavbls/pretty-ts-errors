@@ -81,6 +81,12 @@ export const formatBody = (diagnostic: Diagnostic) =>
       /(return|operator) '(.*?)'/gi,
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
     )
+    .replaceAll(
+      /(Overload \d of \d,) '(.*?)'/gi,
+      (_, p1: string, p2: string, p3: string) => {
+        return `${p1} ${formatTypeScriptBlock("", p2)}`;
+      }
+    )
     // Format function calls
     .replaceAll(/(\w+\(\))/g, formatTypeScriptBlock)
     // Format regular code blocks

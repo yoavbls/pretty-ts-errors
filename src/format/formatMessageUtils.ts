@@ -14,16 +14,18 @@ export const embedSymbolLinks = (
   const symbol = ref?.message.match(/(?<symbol>'.*?') is declared here./)
     ?.groups?.symbol!;
 
-  return message.replaceAll(
-    symbol,
-    dedent/*html*/ `
+  return symbol
+    ? message.replaceAll(
+        symbol,
+        dedent/*html*/ `
       ${symbol} 
       <a href="${ref.location.uri.path}#${ref.location.range.start.line + 1},
       ${ref.location.range.start.character + 1}">
       <span class="codicon codicon-go-to-file" >
       </span>
       </a>&nbsp;`
-  );
+      )
+    : message;
 };
 
 export const identSentences = (message: string): string => {
