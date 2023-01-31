@@ -1,6 +1,6 @@
 import { Diagnostic } from "vscode";
 import { inlineCodeBlock, unstyledCodeBlock } from "../components/codeBlock";
-import { identSentences } from "./formatMessageUtils";
+import { embedSymbolLinks, identSentences } from "./formatMessageUtils";
 import { prettyType } from "./prettyType";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
@@ -19,7 +19,7 @@ const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
 
 export const formatBody = (diagnostic: Diagnostic) =>
   // embedSymbolLinks(
-  identSentences(diagnostic.message)
+  identSentences(embedSymbolLinks(diagnostic.message, diagnostic))
     // , diagnostic )
 
     // format backticks

@@ -40,6 +40,10 @@ export const prettyType = (prefix: string, type: string) => {
 
 const convertToValidType = (type: string) =>
   `type x = ${type
+    // Try to fix cuuted types
+    .replace(/(\w+\.\.\.$)/, (_, p1) =>
+      type[0] === "{" ? "}" : type[0] === "<" ? ">" : ""
+    )
     .replaceAll(/... (\d{0,}) more ...;/g, (_, p1) => `___MORE___: ${p1};`)
     .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `___${p1}MORE___`)
     .replaceAll("...;", "___KEY___: ___THREE_DOTS___;")
@@ -51,5 +55,6 @@ const convertToOriginalType = (type: string) =>
     .replaceAll(/___(\d{0,})MORE___/g, (_, p1) => `... ${p1} more ...`)
     .replaceAll("___KEY___: ___THREE_DOTS___", "...;")
     .replaceAll("__THREE_DOTS__", "...")
+    .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `/* ${p1} more */`) // ... x more ... not shown sell
     .replace(/type x =[ ]?((.|\n)*);.*/g, "$1")
     .trim();

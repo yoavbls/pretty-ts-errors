@@ -16,11 +16,13 @@ export const embedSymbolLinks = (
 
   return message.replaceAll(
     symbol,
-    `${symbol} <a href="${ref.location.uri.path}#${
-      ref.location.range.start.line + 1
-    },${ref.location.range.start.character + 1}">      
-        <span class="codicon codicon-go-to-file" ></span>
-        </a>&nbsp;`
+    dedent/*html*/ `
+      ${symbol} 
+      <a href="${ref.location.uri.path}#${ref.location.range.start.line + 1},
+      ${ref.location.range.start.character + 1}">
+      <span class="codicon codicon-go-to-file" >
+      </span>
+      </a>&nbsp;`
   );
 };
 

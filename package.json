@@ -2,7 +2,12 @@
   "name": "pretty-ts-errors",
   "displayName": "Pretty TS Errors",
   "description": "Pretty TypeScript errors",
-  "version": "0.2.1",
+  "version": "0.2.2",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoavbls/pretty-ts-errors"
+  },
   "engines": {
     "vscode": "^1.70.0"
   },
