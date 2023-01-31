@@ -3,7 +3,7 @@ import {
   inlineCodeBlock,
   multiLineCodeBlock,
   unstyledCodeBlock,
-} from "./codeBlock";
+} from "../components/codeBlock";
 
 export const prettyType = (prefix: string, type: string) => {
   if (type.match(/^(\[\]|\{\})$/)) {
@@ -21,12 +21,12 @@ export const prettyType = (prefix: string, type: string) => {
   let prettyType: string;
   // Wrap type with valid statement, format it and extract the type back
   try {
-    prettyType = format(`type x = ${type};`, {
-      parser: "typescript",
-      printWidth: 60,
-    })
-      .replace(/type x =[ ]?((.|\n)*);.*/g, "$1")
-      .trim();
+    prettyType = convertToOriginalType(
+      format(convertToValidType(type), {
+        parser: "typescript",
+        printWidth: 60,
+      })
+    );
   } catch (e) {
     return unstyledCodeBlock(type);
   }
@@ -37,3 +37,19 @@ export const prettyType = (prefix: string, type: string) => {
     return `${prefix} ${inlineCodeBlock(prettyType, "type")}`;
   }
 };
+
+const convertToValidType = (type: string) =>
+  `type x = ${type
+    .replaceAll(/... (\d{0,}) more ...;/g, (_, p1) => `___MORE___: ${p1};`)
+    .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `___${p1}MORE___`)
+    .replaceAll("...;", "___KEY___: ___THREE_DOTS___;")
+    .replaceAll("...", "__THREE_DOTS__")};`;
+
+const convertToOriginalType = (type: string) =>
+  type
+    .replaceAll(/___MORE___: (\d{0,});/g, (_, p1) => `... ${p1} more ...;`)
+    .replaceAll(/___(\d{0,})MORE___/g, (_, p1) => `... ${p1} more ...`)
+    .replaceAll("___KEY___: ___THREE_DOTS___", "...;")
+    .replaceAll("__THREE_DOTS__", "...")
+    .replace(/type x =[ ]?((.|\n)*);.*/g, "$1")
+    .trim();

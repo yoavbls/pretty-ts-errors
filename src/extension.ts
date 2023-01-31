@@ -5,7 +5,7 @@ import {
   Range,
   window,
 } from "vscode";
-import { formatDiagnostic } from "./formatDiagnostic";
+import { formatDiagnostic } from "./format/formatDiagnostic";
 import { hoverProvider } from "./hoverProvider";
 import { uriStore } from "./uriStore";
 

@@ -1,23 +1,27 @@
-import { Diagnostic, MarkdownString } from "vscode";
-import { unstyledCodeBlock, inlineCodeBlock } from "./format/codeBlock";
-import { errorCodeExternalExplanation } from "./format/externalExplanation";
-import { prettyType } from "./format/prettyType";
-import { embedSymbolLinks, identSentences } from "./formatMessageUtils";
+import { Diagnostic } from "vscode";
+import { inlineCodeBlock, unstyledCodeBlock } from "../components/codeBlock";
+import { identSentences } from "./formatMessageUtils";
+import { prettyType } from "./prettyType";
 
-export const formatDiagnostic = (diagnostic: Diagnostic) => {
-  const errorTitle = `<span style="color:#f96363;">⚠ Error</span>${
-    typeof diagnostic.code === "number"
-      ? ` <span style="color:#5f5f5f;">(TS${
-          diagnostic.code
-        }) ${errorCodeExternalExplanation(diagnostic.code)}</span>`
-      : ""
-  }<br>
-`;
+const formatTypeScriptBlock = (_: string, code: string) =>
+  inlineCodeBlock(code, "typescript");
 
-  const errorBody = embedSymbolLinks(
-    identSentences(diagnostic.message),
-    diagnostic
-  )
+const formatSimpleTypeBlock = (_: string, code: string) =>
+  inlineCodeBlock(code, "type");
+
+const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
+  prettyType(
+    prefix,
+    ["module", "file", "file name"].includes(prefix.toLowerCase())
+      ? `"${code}"`
+      : code
+  );
+
+export const formatBody = (diagnostic: Diagnostic) =>
+  // embedSymbolLinks(
+  identSentences(diagnostic.message)
+    // , diagnostic )
+
     // format backticks
     .replaceAll(/`(.*?)`/g, (_: string, p1: string) => `'${p1}'`)
     // format declare module snippet
@@ -81,29 +85,3 @@ export const formatDiagnostic = (diagnostic: Diagnostic) => {
     .replaceAll(/(\w+\(\))/g, formatTypeScriptBlock)
     // Format regular code blocks
     .replaceAll(/'(.*?)'/g, (_: string, p1: string) => unstyledCodeBlock(p1));
-
-  const errorMessage = `
-${errorTitle}
-<span>
-${errorBody}
-</span>
-`;
-  const markdownString = new MarkdownString(errorMessage);
-  markdownString.isTrusted = true;
-  markdownString.supportHtml = true;
-  return markdownString;
-};
-
-const formatTypeScriptBlock = (_: string, code: string) =>
-  inlineCodeBlock(code, "typescript");
-
-const formatSimpleTypeBlock = (_: string, code: string) =>
-  inlineCodeBlock(code, "type");
-
-const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
-  prettyType(
-    prefix,
-    ["module", "file", "file name"].includes(prefix.toLowerCase())
-      ? `"${code}"`
-      : code
-  );

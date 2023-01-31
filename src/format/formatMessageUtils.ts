@@ -1,3 +1,4 @@
+import dedent from "ts-dedent";
 import { Diagnostic } from "vscode";
 
 export const embedSymbolLinks = (
@@ -27,21 +28,27 @@ export const identSentences = (message: string): string => {
   return message
     .split("\n")
     .map((line, i) => {
-      if (i === 0) {
+      let whiteSpacesCount = line.search(/\S/);
+      if (whiteSpacesCount === -1) {
+        whiteSpacesCount = 0;
+      }
+      if (whiteSpacesCount === 0) {
         return line;
       }
-      return `
-  </span>
-  <p></p>
-  <span>
-  <table>
-  <tr>
-  <td>${"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".repeat(
-    i - 1
-  )}<span class="codicon codicon-indent"></span>&nbsp;&nbsp;</td>
-  <td>${line}</td>
-  </tr>
-  </table>
+      return dedent/*html*/ `
+        </span>
+        <p></p>
+        <span>
+        <table>
+        <tr>
+        <td>
+          ${"&nbsp;&nbsp;&nbsp;".repeat(whiteSpacesCount)}
+          <span class="codicon codicon-indent"></span>
+          &nbsp;&nbsp;
+        </td>
+        <td>${line}</td>
+        </tr>
+        </table>
   `;
     })
     .join("");
