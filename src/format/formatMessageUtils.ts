@@ -39,16 +39,17 @@ export const identSentences = (message: string): string => {
       if (whiteSpacesCount === 0) {
         return line;
       }
+      if (whiteSpacesCount >= 2) {
+        whiteSpacesCount -= 2;
+      }
+
       return dedent/*html*/ `
-        </span>
-        <p></p>
-        <span>
         <table>
         <tr>
         <td>
-          ${"&nbsp;&nbsp;&nbsp;".repeat(whiteSpacesCount)}
-          <span class="codicon codicon-indent"></span>
-          &nbsp;&nbsp;
+        ${"&nbsp;&nbsp;&nbsp;".repeat(whiteSpacesCount)}
+        <span class="codicon codicon-indent"></span>
+        &nbsp;&nbsp;
         </td>
         <td>${line}</td>
         </tr>
