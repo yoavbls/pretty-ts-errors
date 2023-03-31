@@ -4,6 +4,7 @@ import {
   multiLineCodeBlock,
   unstyledCodeBlock,
 } from "../components/codeBlock";
+import { addMissingParentheses } from "./addMissingParentheses";
 
 export const prettyType = (prefix: string, type: string) => {
   if (type.match(/^(\[\]|\{\})$/)) {
@@ -24,7 +25,8 @@ export const prettyType = (prefix: string, type: string) => {
     prettyType = convertToOriginalType(
       format(convertToValidType(type), {
         parser: "typescript",
-        printWidth: 60,
+        printWidth: 80,
+        arrowParens: "avoid",
       })
     );
   } catch (e) {
@@ -40,6 +42,10 @@ export const prettyType = (prefix: string, type: string) => {
 
 const convertToValidType = (type: string) =>
   `type x = ${type
+    // Add missing parentheses when the type ends with "...""
+    .replace(/(.*)\.\.\./, (_, p1) =>
+      addMissingParentheses(`${p1} \n /* more */`)
+    )
     // Change `(...): return` which is invalid to `(...) => return`
     .replace(/^(\(.*\)): /, (_, p1) => `${p1} =>`)
     // Try to fix cuuted types

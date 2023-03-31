@@ -1,31 +1,32 @@
 import dedent from "ts-dedent";
 import { Diagnostic } from "vscode";
 
-export const embedSymbolLinks = (
-  message: string,
-  diagnostic: Diagnostic
-): string => {
+export const embedSymbolLinks = (diagnostic: Diagnostic): Diagnostic => {
   if (
     !diagnostic?.relatedInformation?.[0]?.message?.includes("is declared here")
   ) {
-    return message;
+    return diagnostic;
   }
   const ref = diagnostic.relatedInformation[0];
   const symbol = ref?.message.match(/(?<symbol>'.*?') is declared here./)
     ?.groups?.symbol!;
 
-  return symbol
-    ? message.replaceAll(
-        symbol,
-        dedent/*html*/ `
+  if (!symbol) {
+    return diagnostic;
+  }
+  return {
+    ...diagnostic,
+    message: diagnostic.message.replaceAll(
+      symbol,
+      dedent/*html*/ `
       ${symbol} 
       <a href="${ref.location.uri.path}#${ref.location.range.start.line + 1},
       ${ref.location.range.start.character + 1}">
       <span class="codicon codicon-go-to-file" >
       </span>
       </a>&nbsp;`
-      )
-    : message;
+    ),
+  };
 };
 
 export const identSentences = (message: string): string => {
@@ -44,6 +45,9 @@ export const identSentences = (message: string): string => {
       }
 
       return dedent/*html*/ `
+        </span>
+        <p></p>
+        <span>
         <table>
         <tr>
         <td>

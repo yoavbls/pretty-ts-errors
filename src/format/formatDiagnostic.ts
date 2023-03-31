@@ -1,13 +1,16 @@
 import dedent from "ts-dedent";
 import { Diagnostic, MarkdownString } from "vscode";
 import { title } from "../components/title";
-import { formatBody } from "./formatBody";
+import { formatDiagnosticMessage } from "./formatBody";
+import { embedSymbolLinks, identSentences } from "./formatMessageUtils";
 
 export const formatDiagnostic = (diagnostic: Diagnostic) => {
+  diagnostic = embedSymbolLinks(diagnostic);
+
   const markdownString = new MarkdownString(dedent/*html*/ `
     ${title(diagnostic)}
     <span>
-    ${formatBody(diagnostic)}
+    ${formatDiagnosticMessage(identSentences(diagnostic.message))}
     </span>
   `);
 

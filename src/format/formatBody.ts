@@ -1,6 +1,4 @@
-import { Diagnostic } from "vscode";
 import { inlineCodeBlock, unstyledCodeBlock } from "../components/codeBlock";
-import { embedSymbolLinks, identSentences } from "./formatMessageUtils";
 import { prettyType } from "./prettyType";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
@@ -17,11 +15,8 @@ const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
       : code
   );
 
-export const formatBody = (diagnostic: Diagnostic) =>
-  // embedSymbolLinks(
-  identSentences(embedSymbolLinks(diagnostic.message, diagnostic))
-    // , diagnostic )
-
+export const formatDiagnosticMessage = (message: string) =>
+  message
     // format backticks
     .replaceAll(/`(.*?)`/g, (_: string, p1: string) => `'${p1}'`)
     // format declare module snippet
@@ -52,6 +47,10 @@ export const formatBody = (diagnostic: Diagnostic) =>
       (_: string, p1: string, p2: string, p3: string) =>
         `${prettyType(p1, p2)} or ${prettyType("", p3)}`
     )
+    .replaceAll(
+      /(Overload \d of \d), '(.*?)', /gi,
+      (_, p1: string, p2: string) => `${p1}${prettyType("", p2)}`
+    )
     // format simple strings
     .replaceAll(/'(".*?")'/g, formatTypeScriptBlock)
     // Format types
@@ -80,10 +79,6 @@ export const formatBody = (diagnostic: Diagnostic) =>
     .replaceAll(
       /(return|operator) '(.*?)'/gi,
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
-    )
-    .replaceAll(
-      /(Overload \d of \d,) '(.*?)'/gi,
-      (_, p1: string, p2: string, p3: string) => `${p1} ${prettyType("", p2)}`
     )
     // Format function calls
     .replaceAll(/(\w+\(\))/g, formatTypeScriptBlock)
