@@ -1,9 +1,12 @@
 <img src="./assets/icon.png" width="150" /> 
-<br />
 
 # Pretty `TypeScript` Errors
 
 <b>Make TypeScript errors prettier and more human-readable in VSCode.</b>  
+  
+[![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://code.visualstudio.com/)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
+
+
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
@@ -24,3 +27,7 @@ Yes, these types include things like `... more ...`, `{ ... }`, etc in an incons
 ## Contribution
 Every contribution is welcome.  
 Feel free to ask anything and open any issue / PR you desire.
+
+## Support
+Please star this repo if you like it so this graph will grow:  
+[![Sparkline](https://stars.medv.io/yoavbls/pretty-ts-errors.svg)](https://stars.medv.io/yoavbls/pretty-ts-errors)
