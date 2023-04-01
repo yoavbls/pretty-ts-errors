@@ -1,9 +1,4 @@
 {
-  "information_for_contributors": [
-    "This file has been converted from https://github.com/microsoft/TypeScript-TmLanguage/blob/master/TypeScript.tmLanguage",
-    "If you want to provide a fix or improvement, please create a pull request against the original repository.",
-    "Once accepted there, we are happy to receive an update request."
-  ],
   "version": "https://github.com/microsoft/TypeScript-TmLanguage/commit/0dfae8cc4807fecfbf8f1add095d9817df824c95",
   "name": "TypeScript Type",
   "scopeName": "source.type",

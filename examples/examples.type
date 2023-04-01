@@ -1,0 +1,10 @@
+{
+  fistName: string;
+  lastName: string;
+  age: number;  
+} | undefined | null;
+
+{
+  x: string;
+  y: number;
+}[]
