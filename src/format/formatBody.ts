@@ -18,7 +18,7 @@ const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
 export const formatDiagnosticMessage = (message: string) =>
   message
     // format backticks
-    .replaceAll(/`(.*?)`/g, (_: string, p1: string) => `'${p1}'`)
+    // .replaceAll(/`(.*?)`/g, (_: string, p1: string) => `'${p1}'`)
     // format declare module snippet
     .replaceAll(
       /'(declare module )'(.*)';'/g,

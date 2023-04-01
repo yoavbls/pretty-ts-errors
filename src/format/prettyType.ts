@@ -25,7 +25,7 @@ export const prettyType = (prefix: string, type: string) => {
     prettyType = convertToOriginalType(
       format(convertToValidType(type), {
         parser: "typescript",
-        printWidth: 80,
+        printWidth: 60,
         arrowParens: "avoid",
       })
     );

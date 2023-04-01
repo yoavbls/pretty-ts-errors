@@ -18,13 +18,11 @@ export const embedSymbolLinks = (diagnostic: Diagnostic): Diagnostic => {
     ...diagnostic,
     message: diagnostic.message.replaceAll(
       symbol,
-      dedent/*html*/ `
-      ${symbol} 
-      <a href="${ref.location.uri.path}#${ref.location.range.start.line + 1},
-      ${ref.location.range.start.character + 1}">
-      <span class="codicon codicon-go-to-file" >
-      </span>
-      </a>&nbsp;`
+      `${symbol} <a href="${ref.location.uri.path}#${
+        ref.location.range.start.line + 1
+      },${
+        ref.location.range.start.character + 1
+      }"><span class="codicon codicon-go-to-file" ></span></a>&nbsp;`
     ),
   };
 };
