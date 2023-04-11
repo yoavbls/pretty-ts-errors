@@ -1,5 +1,4 @@
-import { invert } from "radash";
-import { has, keys, values } from "../utils";
+import { has, invert, keys, values } from "../utils";
 
 const parentheses = {
   "(": ")",
@@ -11,7 +10,7 @@ const openParentheses = keys(parentheses);
 const closeParentheses = values(parentheses);
 
 export function addMissingParentheses(type: string): string {
-  let openStack: typeof openParentheses[number][] = [];
+  let openStack: (typeof openParentheses)[number][] = [];
   let missingClosingChars = "";
 
   for (const char of type) {
@@ -37,5 +36,21 @@ export function addMissingParentheses(type: string): string {
     missingClosingChars += closingChar;
   }
 
-  return type + missingClosingChars;
+  let validType = type;
+
+  // Close the last string if it's not closed
+  if ((validType.match(/\"/g) ?? []).length % 2 === 1) {
+    validType = validType + '..."';
+  }
+  if ((validType.match(/\'/g) ?? []).length % 2 === 1) {
+    validType = validType + "...'";
+  }
+
+  validType = (validType + missingClosingChars).replace(
+    // Change (param: ...) to (param) => __RETURN_TYPE__ if needed
+    /(\([a-zA-Z0-9]*\:.*\))/,
+    (p1) => `${p1} => ...`
+  );
+
+  return validType;
 }

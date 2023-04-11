@@ -1,15 +1,16 @@
-export const keys = <T extends {}>(object: T): Array<keyof T> =>
+export const keys = <const T extends {}>(object: T): Array<keyof T> =>
   <Array<keyof T>>Object.keys(object);
 
-export const values = <T extends {}>(object: T): Array<T[keyof T]> =>
+export const values = <const T extends {}>(object: T): Array<T[keyof T]> =>
   <Array<T[keyof T]>>Object.values(object);
 
 export const has = (
   array: unknown[],
   item: string
-): item is Extract<typeof array[number], string> => array.includes(item);
+): item is Extract<(typeof array)[number], string> => array.includes(item);
 
 /**
+ * Copied from radash library
  * Returns an object with { [keys]: value }
  * inverted as { [value]: key }
  */

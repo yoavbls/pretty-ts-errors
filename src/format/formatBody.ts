@@ -52,7 +52,7 @@ export const formatDiagnosticMessage = (message: string) =>
       (_, p1: string, p2: string) => `${p1}${prettyType("", p2)}`
     )
     // format simple strings
-    .replaceAll(/'(".*?")'/g, formatTypeScriptBlock)
+    .replaceAll(/^'"[^"]*"'$/g, formatTypeScriptBlock)
     // Format types
     .replaceAll(
       /(type|type alias|interface|module|file|file name) '(.*?)'[\.]?/gi,
