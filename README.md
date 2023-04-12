@@ -10,12 +10,14 @@
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
-<img src="./assets/this.png" height="350" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" height="350" />
+<img src="./assets/this.png" style="max-height: 350px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" style="max-height: 350px" />
 
-## Other features:
-- A link to the relevant type location in the error message
-- A Button that navigates you to the error at [typescript.tv](http://typescript.tv) where you can find a detailed explanation, sometimes with a video.
-- A Button that navigates you to [ts-error-translator](https://ts-error-translator.vercel.app/) where you can read the error in plain English
+## Features
+- Syntax highlighting with your theme colors for types in error messages, supporting both light and dark themes
+- Support for Node and Deno
+- A button that leads you to the relevant type declaration next to the type in the error message
+- A button that navigates you to the error at [typescript.tv](http://typescript.tv), where you can find a detailed explanation, sometimes with a video
+- A button that navigates you to [ts-error-translator](https://ts-error-translator.vercel.app/), where you can read the error in plain English
 
   
 ## Why isn't it trivial
@@ -28,7 +30,3 @@ Yes, these types include things like `... more ...`, `{ ... }`, etc in an incons
 ## Contribution
 Every contribution is welcome.  
 Feel free to ask anything and open any issue / PR you desire.
-
-<!-- ## Support
-Please star this repo if you like it so this graph will grow:  
-[![Sparkline](https://stars.medv.io/yoavbls/pretty-ts-errors.svg)](https://stars.medv.io/yoavbls/pretty-ts-errors) -->

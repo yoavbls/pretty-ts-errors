@@ -8,6 +8,7 @@ import {
 import { formatDiagnostic } from "./format/formatDiagnostic";
 import { hoverProvider } from "./hoverProvider";
 import { uriStore } from "./uriStore";
+import { has } from "./utils";
 
 export function activate(context: ExtensionContext) {
   context.subscriptions.push(
@@ -39,7 +40,11 @@ export function activate(context: ExtensionContext) {
         }[] = [];
 
         diagnostics
-          .filter((diag) => diag.source === "ts")
+          .filter((diagnostic) =>
+            diagnostic.source
+              ? has(["ts", "deno-ts"], diagnostic.source)
+              : false
+          )
           .forEach(async (diagnostic) => {
             items.push({
               range: diagnostic.range,
