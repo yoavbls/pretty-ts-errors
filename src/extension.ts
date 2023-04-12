@@ -69,7 +69,12 @@ function getMetaFrameworkLanguages() {
     for (const language of packageJSON.contributes?.languages ?? []) {
       for (const grammar of packageJSON.contributes.grammars ?? []) {
         const embeddedLanguages = new Set<string>(Object.values(grammar.embeddedLanguages ?? []));
-        if (embeddedLanguages.has('typescript') || embeddedLanguages.has('typescriptreact')) {
+        if (
+          embeddedLanguages.has("typescript")
+          || embeddedLanguages.has("typescriptreact")
+          || embeddedLanguages.has("javascript")
+          || embeddedLanguages.has("javascriptreact")
+        ) {
           metaFrameworkLanguages.push(language.id);
         }
       }
