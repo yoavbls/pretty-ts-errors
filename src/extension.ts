@@ -1,6 +1,5 @@
 import {
   ExtensionContext,
-  extensions,
   languages,
   MarkdownString,
   Range,
@@ -13,20 +12,7 @@ import { has } from "./utils";
 
 export function activate(context: ExtensionContext) {
 
-  const languagesId: string[] = [...new Set(["typescript", "typescriptreact", "javascript", "javascriptreact", ...getMetaFrameworkLanguages()])];
-
-  context.subscriptions.push(
-    ...languagesId.map(
-      (language) =>
-        languages.registerHoverProvider(
-          {
-            scheme: "file",
-            language,
-          },
-          hoverProvider
-        )
-    )
-  );
+  const registeredLanguages = new Set<string>();
 
   context.subscriptions.push(
     window.onDidChangeActiveColorTheme((e) => { }), // TODO: change background color
@@ -39,6 +25,8 @@ export function activate(context: ExtensionContext) {
           contents: MarkdownString[];
         }[] = [];
 
+        let hasTsDiagnostic = false;
+
         diagnostics
           .filter((diagnostic) =>
             diagnostic.source
@@ -50,8 +38,25 @@ export function activate(context: ExtensionContext) {
               range: diagnostic.range,
               contents: [formatDiagnostic(diagnostic)],
             });
+            hasTsDiagnostic = true;
           });
         uriStore[uri.path] = items;
+
+        if (hasTsDiagnostic && uri.scheme === "file") {
+          const editor = window.visibleTextEditors.find(editor => editor.document.uri.toString() === uri.toString());
+          if (editor && !registeredLanguages.has(editor.document.languageId)) {
+            registeredLanguages.add(editor.document.languageId);
+            context.subscriptions.push(
+              languages.registerHoverProvider(
+                {
+                  scheme: "file",
+                  language: editor.document.languageId,
+                },
+                hoverProvider
+              )
+            );
+          }
+        }
       });
     })
   );
@@ -59,27 +64,3 @@ export function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
-
-function getMetaFrameworkLanguages() {
-
-  const metaFrameworkLanguages: string[] = [];
-
-  for (const extension of extensions.all) {
-    const packageJSON = extension.packageJSON;
-    for (const language of packageJSON.contributes?.languages ?? []) {
-      for (const grammar of packageJSON.contributes.grammars ?? []) {
-        const embeddedLanguages = new Set<string>(Object.values(grammar.embeddedLanguages ?? []));
-        if (
-          embeddedLanguages.has("typescript")
-          || embeddedLanguages.has("typescriptreact")
-          || embeddedLanguages.has("javascript")
-          || embeddedLanguages.has("javascriptreact")
-        ) {
-          metaFrameworkLanguages.push(language.id);
-        }
-      }
-    }
-  }
-
-  return metaFrameworkLanguages;
-}
