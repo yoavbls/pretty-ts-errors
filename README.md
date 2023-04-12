@@ -1,10 +1,15 @@
 <a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">
     <img src="./assets/icon.png" width="150"  hidden style="display: block !important; max-width: 0" /> 
+    <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/icon.png" width="150">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png" width="150">
+  <img alt="Shows an illustrated sun in light mode and a moon with stars in dark mode." src="./assets/icon.png" width="140" style="max-width: 0;">
+</picture>
 </a>
 
 # Pretty `TypeScript` Errors
 
-<b>Make TypeScript errors prettier and more human-readable in VSCode.</b>  
+<b>Make TypeScript errors prettier and human-readable in VSCode.</b>  
   
 [![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
 
@@ -23,7 +28,7 @@ This extension will help you understand what's going on. For example, in this re
 ## Supports
 - Node and Deno TypeScript error reporters (in `.ts` files)
 - JSDoc type errors (in `.js` and `.jsx` files)
-- React, Solid and Qwik errors (in `.tsx` files)
+- React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
 
 
