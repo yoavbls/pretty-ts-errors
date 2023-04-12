@@ -1,5 +1,6 @@
 import {
   ExtensionContext,
+  extensions,
   languages,
   MarkdownString,
   Range,
@@ -11,8 +12,11 @@ import { uriStore } from "./uriStore";
 import { has } from "./utils";
 
 export function activate(context: ExtensionContext) {
+
+  const languagesId: string[] = [...new Set(["typescript", "typescriptreact", "javascript", "javascriptreact", ...getMetaFrameworkLanguages()])];
+
   context.subscriptions.push(
-    ...["typescript", "typescriptreact", "javascript", "javascriptreact"].map(
+    ...languagesId.map(
       (language) =>
         languages.registerHoverProvider(
           {
@@ -25,7 +29,7 @@ export function activate(context: ExtensionContext) {
   );
 
   context.subscriptions.push(
-    window.onDidChangeActiveColorTheme((e) => {}), // TODO: change background color
+    window.onDidChangeActiveColorTheme((e) => { }), // TODO: change background color
     languages.onDidChangeDiagnostics(async (e) => {
       e.uris.forEach((uri) => {
         const diagnostics = languages.getDiagnostics(uri);
@@ -54,4 +58,23 @@ export function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
+
+function getMetaFrameworkLanguages() {
+
+  const metaFrameworkLanguages: string[] = [];
+
+  for (const extension of extensions.all) {
+    const packageJSON = extension.packageJSON;
+    for (const language of packageJSON.contributes?.languages ?? []) {
+      for (const grammar of packageJSON.contributes.grammars ?? []) {
+        const embeddedLanguages = new Set<string>(Object.values(grammar.embeddedLanguages ?? []));
+        if (embeddedLanguages.has('typescript') || embeddedLanguages.has('typescriptreact')) {
+          metaFrameworkLanguages.push(language.id);
+        }
+      }
+    }
+  }
+
+  return metaFrameworkLanguages;
+}

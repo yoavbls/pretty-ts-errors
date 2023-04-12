@@ -21,6 +21,10 @@
   "activationEvents": [
     "onLanguage:typescript",
     "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onLanguage:astro",
+    "onLanguage:mdx",
     "onLanguage:type"
   ],
   "main": "./dist/extension.js",
