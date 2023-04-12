@@ -3,12 +3,13 @@
   "displayName": "Pretty TypeScript Errors",
   "publisher": "yoavbls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/yoavbls/pretty-ts-errors"
   },
+  "homepage": "https://github.com/yoavbls/pretty-ts-errors",
   "engines": {
     "vscode": "^1.70.0"
   },
