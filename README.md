@@ -1,8 +1,9 @@
 <a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">    
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/icon.png" width="150">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png" width="145">
-  <img alt="logo" src="./assets/icon.png" width="140" style="max-width: 0;">
-</picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/icon.png" width="150">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png" width="145">
+    <img alt="logo" src="./assets/icon.png" width="140" style="max-width: 0;">
+  </picture>
 </a>
 
 # Pretty `TypeScript` Errors
