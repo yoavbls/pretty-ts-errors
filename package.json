@@ -28,7 +28,8 @@
     "onLanguage:typescriptreact",
     "onLanguage:astro",
     "onLanguage:svelte",
-    "onLanguage:vue"
+    "onLanguage:vue",
+    "onLanguage:mdx"
   ],
   "main": "./dist/extension.js",
   "contributes": {
