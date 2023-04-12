@@ -10,7 +10,7 @@
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
-<img src="./assets/this.png" style="max-height: 350px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" style="max-height: 350px" />
+<img src="./assets/this.png" style="max-height: 350px"  height="350px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" height="350px"  width="350px" style="max-height: 350px" />
 
 ## Features
 - Syntax highlighting with your theme colors for types in error messages, supporting both light and dark themes

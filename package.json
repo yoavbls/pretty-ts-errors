@@ -1,6 +1,7 @@
 {
   "name": "pretty-ts-errors",
   "displayName": "Pretty TypeScript Errors",
+  "publisher": "yoavbls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
   "version": "0.2.3",
   "icon": "assets/icon.png",
