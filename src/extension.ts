@@ -12,19 +12,15 @@ import { has } from "./utils";
 
 export function activate(context: ExtensionContext) {
   context.subscriptions.push(
-    languages.registerHoverProvider(
-      {
-        scheme: "file",
-        language: "typescript",
-      },
-      hoverProvider
-    ),
-    languages.registerHoverProvider(
-      {
-        scheme: "file",
-        language: "typescriptreact",
-      },
-      hoverProvider
+    ...["typescript", "typescriptreact", "javascript", "javascriptreact"].map(
+      (language) =>
+        languages.registerHoverProvider(
+          {
+            scheme: "file",
+            language,
+          },
+          hoverProvider
+        )
     )
   );
 
