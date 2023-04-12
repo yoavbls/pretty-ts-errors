@@ -1,5 +1,5 @@
 <a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">
-    <img src="./assets/icon.png" width="150" style="max-width: 0" /> 
+    <img src="./assets/icon.png" width="150"  hidden style="display: block !important; max-width: 0" /> 
 </a>
 
 # Pretty `TypeScript` Errors
@@ -16,12 +16,17 @@ This extension will help you understand what's going on. For example, in this re
 
 ## Features
 - Syntax highlighting with your theme colors for types in error messages, supporting both light and dark themes
-- Support for Node and Deno
 - A button that leads you to the relevant type declaration next to the type in the error message
 - A button that navigates you to the error at [typescript.tv](http://typescript.tv), where you can find a detailed explanation, sometimes with a video
 - A button that navigates you to [ts-error-translator](https://ts-error-translator.vercel.app/), where you can read the error in plain English
 
-  
+## Supports
+- Node and Deno TypeScript error reporters (in `.ts` files)
+- JSDoc type errors (in `.js` and `.jsx` files)
+- React, Solid and Qwik errors (in `.tsx` files)
+- Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
+
+
 ## Why isn't it trivial
 1. TypeScript errors contain types that are not valid in TypeScript.  
 Yes, these types include things like `... more ...`, `{ ... }`, etc in an inconsistent manner. Some are also cutting in the middle because they're too long.

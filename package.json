@@ -18,10 +18,17 @@
     "Visualization",
     "Other"
   ],
+  "galleryBanner": {
+    "color": "#133b55",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onLanguage:typescript",
+    "onLanguage:javascript",
     "onLanguage:typescriptreact",
-    "onLanguage:type"
+    "onLanguage:astro",
+    "onLanguage:svelte",
+    "onLanguage:vue"
   ],
   "main": "./dist/extension.js",
   "contributes": {

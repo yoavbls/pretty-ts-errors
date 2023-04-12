@@ -12,15 +12,22 @@ import { has } from "./utils";
 
 export function activate(context: ExtensionContext) {
   context.subscriptions.push(
-    ...["typescript", "typescriptreact", "javascript", "javascriptreact"].map(
-      (language) =>
-        languages.registerHoverProvider(
-          {
-            scheme: "file",
-            language,
-          },
-          hoverProvider
-        )
+    ...[
+      "typescript",
+      "typescriptreact",
+      "javascript",
+      "javascriptreact",
+      "astro",
+      "svelte",
+      "vue",
+    ].map((language) =>
+      languages.registerHoverProvider(
+        {
+          scheme: "file",
+          language,
+        },
+        hoverProvider
+      )
     )
   );
 
@@ -38,7 +45,7 @@ export function activate(context: ExtensionContext) {
         diagnostics
           .filter((diagnostic) =>
             diagnostic.source
-              ? has(["ts", "deno-ts"], diagnostic.source)
+              ? has(["ts", "deno-ts", "js"], diagnostic.source)
               : false
           )
           .forEach(async (diagnostic) => {
