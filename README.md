@@ -1,9 +1,8 @@
-<a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">
+<a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors" style="display: none;">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/icon.png">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png">
-    <img src="./assets/empty.png" alt="Logo" 
-      width="140">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/icon.png" width="140">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/icon.png" width="140">
+    <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/empty.png" alt="Logo">
   </picture>
 </a>
 
