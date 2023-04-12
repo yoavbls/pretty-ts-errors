@@ -1,9 +1,7 @@
-<a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">
-    <img src="./assets/icon.png" width="150"  hidden style="display: block !important; max-width: 0" /> 
-    <picture>
+<a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors">    
   <source media="(prefers-color-scheme: dark)" srcset="./assets/icon.png" width="150">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png" width="150">
-  <img alt="Shows an illustrated sun in light mode and a moon with stars in dark mode." src="./assets/icon.png" width="140" style="max-width: 0;">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/icon.png" width="145">
+  <img alt="logo" src="./assets/icon.png" width="140" style="max-width: 0;">
 </picture>
 </a>
 
