@@ -1,5 +1,5 @@
-import { inlineCodeBlock, unstyledCodeBlock } from "../components/codeBlock";
-import { prettyType } from "./prettyType";
+import { inlineCodeBlock, unstyledCodeBlock } from "../components";
+import { formatTypeBlock } from "./formatTypeBlock";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "typescript");
@@ -8,7 +8,7 @@ const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
 const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
-  prettyType(
+  formatTypeBlock(
     prefix,
     ["module", "file", "file name"].includes(prefix.toLowerCase())
       ? `"${code}"`
@@ -37,17 +37,17 @@ export const formatDiagnosticMessage = (message: string) =>
     .replaceAll(
       /(types) '(.*?)' and '(.*?)'[\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${prettyType(p1, p2)} and ${prettyType("", p3)}`
+        `${formatTypeBlock(p1, p2)} and ${formatTypeBlock("", p3)}`
     )
     // Format type annotation options
     .replaceAll(
       /type annotation must be '(.*?)' or '(.*?)'[\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${prettyType(p1, p2)} or ${prettyType("", p3)}`
+        `${formatTypeBlock(p1, p2)} or ${formatTypeBlock("", p3)}`
     )
     .replaceAll(
       /(Overload \d of \d), '(.*?)', /gi,
-      (_, p1: string, p2: string) => `${p1}${prettyType("", p2)}`
+      (_, p1: string, p2: string) => `${p1}${formatTypeBlock("", p2)}`
     )
     // format simple strings
     .replaceAll(/^'"[^"]*"'$/g, formatTypeScriptBlock)
