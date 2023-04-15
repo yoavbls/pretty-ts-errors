@@ -1,30 +1,26 @@
-import dedent from "ts-dedent";
-import { blockColor } from "./consts/colors";
+import { d } from "../utils";
+import { miniLine } from "./miniLine";
+import { spanBreak } from "./spanBreak";
 
-export const unstyledCodeBlock = (content: string) => dedent/*html*/ `
-  <code>${content}</code>
-`;
-
-export const codeBlock = (code: string, language: string) => dedent/*html*/ `
-  <span class="codicon codicon-none" style="background-color:${blockColor};">
+/**
+ * @returns markdown string that will be rendered as a code block (`supportHtml` required)
+ * We're using codicon here since it's the only thing that can be `inline-block`
+ * and have a background color in hovers due to strict sanitization of markdown on
+ * VSCode [code](https://github.com/microsoft/vscode/blob/735aff6d962db49423e02c2344e60d418273ae39/src/vs/base/browser/markdownRenderer.ts#L372)
+ */
+const codeBlock = (code: string, language: string) =>
+  spanBreak(d/*html*/ `
+  <span class="codicon codicon-none" style="background-color:var(--vscode-textCodeBlock-background);">
 
     \`\`\`${language}
     ${code}
     \`\`\`
 
   </span>
-`;
+`);
 
-export const inlineCodeBlock = (
-  code: string,
-  language: string
-) => dedent/*html*/ `
-  </span>
-  ${codeBlock(` ${code} `, language)}
-  <span>
-`;
-
-export const miniLine = "<p></p>";
+export const inlineCodeBlock = (code: string, language: string) =>
+  codeBlock(` ${code} `, language);
 
 export const multiLineCodeBlock = (code: string, language: string) => {
   const maxLineChars = Math.max(...code.split("\n").map((line) => line.length));
@@ -34,10 +30,9 @@ export const multiLineCodeBlock = (code: string, language: string) => {
     .map((line) => line.padEnd(maxLineChars + 2))
     .join("\n");
 
-  return dedent/*html*/ `
-    </span>
+  return d/*html*/ `    
     ${miniLine}
     ${codeBlock(paddedCode, language)}
     ${miniLine}
-    <span>`;
+    `;
 };
