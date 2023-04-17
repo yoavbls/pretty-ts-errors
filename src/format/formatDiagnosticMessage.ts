@@ -15,10 +15,17 @@ const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
       : code
   );
 
-export const formatDiagnosticMessage = (message: string) =>
-  message
-    // format declare module snippet
-    .replaceAll(
+  const formatObjectLiterals = (message: string) => {
+  const objectLiteralRegex = /'(\{.*?\})'/g;
+  return message.replace(objectLiteralRegex, (_: string, p1: string) => {
+    return unstyledCodeBlock(p1);
+  });
+};
+
+export const formatDiagnosticMessage = (message: string) => {
+  const formattedMessage = formatObjectLiterals(message);
+
+  return formattedMessage.replaceAll(
       /'(declare module )'(.*)';'/g,
       (_: string, p1: string, p2: string) =>
         formatTypeScriptBlock(_, `${p1} "${p2}"`)
@@ -35,7 +42,7 @@ export const formatDiagnosticMessage = (message: string) =>
     )
     // Format type pairs
     .replaceAll(
-      /(types) '(.*?)' and '(.*?)'[\.]?/gi,
+      /(types) '(?:(?!\{.*\})[^'])' and '(?:(?!\{.*\})[^'])'[\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
         `${formatTypeBlock(p1, p2)} and ${formatTypeBlock("", p3)}`
     )
@@ -58,7 +65,7 @@ export const formatDiagnosticMessage = (message: string) =>
     )
     // Format reversed types
     .replaceAll(
-      /(.*)'([^>]*)' (type|interface|return type|file|module)/gi,
+      /([^>]*)'(?:(?!\{.*\})[^>])' (type|interface|return type|file|module)/gi,
       (_: string, p1: string, p2: string, p3: string) =>
         `${p1}${formatTypeOrModuleBlock(_, "", p2)} ${p3}`
     )
@@ -77,6 +84,5 @@ export const formatDiagnosticMessage = (message: string) =>
     .replaceAll(
       /(return|operator) '(.*?)'/gi,
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
-    )
-    // Format regular code blocks
-    .replaceAll(/'(.*?)'/g, (_: string, p1: string) => unstyledCodeBlock(p1));
+    );
+};
