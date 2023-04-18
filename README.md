@@ -32,18 +32,10 @@ This extension will help you understand what's going on. For example, in this re
 - React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
 
-## Backed by these amazing folks
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=nTQUwghvy5Q" target="_blank">
+## Watch it
+<a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
  <img src="http://img.youtube.com/vi/9RM2aErJs-s/0.jpg" alt="Watch the video" />
 </a>
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">s/o <a href="https://twitter.com/yoavbls?ref_src=twsrc%5Etfw">@yoavbls</a> - this is dope <a href="https://t.co/wsI7gOxqC4">https://t.co/wsI7gOxqC4</a></p>&mdash; Theo - t3.gg (@t3dotgg) 
-<a href="https://twitter.com/t3dotgg/status/1647752075969974272?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
-  
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Typescript just got way better<a href="https://t.co/y8BQERWz7h">https://t.co/y8BQERWz7h</a></p>&mdash; Tanner Linsley (@tannerlinsley) 
-<a href="https://twitter.com/tannerlinsley/status/1647982562026090496?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
-
-
 
 
 ## Why isn't it trivial
@@ -61,3 +53,17 @@ Feel free to ask anything and open any issue / PR you desire.
 <a href="https://star-history.com/#yoavbls/pretty-ts-errors&Date" target="_blank">
 <img src="https://api.star-history.com/svg?repos=yoavbls/pretty-ts-errors&type=Date" width="500px" />
 </a>
+
+Thanks to these amazing folks and anyone else that help it reach so many people 💙
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">That&#39;s great! <a href="https://t.co/gGX2TNKFqO">https://t.co/gGX2TNKFqO</a> <a href="https://t.co/xu3i5GjC7H">pic.twitter.com/xu3i5GjC7H</a></p>&mdash; Johnson Chu (@johnsoncodehk) <a href="https://twitter.com/johnsoncodehk/status/1646214711204286465?ref_src=twsrc%5Etfw">April 12, 2023</a></blockquote>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">s/o <a href="https://twitter.com/yoavbls?ref_src=twsrc%5Etfw">@yoavbls</a> - this is dope <a href="https://t.co/wsI7gOxqC4">https://t.co/wsI7gOxqC4</a></p>&mdash; Theo - t3.gg (@t3dotgg) 
+<a href="https://twitter.com/t3dotgg/status/1647752075969974272?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
+  
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Typescript just got way better 
+<a href="https://t.co/y8BQERWz7h">https://t.co/y8BQERWz7h</a></p>&mdash; Tanner Linsley (@tannerlinsley) 
+<a href="https://twitter.com/tannerlinsley/status/1647982562026090496?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
+
+
+
