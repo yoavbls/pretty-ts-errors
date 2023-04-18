@@ -8,10 +8,12 @@ import {
 import { formatDiagnostic } from "./format/formatDiagnostic";
 import { hoverProvider } from "./provider/hoverProvider";
 import { uriStore } from "./provider/uriStore";
-import { has } from "./utils";
+import { has, prettify } from "./utils";
+import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
+  const converter = createConverter();
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -32,9 +34,15 @@ export function activate(context: ExtensionContext) {
               : false
           )
           .forEach(async (diagnostic) => {
+
+            const markdownString = new MarkdownString(formatDiagnostic(converter.asDiagnostic(diagnostic), prettify));
+
+            markdownString.isTrusted = true;
+            markdownString.supportHtml = true;
+
             items.push({
               range: diagnostic.range,
-              contents: [formatDiagnostic(diagnostic)],
+              contents: [markdownString],
             });
             hasTsDiagnostic = true;
           });

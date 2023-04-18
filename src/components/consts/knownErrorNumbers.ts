@@ -1,4 +1,4 @@
-import { Diagnostic } from "vscode";
+import { Diagnostic } from "vscode-languageserver-types";
 
 /** Should be updated from:
  * https://typescript.tv/errors

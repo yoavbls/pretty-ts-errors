@@ -83,6 +83,9 @@
   "dependencies": {
     "lz-string": "^1.4.4",
     "prettier": "^2.8.7",
-    "ts-dedent": "^2.2.0"
+    "ts-dedent": "^2.2.0",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver-types": "^3.17.3",
+    "vscode-uri": "^3.0.7"
   }
 }

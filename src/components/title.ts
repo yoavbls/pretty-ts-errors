@@ -1,4 +1,4 @@
-import { Diagnostic } from "vscode";
+import { Diagnostic } from "vscode-languageserver-types";
 import { compressToEncodedURIComponent, d } from "../utils";
 import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
 

@@ -1,7 +1,16 @@
 // We re-export modules to be able to replace/change them easily across all the usages
 export { compressToEncodedURIComponent } from "lz-string";
-export { format as prettify } from "prettier";
+import { format } from "prettier";
 import dedent from "ts-dedent";
+
+export function prettify(text: string) {
+  return format(text, {
+    parser: "typescript",
+    printWidth: 60,
+    singleAttributePerLine: false,
+    arrowParens: "avoid",
+  });
+}
 
 /**
  * d stands for dedent.
