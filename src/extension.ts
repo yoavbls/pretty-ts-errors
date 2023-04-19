@@ -8,8 +8,9 @@ import {
 import { formatDiagnostic } from "./format/formatDiagnostic";
 import { hoverProvider } from "./provider/hoverProvider";
 import { uriStore } from "./provider/uriStore";
-import { has, prettify } from "./utils";
+import { has } from "./utils";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
+import { format } from "prettier";
 
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
@@ -70,4 +71,13 @@ export function activate(context: ExtensionContext) {
       });
     })
   );
+}
+
+function prettify(text: string) {
+  return format(text, {
+    parser: "typescript",
+    printWidth: 60,
+    singleAttributePerLine: false,
+    arrowParens: "avoid",
+  });
 }
