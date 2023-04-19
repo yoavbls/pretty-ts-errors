@@ -9,9 +9,12 @@ import { formatDiagnostic } from "./format/formatDiagnostic";
 import { hoverProvider } from "./provider/hoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
+import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
+import { format } from "prettier";
 
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
+  const converter = createConverter();
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -32,9 +35,17 @@ export function activate(context: ExtensionContext) {
               : false
           )
           .forEach(async (diagnostic) => {
+
+            // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
+            // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
+            const markdownString = new MarkdownString(formatDiagnostic(converter.asDiagnostic(diagnostic), prettify));
+
+            markdownString.isTrusted = true;
+            markdownString.supportHtml = true;
+
             items.push({
               range: diagnostic.range,
-              contents: [formatDiagnostic(diagnostic)],
+              contents: [markdownString],
             });
             hasTsDiagnostic = true;
           });
@@ -60,4 +71,13 @@ export function activate(context: ExtensionContext) {
       });
     })
   );
+}
+
+function prettify(text: string) {
+  return format(text, {
+    parser: "typescript",
+    printWidth: 60,
+    singleAttributePerLine: false,
+    arrowParens: "avoid",
+  });
 }

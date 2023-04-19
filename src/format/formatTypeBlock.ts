@@ -3,10 +3,9 @@ import {
   multiLineCodeBlock,
   unstyledCodeBlock,
 } from "../components";
-import { prettify } from "../utils";
 import { addMissingParentheses } from "./addMissingParentheses";
 
-export function formatTypeBlock(prefix: string, type: string) {
+export function formatTypeBlock(prefix: string, type: string, format: (type: string) => string) {
   // Return a simple code block if it's just a parenthasis
   if (type.match(/^(\[\]|\{\})$/)) {
     return `${prefix} ${unstyledCodeBlock(type)}`;
@@ -21,7 +20,7 @@ export function formatTypeBlock(prefix: string, type: string) {
     return `${prefix} ${inlineCodeBlock(type, "type")}`;
   }
 
-  const prettyType = prettifyType(type);
+  const prettyType = convertToOriginalType(prettifyType(convertToValidType(type), format));
 
   if (prettyType.includes("\n")) {
     return `${prefix}: ${multiLineCodeBlock(prettyType, "type")}`;
@@ -32,16 +31,11 @@ export function formatTypeBlock(prefix: string, type: string) {
 /**
  * Try to make type prettier with prettier
  */
-function prettifyType(type: string) {
+function prettifyType(type: string, format: (type: string) => string) {
   try {
     // Wrap type with valid statement, format it and extract the type back
     return convertToOriginalType(
-      prettify(convertToValidType(type), {
-        parser: "typescript",
-        printWidth: 60,
-        singleAttributePerLine: false,
-        arrowParens: "avoid",
-      })
+      format(convertToValidType(type))
     );
   } catch (e) {
     return type;

@@ -7,15 +7,16 @@ const formatTypeScriptBlock = (_: string, code: string) =>
 const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
-const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
+const formatTypeOrModuleBlock = (_: string, prefix: string, code: string, format: (type: string) => string) =>
   formatTypeBlock(
     prefix,
     ["module", "file", "file name"].includes(prefix.toLowerCase())
       ? `"${code}"`
-      : code
+      : code,
+    format
   );
 
-export const formatDiagnosticMessage = (message: string) =>
+export const formatDiagnosticMessage = (message: string, format: (type: string) => string) =>
   message
     // format declare module snippet
     .replaceAll(
@@ -37,30 +38,30 @@ export const formatDiagnosticMessage = (message: string) =>
     .replaceAll(
       /(types) '(.*?)' and '(.*?)'[\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${formatTypeBlock(p1, p2)} and ${formatTypeBlock("", p3)}`
+        `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock("", p3, format)}`
     )
     // Format type annotation options
     .replaceAll(
       /type annotation must be '(.*?)' or '(.*?)'[\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${formatTypeBlock(p1, p2)} or ${formatTypeBlock("", p3)}`
+        `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock("", p3, format)}`
     )
     .replaceAll(
       /(Overload \d of \d), '(.*?)', /gi,
-      (_, p1: string, p2: string) => `${p1}${formatTypeBlock("", p2)}`
+      (_, p1: string, p2: string) => `${p1}${formatTypeBlock("", p2, format)}`
     )
     // format simple strings
     .replaceAll(/^'"[^"]*"'$/g, formatTypeScriptBlock)
     // Format types
     .replaceAll(
       /(type|type alias|interface|module|file|file name) '(.*?)'[\.]?/gi,
-      formatTypeOrModuleBlock
+      (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2, format)
     )
     // Format reversed types
     .replaceAll(
       /(.*)'([^>]*)' (type|interface|return type|file|module)/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${p1}${formatTypeOrModuleBlock(_, "", p2)} ${p3}`
+        `${p1}${formatTypeOrModuleBlock(_, "", p2, format)} ${p3}`
     )
     // Format simple types that didn't captured before
     .replaceAll(

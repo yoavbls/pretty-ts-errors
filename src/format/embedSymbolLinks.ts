@@ -1,4 +1,5 @@
-import { Diagnostic } from "vscode";
+import { Diagnostic } from "vscode-languageserver-types";
+import { URI } from "vscode-uri";
 
 export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
   if (
@@ -17,7 +18,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
     ...diagnostic,
     message: diagnostic.message.replaceAll(
       symbol,
-      `${symbol} <a href="${ref.location.uri.path}#${
+      `${symbol} <a href="${URI.parse(ref.location.uri).path}#${
         ref.location.range.start.line + 1
       },${
         ref.location.range.start.character + 1
