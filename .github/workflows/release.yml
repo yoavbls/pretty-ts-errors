@@ -1,0 +1,136 @@
+name: Build Release Publish
+on:
+  push:
+    branches:
+    - 'main'
+  workflow_dispatch:
+permissions: {}
+defaults:
+  run:
+    shell: bash
+jobs:
+  # Gate the build -> release -> publish jobs with the test workflow.
+  test:
+    name: 🦂 CI
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/test.yaml
+  # 🛑 Check both whether the package's version field has changed, and if that
+  # version's value already exists in a known release, to determine if we should
+  # proceed with building and releasing.
+  workflow-conditions:
+    name: 🛑 Stop release collisions
+    runs-on: ubuntu-latest
+    outputs:
+      version-file-changed: ${{ steps.version-file-check.outputs.version-file-changed }}
+      version-tag-exists: ${{ steps.version-tag-exists.outputs.version-tag-exists }}
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+      with:
+        fetch-depth: 2
+    - name: Check if version files changed
+      id: version-file-check
+      run: |
+        export VERSION_FILE="package.json"
+        [ "$(git diff HEAD^1.. --name-only | grep -e "^$VERSION_FILE$")" == "$VERSION_FILE" ] && echo "version-file-changed=${{toJSON(true)}}" >> $GITHUB_OUTPUT || echo "version-file-changed=${{toJSON(false)}}" >> $GITHUB_OUTPUT
+    - name: Notify on version-file-check
+      run: echo "::Notice::version-file-changed is ${{ fromJSON(steps.version-file-check.outputs.version-file-changed) }}"
+    - name: Check if version specified in version file has not released.
+      id: version-tag-exists
+      run: |
+        git fetch --tags
+        export VER=$(grep package.json -e "\"version\":" | cut -d \" -f 4)
+        [ -z "$(git tag -l "v$VER")" ] && echo "version-tag-exists=${{toJSON(false)}}" >> $GITHUB_OUTPUT || echo "version-tag-exists=${{toJSON(true)}}" >> $GITHUB_OUTPUT
+    - name: Notify on version-tag-exists
+      run: echo "::Notice::version-tag-exists is ${{ fromJSON(steps.version-tag-exists.outputs.version-tag-exists) }}"
+  # We want to build release and publish automatically if "version-file-changed"
+  # is true on push. Or manually if workflow_dispatch.
+  # Both triggers need "version-tag-exists" is false.
+  build:
+    name: Build 🧱
+    needs: [test, workflow-conditions]
+    if: >-
+      ${{ ((fromJSON(needs.workflow-conditions.outputs.version-file-changed) == true && github.event_name == 'push') ||
+      github.event_name == 'workflow_dispatch') && fromJSON(needs.workflow-conditions.outputs.version-tag-exists) == false }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+      with:
+        node-version: 14.17.0
+    - name: 🧱 Install build dependencies
+      run: make setup
+    - name: 🧱 Build
+      run: make build
+    - name: 🆙 Upload dists
+      uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3.1.1
+      with:
+        name: Package
+        path: pretty-ts-errors-*.tgz
+        if-no-files-found: error
+  release:
+    name: Release 🚰
+    needs: [build]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+    - name: 🆒 Download dists
+      uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # v3.0.1
+      with:
+        name: Package
+    - name: 🚰 Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        export VER=$(grep package.json -e "\"version\":" | cut -d \" -f 4)
+        gh release create v$VER "$(find . | grep -e pretty-ts-errors-*\.tgz)#Package" --generate-notes -t "v$VER"
+  publish-github:
+    name: Publish GitHub 🐱‍👤
+    needs: [release]
+    permissions:
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+    - name: 🆒 Download dists
+      uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # v3.0.1
+      with:
+        name: Package
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+      with:
+        node-version: 14.17.0
+        registry-url: 'https://npm.pkg.github.com'
+    - name: 📦 Publish
+      run: make publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  publish-npm:
+    name: Publish NPM 🟥
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+    - name: 🆒 Download dists
+      uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # v3.0.1
+      with:
+        name: Package
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+      with:
+        node-version: 14.17.0
+        registry-url: 'https://registry.npmjs.org'
+    - name: 📦 Publish
+      run: make publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
