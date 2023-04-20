@@ -62,6 +62,7 @@ jobs:
     if: >- 
       ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
