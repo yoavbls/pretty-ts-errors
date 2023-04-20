@@ -2,11 +2,10 @@ import { Diagnostic } from "vscode-languageserver-types";
 import { title } from "../components";
 import { d } from "../utils";
 import { embedSymbolLinks } from "./embedSymbolLinks";
-import { formatDiagnosticMessage } from "./formatDiagnosticMessage";
+import { FormatDiagnosticMessageRules, formatDiagnosticMessage } from "./formatDiagnosticMessage";
 import { identSentences } from "./identSentences";
-import { getFormatRegexes } from './i18n/locales';
 
-export function formatDiagnostic(diagnostic: Diagnostic, format: (type: string) => string, locale:string) {
+export function formatDiagnostic(diagnostic: Diagnostic, format: (type: string) => string, formatRegexes:Record<FormatDiagnosticMessageRules,RegExp>) {
   const newDiagnostic = embedSymbolLinks(diagnostic);
 
   return d/*html*/ `
@@ -15,7 +14,7 @@ export function formatDiagnostic(diagnostic: Diagnostic, format: (type: string) 
     ${formatDiagnosticMessage(
       identSentences(newDiagnostic.message),
       format,
-      getFormatRegexes(locale)
+      formatRegexes
     )}
     </span>
   `;
