@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import { addMissingParentheses } from "../../format/addMissingParentheses";
 import { formatDiagnosticMessage } from "../../format/formatDiagnosticMessage";
 import { inlineCodeBlock } from "../../components";
+import { format } from "prettier";
 // import * as myExtension from '../../extension';
 
 suite("Extension Test Suite", () => {
@@ -20,11 +21,11 @@ suite("Extension Test Suite", () => {
 
   test("Special characters in object keys", () => {
     assert.strictEqual(
-      formatDiagnosticMessage("Type 'string' is not assignable to type '{ 'abc*bc': string; }'."),
+      formatDiagnosticMessage("Type 'string' is not assignable to type '{ 'abc*bc': string; }'.", (text) => text),
       'Type ' +
       inlineCodeBlock('string', 'type') +
       ' is not assignable to type ' +
-      inlineCodeBlock('{ "abc*bc": string }', 'type') +
+      inlineCodeBlock("{ 'abc*bc': string; }", 'type') +
       '.'
     );
   });
