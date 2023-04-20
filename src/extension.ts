@@ -4,6 +4,7 @@ import {
   MarkdownString,
   Range,
   window,
+  env,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formatDiagnostic } from "./format/formatDiagnostic";
@@ -41,7 +42,7 @@ export function activate(context: ExtensionContext) {
             // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
             // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
             const markdownString = new MarkdownString(
-              formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+              formatDiagnostic(converter.asDiagnostic(diagnostic), prettify, env.language)
             );
 
             markdownString.isTrusted = true;
