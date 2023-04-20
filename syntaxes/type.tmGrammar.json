@@ -1,5 +1,4 @@
 {
-  "version": "https://github.com/microsoft/TypeScript-TmLanguage/commit/0dfae8cc4807fecfbf8f1add095d9817df824c95",
   "name": "TypeScript Type",
   "scopeName": "source.type",
   "patterns": [
