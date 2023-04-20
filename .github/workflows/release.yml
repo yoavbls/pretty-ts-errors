@@ -62,7 +62,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 14.17.0
+        node-version: 17.6.0
     - name: 🧱 Install build dependencies
       run: make setup
     - name: 🧱 Build
@@ -108,7 +108,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 14.17.0
+        node-version: 17.6.0
         registry-url: 'https://npm.pkg.github.com'
     - name: 📦 Publish
       run: make publish
@@ -128,7 +128,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 14.17.0
+        node-version: 17.6.0
         registry-url: 'https://registry.npmjs.org'
     - name: 📦 Publish
       run: make publish
