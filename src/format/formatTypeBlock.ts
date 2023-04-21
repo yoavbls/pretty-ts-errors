@@ -6,7 +6,7 @@ import {
 import { addMissingParentheses } from "./addMissingParentheses";
 
 export function formatTypeBlock(prefix: string, type: string, format: (type: string) => string) {
-  // Return a simple code block if it's just a parenthasis
+  // Return a simple code block if it's just a parenthesis
   if (type.match(/^(\[\]|\{\})$/)) {
     return `${prefix} ${unstyledCodeBlock(type)}`;
   }
