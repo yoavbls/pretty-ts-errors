@@ -28,7 +28,7 @@ clean:
 	npm run clean
 
 test: clean
-	xvfb-run npm test
+	npx xvfb-maybe npm test
 	npm publish --dry-run
 
 lint:
