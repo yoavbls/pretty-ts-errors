@@ -16,7 +16,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: ./.github/workflows/test.yaml
+    uses: ./.github/workflows/test.yml
   # 🛑 Check both whether the package's version field has changed, and if that
   # version's value already exists in a known release, to determine if we should
   # proceed with building and releasing.
