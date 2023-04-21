@@ -32,6 +32,16 @@ This extension will help you understand what's going on. For example, in this re
 - React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
 
+## Installation
+
+Install the plugin by typing:
+
+```
+code --install-extension yoavbls.pretty-ts-errors
+```
+
+Or simply by searching for `pretty-ts-errors` in the VSCode marketplace.
+
 ## Watch it
 <a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
  <img src="http://img.youtube.com/vi/9RM2aErJs-s/0.jpg" alt="Watch the video" />
