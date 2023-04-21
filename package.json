@@ -1,9 +1,9 @@
 {
-  "name": "pretty-ts-errors",
+  "name": "@skenvy/pretty-ts-errors",
   "displayName": "Pretty TypeScript Errors",
   "publisher": "yoavbls",
-  "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.3.0",
+  "description": "[Unofficial deployment test!] Make TypeScript errors prettier and more human-readable in VSCode",
+  "version": "0.3.0-alpha-1",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -52,6 +52,7 @@
     ]
   },
   "scripts": {
+    "clean": "rm -rf ./out",
     "vscode:prepublish": "npm run package",
     "compile": "node scripts/build",
     "watch": "npm run compile -- --watch",
@@ -59,7 +60,7 @@
     "package": "node scripts/build -- --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "pretest": "npm run compile-tests && npm run compile",
     "lint": "eslint src --ext ts & tsc --noEmit",
     "test": "node ./out/test/runTest.js"
   },
@@ -78,7 +79,8 @@
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
     "ts-loader": "^9.3.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "xvfb-maybe": "^0.2.1"
   },
   "dependencies": {
     "lz-string": "^1.4.4",

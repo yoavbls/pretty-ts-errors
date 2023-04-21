@@ -1,0 +1,83 @@
+name: CI
+on:
+  push:
+    branches-ignore:
+    - 'main'
+  pull_request:
+    branches:
+    - 'main'
+  workflow_call:
+permissions: {}
+defaults:
+  run:
+    shell: bash
+jobs:
+  # On a push to a non-trunk branch, do a "quick" test.
+  quick-test:
+    name: 🦂 Quick Test
+    if: ${{ github.event_name == 'push' && !(github.event.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+      with:
+        node-version: 17.6.0
+    - name: 🧱 Install build dependencies
+      run: make setup
+    - name: 🦂 Test
+      run: make test
+    - name: 🧹 Lint
+      run: make lint
+  # On a push to the trunk branch, or a PR (or manual dispatch), run the full
+  # set of all tests against the targeted supported major versions.
+  full-test:
+    name: 🦂 Full Test
+    if: >- 
+      ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['16', '17', '18', '19']
+        os: [ubuntu-latest] # , macOS-latest, windows-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+    - name: 🟩 Set up Node ${{ matrix.version }}
+      uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+      with:
+        node-version: '${{ matrix.version }}'
+    - name: 🧱 Install build dependencies
+      run: make setup
+    - name: 🦂 Test
+      run: make test
+    - name: 🧹 Lint
+      run: make lint
+  # On a push to the trunk branch, or a PR (or manual dispatch), do a CodeQL analysis.
+  codeql:
+    name: 👨‍💻 CodeQL
+    if: >- 
+      ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+    - name: 👨‍💻 Init CodeQL
+      uses: github/codeql-action/init@c3b6fce4ee2ca25bc1066aa3bf73962fda0e8898 # v2.1.31
+      with:
+        languages: javascript
+        queries: +security-extended,security-and-quality
+    - name: 🧱 Autobuild
+      uses: github/codeql-action/autobuild@c3b6fce4ee2ca25bc1066aa3bf73962fda0e8898 # v2.1.31
+    - name: 👨‍💻 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@c3b6fce4ee2ca25bc1066aa3bf73962fda0e8898 # v2.1.31
+      with:
+        category: "/language:javascript"
