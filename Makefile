@@ -14,6 +14,7 @@ bump_patch:
 	npm i --package-lock-only
 
 setup:
+	apt install xvfb
 	npm list -g --depth 0
 	npm ci
 	npm list
@@ -27,7 +28,7 @@ clean:
 	npm run clean
 
 test: clean
-	npm test
+	xvfb-run npm test
 	npm publish --dry-run
 
 lint:
