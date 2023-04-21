@@ -21,7 +21,7 @@ bump_patch:
 setup:
 	sudo apt install xvfb
 	npm list -g --depth 0
-	npm ci
+	npm ci --legacy-peer-deps
 	npm list
 
 .PHONY: update
