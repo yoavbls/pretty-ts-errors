@@ -54,7 +54,7 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
     .replaceAll(/^'"[^"]*"'$/g, formatTypeScriptBlock)
     // Format types
     .replaceAll(
-      /(type|type alias|interface|module|file|file name) '(.*?)'[\.]?/gi,
+    /(type|type alias|interface|module|file|file name) '(.*?)'(?=[\s.])/gi,
       (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2, format)
     )
     // Format reversed types
@@ -80,4 +80,6 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
     )
     // Format regular code blocks
-    .replaceAll(/'(.*?)'/g, (_: string, p1: string) => unstyledCodeBlock(p1));
+    .replaceAll(/'((?:(?!:\s*}).)*?)'(?!\s*:)/g, (_: string, p1: string) => unstyledCodeBlock(p1));
+
+
