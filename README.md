@@ -13,17 +13,17 @@
 [![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
 [![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
 
-<a href="https://github.com/yoavbls/pretty-ts-errors/issues/38"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" height="32" /></a>  
+<a href="https://github.com/yoavbls/pretty-ts-errors/issues/38"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" width="490px" /></a>  
 
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
-<img src="./assets/this.png" style="max-height: 350px"  height="350px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" height="350px"  width="350px" style="max-height: 350px" />  
+<img src="./assets/this.png" width="340.438px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" width="350px" />  
   
   
 ## Watch this
 <a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
- <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" style="max-height: 150px" width="550" />
+ <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" width="550" />
 </a>
 
 ## Features
@@ -56,20 +56,20 @@ Yes, these types include things like `... more ...`, `{ ... }`, etc in an incons
 ## Hype section
 <a href="https://twitter.com/t3dotgg/status/1647759462709747713">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.pn#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
   </picture>
 </a>
 <a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
   </picture>
 </a>
 <a href="https://twitter.com/tannerlinsley/status/1647982562026090496">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-dark-mode-only">
   </picture>
 </a>
 
