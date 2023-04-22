@@ -8,6 +8,8 @@ permissions: {}
 defaults:
   run:
     shell: bash
+env:
+  target_node_version: 18.12.1
 jobs:
   # Gate the build -> release -> publish jobs with the test workflow.
   test:
@@ -62,11 +64,11 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 17.6.0
+        node-version: ${{ env.target_node_version }}
     - name: 🧱 Install build dependencies
-      run: make setup
+      run: npm run setup
     - name: 🧱 Build
-      run: make build
+      run: npm pack
     - name: 🆙 Upload dists
       uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # v3.1.1
       with:
@@ -108,10 +110,10 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 17.6.0
+        node-version: ${{ env.target_node_version }}
         registry-url: 'https://npm.pkg.github.com'
     - name: 📦 Publish
-      run: make publish
+      run: npm run workflow_publishsh
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   publish-npm:
@@ -128,9 +130,9 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 17.6.0
+        node-version: ${{ env.target_node_version }}
         registry-url: 'https://registry.npmjs.org'
     - name: 📦 Publish
-      run: make publish
+      run: npm run workflow_publishsh
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

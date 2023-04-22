@@ -11,6 +11,8 @@ permissions: {}
 defaults:
   run:
     shell: bash
+env:
+  target_node_version: 18.12.1
 jobs:
   # On a push to a non-trunk branch, do a "quick" test.
   quick-test:
@@ -23,13 +25,13 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
       with:
-        node-version: 17.6.0
+        node-version: ${{ env.target_node_version }}
     - name: 🧱 Install build dependencies
-      run: make setup
+      run: npm run setup
     - name: 🦂 Test
-      run: make test
+      run: npm run workflow_test
     - name: 🧹 Lint
-      run: make lint
+      run: npm run lint
   # On a push to the trunk branch, or a PR (or manual dispatch), run the full
   # set of all tests against the targeted supported major versions.
   full-test:
@@ -42,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ['16', '17', '18', '19']
-        os: [ubuntu-latest] # TODO other platforms?: macOS-latest, windows-latest
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
     - name: 🏁 Checkout
       uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
@@ -51,11 +53,11 @@ jobs:
       with:
         node-version: '${{ matrix.version }}'
     - name: 🧱 Install build dependencies
-      run: make setup
+      run: npm run setup
     - name: 🦂 Test
-      run: make test
+      run: npm run workflow_test
     - name: 🧹 Lint
-      run: make lint
+      run: npm run lint
   # On a push to the trunk branch, or a PR (or manual dispatch), do a CodeQL analysis.
   codeql:
     name: 👨‍💻 CodeQL
