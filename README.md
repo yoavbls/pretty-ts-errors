@@ -23,7 +23,7 @@ This extension will help you understand what's going on. For example, in this re
   
 ## Watch this
 <a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
- <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" width="550" />
+ <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" width="600" />
 </a>
 
 ## Features
@@ -55,20 +55,23 @@ Yes, these types include things like `... more ...`, `{ ... }`, etc in an incons
 
 ## Hype section
 <a href="https://twitter.com/t3dotgg/status/1647759462709747713">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.pn#gh-light-mode-only">
+  <picture>    
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.png#gh-light-mode-only">
     <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
   </picture>
 </a>
 <a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
     <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
   </picture>
 </a>
 <a href="https://twitter.com/tannerlinsley/status/1647982562026090496">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png#gh-light-mode-only">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-light-mode-only">
+     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png#gh-light-mode-only">
     <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-dark-mode-only">
   </picture>
 </a>
