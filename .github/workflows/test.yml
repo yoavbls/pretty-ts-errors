@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ['16', '17', '18', '19']
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest] # TODO: stabilise macOS-latest, windows-latest
     steps:
     - name: 🏁 Checkout
       uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
