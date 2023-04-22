@@ -6,7 +6,9 @@ import * as vscode from "vscode";
 import { inlineCodeBlock } from "../../components";
 import { addMissingParentheses } from "../../format/addMissingParentheses";
 import { formatDiagnosticMessage } from "../../format/formatDiagnosticMessage";
+import { prettifyType } from "../../format/formatTypeBlock";
 import { prettify } from "../../format/prettify";
+import { d } from "../../utils";
 import {
   errorWithDashInObjectKeys,
   errorWithSpecialCharsInObjectKeys,
@@ -28,7 +30,7 @@ suite("Extension Test Suite", () => {
       "Type " +
         inlineCodeBlock("string", "type") +
         " is not assignable to type " +
-        inlineCodeBlock("{ 'abc*bc': string; }", "type") +
+        inlineCodeBlock(`{ "abc*bc": string }`, "type") +
         "."
     );
   });
@@ -37,10 +39,19 @@ suite("Extension Test Suite", () => {
     assert.strictEqual(
       formatDiagnosticMessage(errorWithDashInObjectKeys, prettify),
       "Type " +
-        inlineCodeBlock("{ person: { 'first-name': string; }; }", "type") +
+        inlineCodeBlock(`{ person: { "first-name": string } }`, "type") +
         " is not assignable to type " +
         inlineCodeBlock("string", "type") +
         "."
+    );
+  });
+
+  test("Formatting type with params destructuring should succeed", () => {
+    prettifyType(
+      d` { $ref: null; ref: (ref: any) => any; columns: ({ label: string; prop: string; } | { label: string; formatter: ({ ip_type }: any) => any; } | { actions: { label: string; disabled: ({ contract_id }: any) => boolean; handler({ contract_id }: any): void; }[]; })[]; ... 4 more ...; load(): Promise<...>; }
+    `,
+      prettify,
+      { throwOnError: true }
     );
   });
 });

@@ -22,6 +22,11 @@ The 'this' context of type 'ElementHandle<Node>' is not assignable to method's '
   Type 'Node' is missing the following properties from type 'Element': attributes, classList, className, clientHeight, and 114 more.
 `;
 
+const errorWithParamsDestructuring = d`
+Argument of type '{ $ref: null; ref: (ref: any) => any; columns: ({ label: string; prop: string; } | { label: string; formatter: ({ ip_type }: any) => any; } | { actions: { label: string; disabled: ({ contract_id }: any) => boolean; handler({ contract_id }: any): void; }[]; })[]; ... 4 more ...; load(): Promise<...>; }' is not assignable to parameter of type 'VTableConfig'.
+  Property 'data' is missing in type '{ $ref: null; ref: (ref: any) => any; columns: ({ label: string; prop: string; } | { label: string; formatter: ({ ip_type }: any) => any; } | { actions: { label: string; disabled: ({ contract_id }: any) => boolean; handler({ contract_id }: any): void; }[]; })[]; ... 4 more ...; load(): Promise<...>; }' but required in type 'VTableConfig'.
+`;
+
 const errorWithLongType = d`
 Property 'isFlying' is missing in type '{ animal: { __typename?: "Animal" | undefined; id: string; name: string; age: number; isAlived: boolean; ... 8 more ...; attributes: { ...; } | ... 3 more ... | { ...; }; }; }' but required in type '{ animal: { __typename?: "Animal" | undefined; id: string; name: string; age: number; isAlived: boolean; isFlying: boolean; ... 8 more ...; attributes: { ...; } | ... 3 more ... | { ...; }; }; }'.
 `;
