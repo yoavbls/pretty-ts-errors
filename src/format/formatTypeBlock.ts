@@ -5,7 +5,11 @@ import {
 } from "../components";
 import { addMissingParentheses } from "./addMissingParentheses";
 
-export function formatTypeBlock(prefix: string, type: string, format: (type: string) => string) {
+export function formatTypeBlock(
+  prefix: string,
+  type: string,
+  format: (type: string) => string
+) {
   // Return a simple code block if it's just a parenthesis
   if (type.match(/^(\[\]|\{\})$/)) {
     return `${prefix} ${unstyledCodeBlock(type)}`;
@@ -20,7 +24,7 @@ export function formatTypeBlock(prefix: string, type: string, format: (type: str
     return `${prefix} ${inlineCodeBlock(type, "type")}`;
   }
 
-  const prettyType = convertToOriginalType(prettifyType(convertToValidType(type), format));
+  const prettyType = prettifyType(type, format);
 
   if (prettyType.includes("\n")) {
     return `${prefix}: ${multiLineCodeBlock(prettyType, "type")}`;
@@ -34,9 +38,7 @@ export function formatTypeBlock(prefix: string, type: string, format: (type: str
 function prettifyType(type: string, format: (type: string) => string) {
   try {
     // Wrap type with valid statement, format it and extract the type back
-    return convertToOriginalType(
-      format(convertToValidType(type))
-    );
+    return convertToOriginalType(format(convertToValidType(type)));
   } catch (e) {
     return type;
   }
