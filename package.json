@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Programming Languages",
@@ -55,7 +55,7 @@
     "clean": "rm -rf ./out",
     "vscode:prepublish": "npm run package",
     "compile": "node scripts/build",
-    "watch": "npm run compile --watch",
+    "watch": "npm run compile -- --watch",
     "build": "vsce package",
     "package": "node scripts/build -- --production",
     "compile-tests": "tsc -p . --outDir out",
