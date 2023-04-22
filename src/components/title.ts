@@ -14,6 +14,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
           `
         : ""
     }
+    <br>
     <span>
 
 `;

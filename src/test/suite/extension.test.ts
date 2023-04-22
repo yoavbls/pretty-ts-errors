@@ -3,11 +3,14 @@ import * as assert from "assert";
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
+import { inlineCodeBlock } from "../../components";
 import { addMissingParentheses } from "../../format/addMissingParentheses";
 import { formatDiagnosticMessage } from "../../format/formatDiagnosticMessage";
-import { inlineCodeBlock } from "../../components";
-import { format } from "prettier";
-// import * as myExtension from '../../extension';
+import { prettify } from "../../format/prettify";
+import {
+  errorWithDashInObjectKeys,
+  errorWithSpecialCharsInObjectKeys,
+} from "./errorMessageMocks";
 
 suite("Extension Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -21,12 +24,23 @@ suite("Extension Test Suite", () => {
 
   test("Special characters in object keys", () => {
     assert.strictEqual(
-      formatDiagnosticMessage("Type 'string' is not assignable to type '{ 'abc*bc': string; }'.", (text) => text),
-      'Type ' +
-      inlineCodeBlock('string', 'type') +
-      ' is not assignable to type ' +
-      inlineCodeBlock("{ 'abc*bc': string; }", 'type') +
-      '.'
+      formatDiagnosticMessage(errorWithSpecialCharsInObjectKeys, prettify),
+      "Type " +
+        inlineCodeBlock("string", "type") +
+        " is not assignable to type " +
+        inlineCodeBlock("{ 'abc*bc': string; }", "type") +
+        "."
+    );
+  });
+
+  test("Special method's word in the error", () => {
+    assert.strictEqual(
+      formatDiagnosticMessage(errorWithDashInObjectKeys, prettify),
+      "Type " +
+        inlineCodeBlock("{ person: { 'first-name': string; }; }", "type") +
+        " is not assignable to type " +
+        inlineCodeBlock("string", "type") +
+        "."
     );
   });
 });
