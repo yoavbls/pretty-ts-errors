@@ -13,7 +13,7 @@
 [![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
 [![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
 
-<a href="https://github.com/yoavbls/pretty-ts-errors/issues/38"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" width="490px" /></a>  
+<a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" width="490px" /></a>  
 
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
@@ -121,7 +121,7 @@ Every penny will be invested in other contributors to the project, especially on
 on things that I can't be doing myself like adding support to the extension for other IDEs 🫂
   
 ## Contribution
-Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/issues/38)  
+Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/discussions/43)  
 Any other contribution is welcome. Feel free to open any issue / PR you think.
   
   
