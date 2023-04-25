@@ -4,12 +4,16 @@ on:
     branches:
     - 'main'
   workflow_dispatch:
+
 permissions: {}
+
 defaults:
   run:
     shell: bash
+
 env:
   development_node_version: 18.12.1
+
 jobs:
   # Gate the build -> release -> publish jobs with the test workflow.
   test:
@@ -19,6 +23,7 @@ jobs:
       contents: read
       security-events: write
     uses: ./.github/workflows/test.yml
+
   # 🛑 Check both whether the package's version field has changed, and if that
   # version's value already exists in a known release, to determine if we should
   # proceed with building and releasing.
@@ -48,6 +53,7 @@ jobs:
         [ -z "$(git tag -l "v$VER")" ] && echo "version-tag-exists=${{toJSON(false)}}" >> $GITHUB_OUTPUT || echo "version-tag-exists=${{toJSON(true)}}" >> $GITHUB_OUTPUT
     - name: Notify on version-tag-exists
       run: echo "::Notice::version-tag-exists is ${{ fromJSON(steps.version-tag-exists.outputs.version-tag-exists) }}"
+
   # We want to build release and publish automatically if "version-file-changed"
   # is true on push. Or manually if workflow_dispatch.
   # Both triggers need "version-tag-exists" is false.
@@ -75,6 +81,7 @@ jobs:
         name: Package
         path: pretty-ts-errors-*.tgz
         if-no-files-found: error
+
   release:
     name: Release 🚰
     needs: [build]
@@ -94,6 +101,7 @@ jobs:
       run: |
         export VER=$(grep package.json -e "\"version\":" | cut -d \" -f 4)
         gh release create v$VER "$(find . | grep -e pretty-ts-errors-*\.tgz)#Package" --generate-notes -t "v$VER"
+
   publish-github:
     name: Publish GitHub 🐱‍👤
     needs: [release]
@@ -113,9 +121,10 @@ jobs:
         node-version: ${{ env.development_node_version }}
         registry-url: 'https://npm.pkg.github.com'
     - name: 📦 Publish
-      run: npm run workflow_publishsh
+      run: npm run workflow_publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish-npm:
     name: Publish NPM 🟥
     needs: [release]
@@ -133,6 +142,6 @@ jobs:
         node-version: ${{ env.development_node_version }}
         registry-url: 'https://registry.npmjs.org'
     - name: 📦 Publish
-      run: npm run workflow_publishsh
+      run: npm run workflow_publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
