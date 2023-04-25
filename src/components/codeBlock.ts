@@ -23,10 +23,11 @@ export const inlineCodeBlock = (code: string, language: string) =>
   codeBlock(` ${code} `, language);
 
 export const multiLineCodeBlock = (code: string, language: string) => {
-  const maxLineChars = Math.max(...code.split("\n").map((line) => line.length));
+  const codeSplit = code.split("\n");
+
+  const maxLineChars = codeSplit.reduce((acc,curr)=> curr.length > acc ? curr.length : acc, 0);
   // codicon class align the code to the center so we must padd it with spaces
-  const paddedCode = code
-    .split("\n")
+  const paddedCode = codeSplit
     .map((line) => line.padEnd(maxLineChars + 2))
     .join("\n");
 
