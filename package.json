@@ -58,6 +58,7 @@
     "watch": "npm run compile -- --watch",
     "build": "vsce package",
     "package": "node scripts/build -- --production",
+    "prepack": "npm run package",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile",
