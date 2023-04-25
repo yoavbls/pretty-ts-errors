@@ -19,7 +19,7 @@
 		},
 		{
 			"type": "npm",
-			"script": "watch-tests",
+			"script": "watch-src",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
@@ -29,10 +29,10 @@
 			"group": "build"
 		},
 		{
-			"label": "tasks: watch-tests",
+			"label": "tasks: watch-src",
 			"dependsOn": [
 				"npm: watch",
-				"npm: watch-tests"
+				"npm: watch-src"
 			],
 			"problemMatcher": []
 		}

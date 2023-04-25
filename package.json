@@ -34,6 +34,9 @@
     "onLanguage:mdx"
   ],
   "main": "./dist/extension.js",
+  "files": [
+    "out"
+  ],
   "contributes": {
     "languages": [
       {
@@ -58,10 +61,10 @@
     "watch": "npm run compile -- --watch",
     "build": "vsce package",
     "package": "node scripts/build -- --production",
-    "prepack": "tsc -p ./tsconfig.json",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile",
+    "prepack": "npm run compile-src",
+    "compile-src": "tsc -p .",
+    "watch-src": "tsc -p . -w",
+    "pretest": "npm run compile-src && npm run compile",
     "test": "node ./out/test/runTest.js",
     "lint": "eslint src --ext ts & tsc --noEmit",
     "workflow_test": "xvfb-maybe npm test && npm publish --dry-run",
