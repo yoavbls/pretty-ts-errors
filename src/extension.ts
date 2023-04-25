@@ -21,7 +21,7 @@ export function activate(context: ExtensionContext) {
   const converter = createConverter()
   const { regexes } = getLocale(env.language)
 
-  registerSelectedTextHoverProvider(context)
+  registerSelectedTextHoverProvider(context, regexes)
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {

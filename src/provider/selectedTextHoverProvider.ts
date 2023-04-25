@@ -1,34 +1,38 @@
-import { ExtensionContext, MarkdownString, languages, window } from "vscode";
-import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { miniLine } from "../components";
-import { formatDiagnostic } from "../format/formatDiagnostic";
-import { prettify } from "../format/prettify";
-import { d } from "../utils";
+import { ExtensionContext, MarkdownString, languages, window } from 'vscode'
+import { createConverter } from 'vscode-languageclient/lib/common/codeConverter'
+import { miniLine } from '../components'
+import { formatDiagnostic } from '../format/formatDiagnostic'
+import { prettify } from '../format/prettify'
+import { d } from '../utils'
+import { FormatDiagnosticMessageRules } from '../format/formatDiagnosticMessage'
 
-const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
+const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === 'true'
 
 /**
  * Register an hover provider in debug only.
  * It format selected text and help test things visually easier.
  */
-export function registerSelectedTextHoverProvider(context: ExtensionContext) {
-  const converter = createConverter();
+export function registerSelectedTextHoverProvider(
+  context: ExtensionContext,
+  regexes: Record<FormatDiagnosticMessageRules, RegExp>
+) {
+  const converter = createConverter()
 
   if (!isDebugMode()) {
-    return;
+    return
   }
 
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
-        language: "typescript",
-        pattern: "**/test/**/*.ts",
+        language: 'typescript',
+        pattern: '**/test/**/*.ts'
       },
       {
         provideHover(document, position) {
-          const editor = window.activeTextEditor;
-          const range = document.getWordRangeAtPosition(position);
-          const message = document.getText(editor!.selection);
+          const editor = window.activeTextEditor
+          const range = document.getWordRangeAtPosition(position)
+          const message = document.getText(editor!.selection)
 
           const contents =
             range && message
@@ -40,25 +44,26 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                           message,
                           range,
                           severity: 0,
-                          source: "ts",
-                          code: 1337,
+                          source: 'ts',
+                          code: 1337
                         }),
-                        prettify
+                        prettify,
+                        regexes
                       )
-                  ),
+                  )
                 ]
-              : [];
+              : []
 
-          contents[0].isTrusted = true;
-          contents[0].supportHtml = true;
+          contents[0].isTrusted = true
+          contents[0].supportHtml = true
 
           return {
-            contents,
-          };
-        },
+            contents
+          }
+        }
       }
     )
-  );
+  )
 }
 
 const debugHoverHeader = d/*html*/ `                        
@@ -69,4 +74,4 @@ const debugHoverHeader = d/*html*/ `
   <br>
   <hr>
   ${miniLine}
-`;
+`
