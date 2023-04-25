@@ -7,16 +7,21 @@ on:
     branches:
     - 'main'
   workflow_call:
+
 permissions: {}
+
 defaults:
   run:
     shell: bash
+
 env:
   development_node_version: 18.12.1
+
 jobs:
   # On every push to every branch, lint.
   lint:
     name: 🔬 Lint
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
     - name: 🏁 Checkout
@@ -29,6 +34,7 @@ jobs:
       run: npm run setup
     - name: 🔬 Lint
       run: npm run lint
+
   # On a push to a non-trunk branch, do a "quick" test.
   quick-test:
     name: 🧪 Quick Test
@@ -45,6 +51,7 @@ jobs:
       run: npm run setup
     - name: 🧪 Test
       run: npm run workflow_test
+
   # On a push to the trunk branch, or a PR (or manual dispatch), run the full
   # set of tests against the targeted supported major versions.
   full-test:
@@ -69,6 +76,7 @@ jobs:
       run: npm run setup
     - name: 🧪 Test
       run: npm run workflow_test
+
   # On a push to the trunk branch, or a PR (or manual dispatch), do a CodeQL analysis.
   codeql:
     name: 👨‍💻 CodeQL
