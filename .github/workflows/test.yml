@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🏁 Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v3
     - name: 🟩 Set up Node
-      uses: actions/setup-node@v3.5.1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ env.target_node_version }}
     - name: 🧱 Install build dependencies
@@ -47,9 +47,9 @@ jobs:
         os: [ubuntu-latest] # TODO: stabilise macOS-latest, windows-latest
     steps:
     - name: 🏁 Checkout
-      uses: actions/checkout@v3.0.2
+      uses: actions/checkout@v3
     - name: 🟩 Set up Node ${{ matrix.version }}
-      uses: actions/setup-node@v3.5.1
+      uses: actions/setup-node@v3
       with:
         node-version: '${{ matrix.version }}'
     - name: 🧱 Install build dependencies
@@ -71,15 +71,15 @@ jobs:
       security-events: write
     steps:
     - name: 🏁 Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v3
     - name: 👨‍💻 Init CodeQL
-      uses: github/codeql-action/init@v2.1.31
+      uses: github/codeql-action/init@v2
       with:
         languages: javascript
         queries: +security-extended,security-and-quality
     - name: 🧱 Autobuild
-      uses: github/codeql-action/autobuild@v2.1.31
+      uses: github/codeql-action/autobuild@v2
     - name: 👨‍💻 Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2.1.31
+      uses: github/codeql-action/analyze@v2
       with:
         category: "/language:javascript"
