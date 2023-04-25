@@ -7,7 +7,8 @@
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yoavbls/pretty-ts-errors"
+    "url": "https://github.com/yoavbls/pretty-ts-errors",
+    "directory": "apps/vscode-extension"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
   "engines": {
@@ -34,6 +35,10 @@
     "onLanguage:mdx"
   ],
   "main": "./dist/extension.js",
+  "files": [
+    "out/**/*.js",
+    "out/**/*.d.ts"
+  ],
   "contributes": {
     "languages": [
       {
@@ -55,7 +60,7 @@
     "vscode:prepublish": "npm run package",
     "compile": "node scripts/build",
     "watch": "npm run compile -- --watch",
-    "build": "vsce package",
+    "build": "vsce package --no-dependencies",
     "package": "node scripts/build -- --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
