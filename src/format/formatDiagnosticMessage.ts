@@ -1,11 +1,11 @@
-import { inlineCodeBlock, unstyledCodeBlock } from "../components";
-import { formatTypeBlock } from "./formatTypeBlock";
+import { inlineCodeBlock, unstyledCodeBlock } from '../components'
+import { formatTypeBlock } from './formatTypeBlock'
 
 const formatTypeScriptBlock = (_: string, code: string) =>
-  inlineCodeBlock(code, "typescript");
+  inlineCodeBlock(code, 'typescript')
 
 const formatSimpleTypeBlock = (_: string, code: string) =>
-  inlineCodeBlock(code, "type");
+  inlineCodeBlock(code, 'type')
 
 const formatTypeOrModuleBlock = (
   _: string,
@@ -15,25 +15,25 @@ const formatTypeOrModuleBlock = (
 ) =>
   formatTypeBlock(
     prefix,
-    ["module", "file", "file name"].includes(prefix.toLowerCase())
+    ['module', 'file', 'file name'].includes(prefix.toLowerCase())
       ? `"${code}"`
       : code,
     format
-  );
+  )
 
-export type FormatDiagnosticMessageRules = 
-  | "DeclareModuleSnippet"
-  | "MissingPropsError"
-  | "TypePairs"
-  | "TypeAnnotationOptions"
-  | "Overloaded"
-  | "SimpleStrings"
-  | "Types"
-  | "ReversedTypes"
-  | "SimpleTypesRest"
-  | "TypescriptKeywords"
-  | "ReturnValues"
-  | "RegularCodeBlocks";
+export type FormatDiagnosticMessageRules =
+  | 'DeclareModuleSnippet'
+  | 'MissingPropsError'
+  | 'TypePairs'
+  | 'TypeAnnotationOptions'
+  | 'Overloaded'
+  | 'SimpleStrings'
+  | 'Types'
+  | 'ReversedTypes'
+  | 'SimpleTypesRest'
+  | 'TypescriptKeywords'
+  | 'ReturnValues'
+  | 'RegularCodeBlocks'
 
 export const formatDiagnosticMessage = (
   message: string,
@@ -51,8 +51,8 @@ export const formatDiagnosticMessage = (
     .replaceAll(
       regexes['MissingPropsError'],
       (_, pre, type, post) =>
-        `${pre}${formatTypeBlock("", type, format)}: <ul>${post
-          .split(", ")
+        `${pre}${formatTypeBlock('', type, format)}: <ul>${post
+          .split(', ')
           .filter(Boolean)
           .map((prop: string) => `<li>${prop}</li>`)
           .join('')}</ul>`
@@ -62,7 +62,7 @@ export const formatDiagnosticMessage = (
       regexes['TypePairs'],
       (_: string, p1: string, p2: string, p3: string) =>
         `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock(
-          "",
+          '',
           p3,
           format
         )}`
@@ -72,7 +72,7 @@ export const formatDiagnosticMessage = (
       regexes['TypeAnnotationOptions'],
       (_: string, p1: string, p2: string, p3: string) =>
         `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock(
-          "",
+          '',
           p3,
           format
         )}`
@@ -86,7 +86,7 @@ export const formatDiagnosticMessage = (
     .replaceAll(regexes['SimpleStrings'], formatTypeScriptBlock)
     // Format types
     .replaceAll(regexes['Types'], (_, p1: string, p2: string) =>
-       formatTypeOrModuleBlock(_, p1, p2, format)
+      formatTypeOrModuleBlock(_, p1, p2, format)
     )
     // Format reversed types
     .replaceAll(
@@ -108,6 +108,7 @@ export const formatDiagnosticMessage = (
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock('', p2)}`
     )
     // Format regular code blocks
-    .replaceAll(regexes['RegularCodeBlocks'], (_: string, p1: string) =>
-      `${unstyledCodeBlock(p1)} `
-    );
+    .replaceAll(
+      regexes['RegularCodeBlocks'],
+      (_: string, p1: string) => `${unstyledCodeBlock(p1)} `
+    )
