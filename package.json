@@ -85,7 +85,6 @@
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
-    "ts-loader": "^9.3.1",
     "typescript": "^5.0.4",
     "xvfb-maybe": "^0.2.1"
   },
