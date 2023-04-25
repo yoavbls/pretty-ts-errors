@@ -9,11 +9,11 @@ defaults:
   run:
     shell: bash
 env:
-  target_node_version: 18.12.1
+  development_node_version: 18.12.1
 jobs:
   # Gate the build -> release -> publish jobs with the test workflow.
   test:
-    name: 🦂 CI
+    name: 🧪 CI
     permissions:
       actions: read
       contents: read
@@ -64,7 +64,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ env.target_node_version }}
+        node-version: ${{ env.development_node_version }}
     - name: 🧱 Install build dependencies
       run: npm run setup
     - name: 🧱 Build
@@ -110,7 +110,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ env.target_node_version }}
+        node-version: ${{ env.development_node_version }}
         registry-url: 'https://npm.pkg.github.com'
     - name: 📦 Publish
       run: npm run workflow_publishsh
@@ -130,7 +130,7 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ env.target_node_version }}
+        node-version: ${{ env.development_node_version }}
         registry-url: 'https://registry.npmjs.org'
     - name: 📦 Publish
       run: npm run workflow_publishsh

@@ -12,11 +12,26 @@ defaults:
   run:
     shell: bash
 env:
-  target_node_version: 18.12.1
+  development_node_version: 18.12.1
 jobs:
+  # On every push to every branch, lint.
+  lint:
+    name: 🔬 Lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@v3
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.development_node_version }}
+    - name: 🧱 Install build dependencies
+      run: npm run setup
+    - name: 🔬 Lint
+      run: npm run lint
   # On a push to a non-trunk branch, do a "quick" test.
   quick-test:
-    name: 🦂 Quick Test
+    name: 🧪 Quick Test
     if: ${{ github.event_name == 'push' && !(github.event.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     steps:
@@ -25,17 +40,15 @@ jobs:
     - name: 🟩 Set up Node
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ env.target_node_version }}
+        node-version: ${{ env.development_node_version }}
     - name: 🧱 Install build dependencies
       run: npm run setup
-    - name: 🦂 Test
+    - name: 🧪 Test
       run: npm run workflow_test
-    - name: 🧹 Lint
-      run: npm run lint
   # On a push to the trunk branch, or a PR (or manual dispatch), run the full
-  # set of all tests against the targeted supported major versions.
+  # set of tests against the targeted supported major versions.
   full-test:
-    name: 🦂 Full Test
+    name: 🧪 Full Test
     if: >- 
       ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
@@ -43,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['16', '17', '18', '19']
+        version: ['16', '18', '20']
         os: [ubuntu-latest] # TODO: stabilise macOS-latest, windows-latest
     steps:
     - name: 🏁 Checkout
@@ -54,10 +67,8 @@ jobs:
         node-version: '${{ matrix.version }}'
     - name: 🧱 Install build dependencies
       run: npm run setup
-    - name: 🦂 Test
+    - name: 🧪 Test
       run: npm run workflow_test
-    - name: 🧹 Lint
-      run: npm run lint
   # On a push to the trunk branch, or a PR (or manual dispatch), do a CodeQL analysis.
   codeql:
     name: 👨‍💻 CodeQL
