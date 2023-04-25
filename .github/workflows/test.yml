@@ -35,7 +35,7 @@ jobs:
     - name: 🔬 Lint
       run: npm run lint
 
-  # On a push to a non-trunk branch, do a "quick" test.
+  # On a push to a non-trunk branch, do a "quick" test of the package.
   quick-test:
     name: 🧪 Quick Test
     if: ${{ github.event_name == 'push' && !(github.event.ref == 'refs/heads/main') }}
@@ -76,6 +76,26 @@ jobs:
       run: npm run setup
     - name: 🧪 Test
       run: npm run workflow_test
+
+  # On a push to the trunk branch, or a PR (or manual dispatch), run the build
+  # to confirm that the vsce build is happy.
+  is-vsce-happy:
+    name: 🧪 VSCE Test
+    if: >- 
+      ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@v3
+    - name: 🟩 Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.development_node_version }}
+    - name: 🧱 Install build dependencies
+      run: npm run setup
+    - name: 🧪 Test
+      run: npm run build
 
   # On a push to the trunk branch, or a PR (or manual dispatch), do a CodeQL analysis.
   codeql:
