@@ -121,9 +121,11 @@ jobs:
     - name: 🚰 Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        export VER=$(grep package.json -e "\"version\":" | cut -d \" -f 4)
-        gh release create v$VER "$(find . | grep -e pretty-ts-errors-*\.tgz)#npm package" "$(find . | grep -e pretty-ts-errors-*\.vsix)#vsce package" --generate-notes -t "v$VER" --draft
+      run: >-
+        export VER=$(grep package.json -e "\"version\":" | cut -d \" -f 4) &&
+        gh release create v$VER --generate-notes -t "v$VER" --draft
+        "$(find . | grep -e npm-package/pretty-ts-errors-*\.tgz)#npm package"
+        "$(find . | grep -e vsce-package/pretty-ts-errors-*\.vsix)#vsce package"
 
   publish-github:
     name: Publish GitHub 🐱‍👤
