@@ -1,7 +1,7 @@
 import {
   inlineCodeBlock,
   multiLineCodeBlock,
-  unstyledCodeBlock,
+  unStyledCodeBlock,
 } from "../components";
 import { addMissingParentheses } from "./addMissingParentheses";
 
@@ -12,7 +12,7 @@ export function formatTypeBlock(
 ) {
   // Return a simple code block if it's just a parenthesis
   if (type.match(/^(\[\]|\{\})$/)) {
-    return `${prefix} ${unstyledCodeBlock(type)}`;
+    return `${prefix} ${unStyledCodeBlock(type)}`;
   }
 
   if (

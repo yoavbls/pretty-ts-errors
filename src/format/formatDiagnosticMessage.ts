@@ -1,4 +1,4 @@
-import { inlineCodeBlock, unstyledCodeBlock } from "../components";
+import { inlineCodeBlock, unStyledCodeBlock } from "../components";
 import { formatTypeBlock } from "./formatTypeBlock";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
@@ -98,5 +98,5 @@ export const formatDiagnosticMessage = (
     // Format regular code blocks
     .replaceAll(
       /'((?:(?!:\s*}).)*?)' (?!\s*:)/g,
-      (_: string, p1: string) => `${unstyledCodeBlock(p1)} `
+      (_: string, p1: string) => `${unStyledCodeBlock(p1)} `
     );
