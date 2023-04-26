@@ -1,4 +1,4 @@
-import { d } from "../utils";
+import { d } from "../deps";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
 

@@ -1,4 +1,4 @@
-import { d } from "../utils";
+import { d } from "../deps";
 
 export const identSentences = (message: string): string =>
   message

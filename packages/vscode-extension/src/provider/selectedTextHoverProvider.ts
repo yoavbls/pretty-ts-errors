@@ -1,9 +1,7 @@
 import { ExtensionContext, MarkdownString, languages, window } from "vscode";
+import { formatDiagnostic } from "vscode-formatter";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { miniLine } from "../components";
-import { formatDiagnostic } from "../format/formatDiagnostic";
-import { prettify } from "../format/prettify";
-import { d } from "../utils";
+import { d } from "../deps";
 
 const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
 
@@ -42,8 +40,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                           severity: 0,
                           source: "ts",
                           code: 1337,
-                        }),
-                        prettify
+                        })
                       )
                   ),
                 ]
@@ -68,5 +65,5 @@ const debugHoverHeader = d/*html*/ `
   </span>
   <br>
   <hr>
-  ${miniLine}
+  <p></p>
 `;

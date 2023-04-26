@@ -2,13 +2,13 @@ import * as assert from "assert";
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
+import { formatDiagnosticMessage } from "formatter";
+import { addMissingParentheses } from "formatter/src/addMissingParentheses";
+import { prettifyType } from "formatter/src/formatTypeBlock";
 import * as vscode from "vscode";
 import { inlineCodeBlock } from "../../components";
-import { addMissingParentheses } from "../../format/addMissingParentheses";
-import { formatDiagnosticMessage } from "../../format/formatDiagnosticMessage";
-import { prettifyType } from "../../format/formatTypeBlock";
+import { d } from "../../deps";
 import { prettify } from "../../format/prettify";
-import { d } from "../../utils";
 import {
   errorWithDashInObjectKeys,
   errorWithSpecialCharsInObjectKeys,
@@ -50,7 +50,6 @@ suite("Extension Test Suite", () => {
     prettifyType(
       d` { $ref: null; ref: (ref: any) => any; columns: ({ label: string; prop: string; } | { label: string; formatter: ({ ip_type }: any) => any; } | { actions: { label: string; disabled: ({ contract_id }: any) => boolean; handler({ contract_id }: any): void; }[]; })[]; ... 4 more ...; load(): Promise<...>; }
     `,
-      prettify,
       { throwOnError: true }
     );
   });

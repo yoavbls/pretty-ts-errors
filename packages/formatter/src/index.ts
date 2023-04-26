@@ -1,0 +1,1 @@
+export { formatDiagnosticMessage } from "./formatDiagnosticMessage";

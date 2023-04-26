@@ -1,5 +1,6 @@
+import { compressToEncodedURIComponent } from "lz-string";
 import { Diagnostic } from "vscode-languageserver-types";
-import { compressToEncodedURIComponent, d } from "../utils";
+import { d } from "../deps";
 import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
 
 export const title = (diagnostic: Diagnostic) => d/*html*/ `

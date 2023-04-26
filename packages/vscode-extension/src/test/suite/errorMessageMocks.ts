@@ -1,10 +1,10 @@
-import { d } from "../../utils";
-
 /**
  * This file contains mocks of error messages, only some of them
  * are used in tests but all of them can be used to test and debug
  * the formatting visually, you can try to select them on debug and check the hover.
  */
+
+import { d } from "../../deps";
 
 export const errorWithSpecialCharsInObjectKeys = d`
 Type 'string' is not assignable to type '{ 'abc*bc': string; }'.

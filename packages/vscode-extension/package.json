@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/yoavbls/pretty-ts-errors",
-    "directory": "apps/vscode-extension"
+    "directory": "packages/vscode-extension"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
   "engines": {
@@ -90,6 +90,8 @@
     "ts-dedent": "^2.2.0",
     "vscode-languageclient": "^8.1.0",
     "vscode-languageserver-types": "^3.17.3",
-    "vscode-uri": "^3.0.7"
+    "vscode-uri": "^3.0.7",
+    "utils": "*",
+    "vscode-formatter": "*"
   }
 }

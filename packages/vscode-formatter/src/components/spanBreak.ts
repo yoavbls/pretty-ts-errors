@@ -1,4 +1,4 @@
-import { d } from "../utils";
+import { d } from "../deps";
 
 /**
  * Since every thing in the extension hover split into spans,

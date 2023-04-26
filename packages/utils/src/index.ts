@@ -1,13 +1,3 @@
-// We re-export modules to be able to replace/change them easily across all the usages
-export { compressToEncodedURIComponent } from "lz-string";
-import dedent from "ts-dedent";
-
-/**
- * d stands for dedent.
- * it allow us to indent html in template literals without affecting the output
- */
-export const d = dedent;
-
 /** Similar to `Object.keys` but with stricter types */
 export const keys = <const T extends {}>(object: T): Array<keyof T> =>
   <Array<keyof T>>Object.keys(object);

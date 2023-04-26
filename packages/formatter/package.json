@@ -1,0 +1,29 @@
+{
+  "name": "formatter",
+  "version": "0.1.0",
+  "description": "Pretty TypeScript Errors Formatter",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoavbls/pretty-ts-errors.git"
+  },
+  "keywords": [
+    "typescript",
+    "errors"
+  ],
+  "author": "yoavbls",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yoavbls/pretty-ts-errors/issues"
+  },
+  "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
+  "dependencies": {
+    "utils": "*"
+  },
+  "peerDependencies": {
+    "prettier": "^2.8.7"
+  }
+}
