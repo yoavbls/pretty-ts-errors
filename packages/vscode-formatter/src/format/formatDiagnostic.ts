@@ -1,4 +1,4 @@
-import { formatDiagnosticMessage } from "formatter";
+import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
 import { Diagnostic } from "vscode-languageserver-types";
 import { title } from "../components";
 import { anyCodeBlock } from "../components/anyCodeBlock";

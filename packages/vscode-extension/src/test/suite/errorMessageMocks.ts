@@ -4,7 +4,7 @@
  * the formatting visually, you can try to select them on debug and check the hover.
  */
 
-import { d } from "../../deps";
+import { d } from "@pretty-ts-errors/utils";
 
 export const errorWithSpecialCharsInObjectKeys = d`
 Type 'string' is not assignable to type '{ 'abc*bc': string; }'.

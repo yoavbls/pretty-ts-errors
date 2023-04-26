@@ -1,10 +1,11 @@
 import { format } from "prettier";
+import { CodeBlock } from ".";
 import { addMissingParentheses } from "./addMissingParentheses";
 
 export function formatTypeBlock(
   prefix: string,
   type: string,
-  codeBlock: (code: string, language?: string, multiLine?: boolean) => string
+  codeBlock: CodeBlock
 ) {
   // Return a simple code block if it's just a parenthesis
   if (type.match(/^(\[\]|\{\})$/)) {

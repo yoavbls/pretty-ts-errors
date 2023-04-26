@@ -1,4 +1,4 @@
-import { has, invert, keys, values } from "utils";
+import { has, invert, keys, values } from "@pretty-ts-errors/utils";
 
 const parentheses = {
   "(": ")",

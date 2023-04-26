@@ -1,3 +1,5 @@
+export { dedent as d } from "ts-dedent";
+
 /** Similar to `Object.keys` but with stricter types */
 export const keys = <const T extends {}>(object: T): Array<keyof T> =>
   <Array<keyof T>>Object.keys(object);

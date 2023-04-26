@@ -1,7 +1,7 @@
+import { d } from "@pretty-ts-errors/utils";
+import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import { ExtensionContext, MarkdownString, languages, window } from "vscode";
-import { formatDiagnostic } from "vscode-formatter";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { d } from "../deps";
 
 const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
 

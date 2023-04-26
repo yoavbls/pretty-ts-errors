@@ -1,4 +1,5 @@
-import { has } from "utils";
+import { has } from "@pretty-ts-errors/utils";
+import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -6,7 +7,6 @@ import {
   Range,
   window,
 } from "vscode";
-import { formatDiagnostic } from "vscode-formatter";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";

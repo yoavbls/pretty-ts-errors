@@ -1,10 +1,16 @@
 {
-  "name": "formatter",
-  "version": "0.1.0",
+  "name": "@pretty-ts-errors/formatter",
+  "version": "0.1.7",
   "description": "Pretty TypeScript Errors Formatter",
-  "main": "src/index.ts",
+  "files": [
+    "src/**",
+    "dist/**"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "test"
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "publish": "npm run build && npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -20,8 +26,10 @@
     "url": "https://github.com/yoavbls/pretty-ts-errors/issues"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
-  "dependencies": {
-    "utils": "*"
+  "dependencies": {},
+  "devDependencies": {
+    "@types/prettier": "^2.7.2",
+    "tsup": "^6.7.0"
   },
   "peerDependencies": {
     "prettier": "^2.8.7"
