@@ -13,12 +13,18 @@
 [![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
 [![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
 
-
+<a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" width="490px" /></a>  
 
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
-<img src="./assets/this.png" style="max-height: 350px"  height="350px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" height="350px"  width="350px" style="max-height: 350px" />
+<img src="./assets/this.png" width="340.438px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" width="350px" />  
+  
+  
+## Watch this
+<a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
+ <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" width="600" />
+</a>
 
 ## Features
 - Syntax highlighting with your theme colors for types in error messages, supporting both light and dark themes
@@ -31,13 +37,15 @@ This extension will help you understand what's going on. For example, in this re
 - JSDoc type errors (in `.js` and `.jsx` files)
 - React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
-
-## Watch it
-<a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
- <img src="http://img.youtube.com/vi/9RM2aErJs-s/0.jpg" alt="Watch the video" />
-</a>
-
-
+  
+  
+## Installation
+```
+code --install-extension yoavbls.pretty-ts-errors
+```
+Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)  
+  
+  
 ## Why isn't it trivial
 1. TypeScript errors contain types that are not valid in TypeScript.  
 Yes, these types include things like `... more ...`, `{ ... }`, etc in an inconsistent manner. Some are also cutting in the middle because they're too long.
@@ -45,25 +53,76 @@ Yes, these types include things like `... more ...`, `{ ... }`, etc in an incons
 3. VSCode markdown blocks all styling options, so I had to find hacks to style the error messages. e.g., there isn't an inlined code block on VSCode markdown, so I used a code block inside a codicon icon, which is the only thing that can be inlined. That's why it can't be copied. but it isn't a problem because you can still hover on the error and copy things from the original error pane.  
 <img src="./assets/errors-hover.png" width="600" /> 
 
-## Contribution
-Every contribution is welcome.  
-Feel free to ask anything and open any issue / PR you desire.
-
-## WTF
-<a href="https://star-history.com/#yoavbls/pretty-ts-errors&Date" target="_blank">
-<img src="https://api.star-history.com/svg?repos=yoavbls/pretty-ts-errors&type=Date" width="500px" />
+## Hype section
+<a href="https://twitter.com/t3dotgg/status/1647759462709747713">
+  <picture>    
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
+  </picture>
+</a>
+<a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+  </picture>
+</a>
+<a href="https://twitter.com/tannerlinsley/status/1647982562026090496">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-light-mode-only">
+     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-dark-mode-only">
+  </picture>
 </a>
 
-Thanks to these amazing folks and anyone else that help it reach so many people 💙
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">That&#39;s great! <a href="https://t.co/gGX2TNKFqO">https://t.co/gGX2TNKFqO</a> <a href="https://t.co/xu3i5GjC7H">pic.twitter.com/xu3i5GjC7H</a></p>&mdash; Johnson Chu (@johnsoncodehk) <a href="https://twitter.com/johnsoncodehk/status/1646214711204286465?ref_src=twsrc%5Etfw">April 12, 2023</a></blockquote>
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">s/o <a href="https://twitter.com/yoavbls?ref_src=twsrc%5Etfw">@yoavbls</a> - this is dope <a href="https://t.co/wsI7gOxqC4">https://t.co/wsI7gOxqC4</a></p>&mdash; Theo - t3.gg (@t3dotgg) 
-<a href="https://twitter.com/t3dotgg/status/1647752075969974272?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
   
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Typescript just got way better 
-<a href="https://t.co/y8BQERWz7h">https://t.co/y8BQERWz7h</a></p>&mdash; Tanner Linsley (@tannerlinsley) 
-<a href="https://twitter.com/tannerlinsley/status/1647982562026090496?ref_src=twsrc%5Etfw">April 17, 2023</a></blockquote>
+### Stars from stars  
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/kentcdodds">
+          <img src="https://images.weserv.nl/?url=github.com/kentcdodds.png&fit=cover&mask=circle" width="80"><br>
+          Kent C. Dodds  
+        <a/>
+      </td>
+      <td align="center">
+        <a href="https://github.com/mattpocock">
+          <img src="https://images.weserv.nl/?url=github.com/mattpocock.png&fit=cover&mask=circle" width="80"><br>
+          Matt Pocock  
+        <a/>
+      </td>
+      <td align="center">
+        <a href="https://github.com/katt">
+          <img src="https://images.weserv.nl/?url=github.com/katt.png&fit=cover&mask=circle" width="80"><br>
+          Alex / KATT
+        <a/>
+      </td>
+      <td align="center">
+        <a href="https://github.com/tannerlinsley">
+          <img src="https://images.weserv.nl/?url=github.com/tannerlinsley.png&fit=cover&mask=circle" width="80"><br>
+          Tanner Linsley  
+        <a/>
+      </td>
+      <td align="center">
+        <a href="https://github.com/t3dotgg">
+          <img src="https://images.weserv.nl/?url=github.com/t3dotgg.png&fit=cover&mask=circle" width="80"><br>
+          Theo Browne
+        <a/>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-
-
+  
+## Sponsorship
+Every penny will be invested in other contributors to the project, especially ones that work  
+on things that I can't be doing myself like adding support to the extension for other IDEs 🫂
+  
+## Contribution
+Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/discussions/43)  
+Any other contribution is welcome. Feel free to open any issue / PR you think.
+  
+  
+  

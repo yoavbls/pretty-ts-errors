@@ -1,4 +1,4 @@
-import { inlineCodeBlock, unstyledCodeBlock } from "../components";
+import { inlineCodeBlock, unStyledCodeBlock } from "../components";
 import { formatTypeBlock } from "./formatTypeBlock";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
@@ -7,7 +7,12 @@ const formatTypeScriptBlock = (_: string, code: string) =>
 const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
-const formatTypeOrModuleBlock = (_: string, prefix: string, code: string, format: (type: string) => string) =>
+const formatTypeOrModuleBlock = (
+  _: string,
+  prefix: string,
+  code: string,
+  format: (type: string) => string
+) =>
   formatTypeBlock(
     prefix,
     ["module", "file", "file name"].includes(prefix.toLowerCase())
@@ -16,7 +21,10 @@ const formatTypeOrModuleBlock = (_: string, prefix: string, code: string, format
     format
   );
 
-export const formatDiagnosticMessage = (message: string, format: (type: string) => string) =>
+export const formatDiagnosticMessage = (
+  message: string,
+  format: (type: string) => string
+) =>
   message
     // format declare module snippet
     .replaceAll(
@@ -26,9 +34,9 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
     )
     // format missing props error
     .replaceAll(
-      /(is missing the following properties from type .*: )(.+?)(?=and|$)/g,
-      (_, pre, post) =>
-        `${pre}<ul>${post
+      /(is missing the following properties from type )'(.*)': (.+?)(?=and|$)/g,
+      (_, pre, type, post) =>
+        `${pre}${formatTypeBlock("", type, format)}: <ul>${post
           .split(", ")
           .filter(Boolean)
           .map((prop: string) => `<li>${prop}</li>`)
@@ -38,13 +46,21 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
     .replaceAll(
       /(types) ['“](.*?)['”] and ['“](.*?)['”][\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock("", p3, format)}`
+        `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock(
+          "",
+          p3,
+          format
+        )}`
     )
     // Format type annotation options
     .replaceAll(
       /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][\.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock("", p3, format)}`
+        `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock(
+          "",
+          p3,
+          format
+        )}`
     )
     .replaceAll(
       /(Overload \d of \d), ['“](.*?)['”], /gi,
@@ -54,7 +70,7 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
     .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
     // Format types
     .replaceAll(
-      /(type|type alias|interface|module|file|file name) ['“](.*?)['”][\.]?/gi,
+      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)])/gi,
       (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2, format)
     )
     // Format reversed types
@@ -80,4 +96,7 @@ export const formatDiagnosticMessage = (message: string, format: (type: string) 
       (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
     )
     // Format regular code blocks
-    .replaceAll(/['“](.*?)['”]/g, (_: string, p1: string) => unstyledCodeBlock(p1));
+    .replaceAll(
+      /['“]((?:(?!:\s*}).)*?)['“] (?!\s*:)/g,
+      (_: string, p1: string) => `${unStyledCodeBlock(p1)} `
+    );

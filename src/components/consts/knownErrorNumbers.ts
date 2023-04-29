@@ -9,7 +9,7 @@ import { Diagnostic } from "vscode-languageserver-types";
  * .map(node => Number(node.textContent.match(/TS([0-9]+)/)[1]))
  * ```
  */
-export const KNOWN_ERROR_NUMBERS: Diagnostic["code"][] = [
+export const KNOWN_ERROR_NUMBERS: Set<Diagnostic["code"]> = new Set([
   1002, 1005, 1006, 1015, 1016, 1029, 1036, 1038, 1039, 1046, 1055, 1056, 1064,
   1066, 1068, 1070, 1095, 1103, 1109, 1117, 1127, 1128, 1149, 1155, 1160, 1183,
   1192, 1196, 1202, 1208, 1218, 1219, 1225, 1228, 1243, 1244, 1254, 1259, 1308,
@@ -28,4 +28,4 @@ export const KNOWN_ERROR_NUMBERS: Diagnostic["code"][] = [
   5087, 5101, 6053, 6059, 6133, 6138, 6196, 6198, 6504, 7006, 7008, 7009, 7010,
   7016, 7017, 7022, 7023, 7026, 7027, 7030, 7031, 7034, 7041, 7044, 7053, 8020,
   17000, 17004, 17009, 18004, 18016, 80005,
-];
+]);
