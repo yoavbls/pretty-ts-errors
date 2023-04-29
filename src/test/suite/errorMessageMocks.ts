@@ -42,4 +42,10 @@ Type '(newIds: number[]) => void' is not assignable to type '(selectedId: string
       Type 'string' is not assignable to type 'number'.
 `;
 
+const errorWithComma = d`
+Argument of type '{ filters: Filters; } & T' is not assignable to parameter of type 'T & F'.
+  Type '{ filters: Filters; } & T' is not assignable to type 'F'.
+    '{ filters: Filters; } & T' is assignable to the constraint of type 'F', but 'F' could be instantiated with a different subtype of constraint '{ filters: Filters; }'.
+`;
+
 ("Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.");

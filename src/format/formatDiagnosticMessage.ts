@@ -70,7 +70,7 @@ export const formatDiagnosticMessage = (
     .replaceAll(/^'"[^"]*"'$/g, formatTypeScriptBlock)
     // Format types
     .replaceAll(
-      /(type|type alias|interface|module|file|file name|method's) '(.*?)'(?=[\s.])/gi,
+      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) '(.*?)'(?=[\s(.|,)])/gi,
       (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2, format)
     )
     // Format reversed types
