@@ -35,6 +35,10 @@ const errorWithTruncatedType2 = d`
 Type '{ '!top': string[]; 'xsl:declaration': { attrs: { 'default-collation': null; 'exclude-result-prefixes': null; 'extension-element-prefixes': null; 'use-when': null; 'xpath-default-namespace': null; }; }; 'xsl:instruction': { ...; }; ... 49 more ...; 'xsl:literal-result-element': {}; }' is missing the following properties from type 'GraphQLSchema': description, extensions, astNode, extensionASTNodes, and 21 more.
 `;
 
+const variableNotUsedEror = d`
+'a' is declared but its value is never read.
+`;
+
 const errorWithSimpleIndentations = d`
 Type '(newIds: number[]) => void' is not assignable to type '(selectedId: string[]) => void'.
   Types of parameters 'newIds' and 'selectedId' are incompatible.
@@ -49,3 +53,7 @@ Argument of type '{ filters: Filters; } & T' is not assignable to parameter of t
 `;
 
 ("Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.");
+
+const leftSideAritmeticError = d`
+The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+`;
