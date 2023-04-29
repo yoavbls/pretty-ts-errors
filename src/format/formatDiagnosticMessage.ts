@@ -75,7 +75,7 @@ export const formatDiagnosticMessage = (
     )
     // Format reversed types
     .replaceAll(
-      /(.*)['“]([^>]*)['”] (type|interface|return type|file|module)/gi,
+      /(.*)['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
       (_: string, p1: string, p2: string, p3: string) =>
         `${p1}${formatTypeOrModuleBlock(_, "", p2, format)} ${p3}`
     )

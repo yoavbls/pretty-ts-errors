@@ -1,13 +1,14 @@
 import { Diagnostic } from "vscode-languageserver-types";
 import { compressToEncodedURIComponent, d } from "../utils";
 import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
+import { miniLine } from "./miniLine";
 
 export const title = (diagnostic: Diagnostic) => d/*html*/ `
-    <span style="color:#f96363;">⚠ Error</span>${
+    <span style="color:#f96363;">⚠ Error </span>${
       typeof diagnostic.code === "number"
         ? d/*html*/ `
             <span style="color:#5f5f5f;">
-            (TS${diagnostic.code}) 
+            &nbsp;(TS${diagnostic.code}) 
             ${errorCodeExplanationLink(diagnostic.code)}  | 
             ${errorMessageTranslationLink(diagnostic.message)}
             </span>
@@ -15,8 +16,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
         : ""
     }
     <br>
-    <span>
-
+    ${miniLine}
 `;
 
 export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
