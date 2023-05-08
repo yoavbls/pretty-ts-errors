@@ -7,20 +7,6 @@ const formatTypeScriptBlock = (_: string, code: string) =>
 const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
-const formatTypeOrModuleBlock = (
-  _: string,
-  prefix: string,
-  code: string,
-  format: (type: string) => string
-) =>
-  formatTypeBlock(
-    prefix,
-    ["module", "file", "file name"].includes(prefix.toLowerCase())
-      ? `"${code}"`
-      : code,
-    format
-  );
-
 export const formatDiagnosticMessage = (
   message: string,
   format: (type: string) => string
@@ -68,16 +54,21 @@ export const formatDiagnosticMessage = (
     )
     // format simple strings
     .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
+    // Format string types
+    .replaceAll(
+      /(module|file|file name) "(.*?)"(?=[\s(.|,)])/gi,
+      (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, format)
+    )
     // Format types
     .replaceAll(
       /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)])/gi,
-      (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2, format)
+      (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format)
     )
     // Format reversed types
     .replaceAll(
       /(.*)['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${p1}${formatTypeOrModuleBlock(_, "", p2, format)} ${p3}`
+        `${p1}${formatTypeBlock("", p2, format)} ${p3}`
     )
     // Format simple types that didn't captured before
     .replaceAll(

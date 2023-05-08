@@ -57,3 +57,7 @@ Argument of type '{ filters: Filters; } & T' is not assignable to parameter of t
 const leftSideAritmeticError = d`
 The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
 `;
+
+const theosError = d`
+Exported variable 'uploadRouter' has or is using name 'Uploader' from external module "/Users/theo/Code/Work/filething/packages/uploadthing/dist/types-dbaf1b46" but cannot be named.
+`;
