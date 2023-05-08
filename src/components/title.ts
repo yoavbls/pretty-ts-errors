@@ -8,7 +8,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
       typeof diagnostic.code === "number"
         ? d/*html*/ `
             <span style="color:#5f5f5f;">
-            &nbsp;(TS${diagnostic.code}) 
+            (TS${diagnostic.code}) 
             ${errorCodeExplanationLink(diagnostic.code)}  | 
             ${errorMessageTranslationLink(diagnostic.message)}
             </span>
