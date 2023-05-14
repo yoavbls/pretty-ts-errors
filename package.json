@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
   "engines": {
-    "vscode": "^1.77.0"
+    "vscode": "^1.66.0"
   },
   "categories": [
     "Programming Languages",
@@ -69,7 +69,7 @@
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
     "@types/prettier": "^2.7.2",
-    "@types/vscode": "^1.70.0",
+    "@types/vscode": "^1.66.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/test-electron": "^2.1.5",
