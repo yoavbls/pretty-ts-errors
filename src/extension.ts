@@ -12,6 +12,9 @@ import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
+import { Cache, FormattedDiagnostic } from "./provider/cache";
+
+const cache = new Cache();
 
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
@@ -31,28 +34,37 @@ export function activate(context: ExtensionContext) {
 
         let hasTsDiagnostic = false;
 
-        diagnostics
+        const tsDiagnostics = diagnostics
           .filter((diagnostic) =>
             diagnostic.source
               ? has(["ts", "deno-ts", "js"], diagnostic.source)
               : false
           )
-          .forEach(async (diagnostic) => {
-            // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-            // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-            const markdownString = new MarkdownString(
-              formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
-            );
 
-            markdownString.isTrusted = true;
-            markdownString.supportHtml = true;
+        cache.deleteStale(uri.path, tsDiagnostics);
+        const newDiagnostics = cache.filter(uri.path, tsDiagnostics);
 
-            items.push({
-              range: diagnostic.range,
-              contents: [markdownString],
-            });
-            hasTsDiagnostic = true;
-          });
+        newDiagnostics.forEach(async (diagnostic) => {
+          // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
+          // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
+          const markdownString = new MarkdownString(
+            formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+          );
+
+          markdownString.isTrusted = true;
+          markdownString.supportHtml = true;
+
+          const fDiagnostic: FormattedDiagnostic = {
+            range: diagnostic.range,
+            contents: [markdownString],
+          };
+
+          cache.set(uri.path, diagnostic, fDiagnostic);
+          hasTsDiagnostic = true;
+        });
+
+        items.push(...cache.get(uri.path));
+
         uriStore[uri.path] = items;
 
         if (hasTsDiagnostic) {
