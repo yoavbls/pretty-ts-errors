@@ -44,22 +44,22 @@ export function activate(context: ExtensionContext) {
             let formattedMessage = cache.get(diagnostic.message);
 
             if (!formattedMessage) {
-              // All the expensive formatting is happening here in formatDiagnosticMessage
               const markdownString = new MarkdownString(
                 formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
               );
-              
+
               markdownString.isTrusted = true;
               markdownString.supportHtml = true;
-              
-              formattedMessage = {
-                range: diagnostic.range,
-                contents: [markdownString],
-              };
+
+              formattedMessage = markdownString;
               cache.set(diagnostic.message, formattedMessage);
             }
 
-            items.push(formattedMessage);
+            items.push({
+              range: diagnostic.range,
+              contents: [formattedMessage]
+            });
+
             hasTsDiagnostic = true;
           });
 
