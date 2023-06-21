@@ -53,6 +53,11 @@ export function activate(context: ExtensionContext) {
 
               formattedMessage = markdownString;
               cache.set(diagnostic.message, formattedMessage);
+
+              if (cache.size > 100) {
+                const firstCacheKey = cache.keys().next().value;
+                cache.delete(firstCacheKey);
+              }
             }
 
             items.push({
