@@ -13,6 +13,8 @@ import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverP
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
 
+const cache = new Map();
+
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
@@ -36,23 +38,36 @@ export function activate(context: ExtensionContext) {
             diagnostic.source
               ? has(["ts", "deno-ts", "js"], diagnostic.source)
               : false
-          )
-          .forEach(async (diagnostic) => {
+          ).forEach(async (diagnostic) => {
             // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
             // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-            const markdownString = new MarkdownString(
-              formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
-            );
+            let formattedMessage = cache.get(diagnostic.message);
 
-            markdownString.isTrusted = true;
-            markdownString.supportHtml = true;
+            if (!formattedMessage) {
+              const markdownString = new MarkdownString(
+                formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+              );
+
+              markdownString.isTrusted = true;
+              markdownString.supportHtml = true;
+
+              formattedMessage = markdownString;
+              cache.set(diagnostic.message, formattedMessage);
+
+              if (cache.size > 100) {
+                const firstCacheKey = cache.keys().next().value;
+                cache.delete(firstCacheKey);
+              }
+            }
 
             items.push({
               range: diagnostic.range,
-              contents: [markdownString],
+              contents: [formattedMessage]
             });
+
             hasTsDiagnostic = true;
           });
+
         uriStore[uri.path] = items;
 
         if (hasTsDiagnostic) {
