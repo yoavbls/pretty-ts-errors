@@ -34,6 +34,9 @@
     "onLanguage:mdx"
   ],
   "main": "./dist/extension.js",
+  "files": [
+    "out"
+  ],
   "contributes": {
     "languages": [
       {
@@ -52,16 +55,20 @@
     ]
   },
   "scripts": {
+    "setup": "npm list -g --depth 0 && npm ci --legacy-peer-deps && npm list",
     "vscode:prepublish": "npm run package",
     "compile": "node scripts/build",
     "watch": "npm run compile -- --watch",
     "build": "vsce package",
     "package": "node scripts/build -- --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "prepack": "npm run compile-src",
+    "compile-src": "tsc -p .",
+    "watch-src": "tsc -p . -w",
+    "pretest": "npm run compile-src && npm run compile",
+    "test": "node ./out/test/runTest.js",
     "lint": "eslint src --ext ts & tsc --noEmit",
-    "test": "node ./out/test/runTest.js"
+    "workflow_test": "xvfb-maybe npm test && npm publish --dry-run",
+    "workflow_publish": "npm publish --access=public pretty-ts-errors-*.tgz"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -73,11 +80,13 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/test-electron": "^2.1.5",
+    "@vscode/vsce": "^2.19.0",
     "esbuild": "^0.17.16",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "xvfb-maybe": "^0.2.1"
   },
   "dependencies": {
     "lz-string": "^1.4.4",

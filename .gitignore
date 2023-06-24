@@ -1,5 +1,15 @@
+# build / generate output
 out
 dist
+
+# Dependency directories
 node_modules
+
+# Stores VSCode versions used for testing VSCode extensions
 .vscode-test/
+
+# Output of 'npm pack'
+*.tgz
+
+# Output of 'vsce package'
 *.vsix

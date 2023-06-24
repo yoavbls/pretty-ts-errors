@@ -5,6 +5,10 @@
     "lib": ["ES2021", "ES2021.String"],
     "sourceMap": true,
     "rootDir": "src",
+    "outDir": "./out",
+    "declarationDir": "./out/types",
+    "declaration": true,
+    "declarationMap": true,
     "checkJs": true,
     "strict": true /* enable all strict type-checking options */,
     /* Additional Checks */
