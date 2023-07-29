@@ -1,5 +1,5 @@
 import { inlineCodeBlock, multiLineCodeBlock } from "./codeBlock";
-import {d} from "../utils";
+import { d } from "../utils";
 
 /**
  * Code block without syntax highlighting like.

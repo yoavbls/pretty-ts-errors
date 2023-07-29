@@ -38,7 +38,8 @@ export function activate(context: ExtensionContext) {
             diagnostic.source
               ? has(["ts", "deno-ts", "js"], diagnostic.source)
               : false
-          ).forEach(async (diagnostic) => {
+          )
+          .forEach(async (diagnostic) => {
             // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
             // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
             let formattedMessage = cache.get(diagnostic.message);
@@ -62,7 +63,7 @@ export function activate(context: ExtensionContext) {
 
             items.push({
               range: diagnostic.range,
-              contents: [formattedMessage]
+              contents: [formattedMessage],
             });
 
             hasTsDiagnostic = true;
