@@ -78,6 +78,7 @@
     "eslint": "^8.46.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
+    "path-browserify": "^1.0.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
