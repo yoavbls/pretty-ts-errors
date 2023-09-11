@@ -1,4 +1,10 @@
-import { ExtensionContext, MarkdownString, languages, window } from "vscode";
+import {
+  ExtensionContext,
+  ExtensionMode,
+  MarkdownString,
+  languages,
+  window,
+} from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { miniLine } from "../components";
 import { formatDiagnostic } from "../format/formatDiagnostic";
@@ -14,7 +20,7 @@ const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
 export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   const converter = createConverter();
 
-  if (!isDebugMode()) {
+  if (context.extensionMode !== ExtensionMode.Development) {
     return;
   }
 
