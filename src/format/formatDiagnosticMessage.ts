@@ -88,6 +88,6 @@ export const formatDiagnosticMessage = (
     )
     // Format regular code blocks
     .replaceAll(
-      /['“]((?:(?!:\s*}).)*?)['“] (?!\s*:)/g,
+      /['“]([^']+)['“]/g,
       (_: string, p1: string) => `${unStyledCodeBlock(p1)} `
     );

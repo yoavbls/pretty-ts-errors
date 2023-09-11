@@ -76,7 +76,7 @@
     "@vscode/test-electron": "^2.3.3",
     "esbuild": "^0.18.17",
     "eslint": "^8.46.0",
-    "glob": "^10.3.3",
+    "glob": "^8.1.0",
     "mocha": "^10.2.0",
     "path-browserify": "^1.0.1",
     "typescript": "^5.1.6"
