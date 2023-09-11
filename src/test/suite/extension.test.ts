@@ -20,7 +20,7 @@ suite("Extension Test Suite", () => {
   test("Test of adding missing parentheses", () => {
     assert.strictEqual(
       addMissingParentheses("Hello, {world! [This] is a (test."),
-      "Hello, {world! [This] is a (test.)}"
+      "Hello, {world! [This] is a (test.\n...)}"
     );
   });
 
@@ -50,6 +50,14 @@ suite("Extension Test Suite", () => {
     prettifyType(
       d` { $ref: null; ref: (ref: any) => any; columns: ({ label: string; prop: string; } | { label: string; formatter: ({ ip_type }: any) => any; } | { actions: { label: string; disabled: ({ contract_id }: any) => boolean; handler({ contract_id }: any): void; }[]; })[]; ... 4 more ...; load(): Promise<...>; }
     `,
+      prettify,
+      { throwOnError: true }
+    );
+  });
+
+  test("Formatting truncated type should succeed", () => {
+    prettifyType(
+      d` { b: { name: string; icon: undefined; }; c: { name: string; icon: undefined; }; d: { name: string; icon: undefined; }; e: { name: string; icon: undefined; }; f: { ...; }; g: { ...; }; h:...`,
       prettify,
       { throwOnError: true }
     );

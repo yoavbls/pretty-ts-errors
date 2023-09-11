@@ -45,8 +45,11 @@ export function addMissingParentheses(type: string): string {
   if ((validType.match(/\'/g) ?? []).length % 2 === 1) {
     validType = validType + "...'";
   }
+  if (validType.at(-1) === ":") {
+    validType = validType + "...";
+  }
 
-  validType = (validType + missingClosingChars).replace(
+  validType = (validType + "\n..." + missingClosingChars).replace(
     // Change (param: ...) to (param) => __RETURN_TYPE__ if needed
     /(\([a-zA-Z0-9]*\:.*\))/,
     (p1) => `${p1} => ...`
