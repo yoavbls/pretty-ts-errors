@@ -20,7 +20,7 @@ export const formatDiagnosticMessage = (
     )
     // format missing props error
     .replaceAll(
-      /(is missing the following properties from type )'(.*)': (.+?)(?=and|$)/g,
+      /(is missing the following properties from type\s?)'(.*)': ((?:\w+, )*\w+(?:, \w+)*)\b/g,
       (_, pre, type, post) =>
         `${pre}${formatTypeBlock("", type, format)}: <ul>${post
           .split(", ")
@@ -54,6 +54,11 @@ export const formatDiagnosticMessage = (
     )
     // format simple strings
     .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
+    // Replace module 'x' by module "x" for ts error #2307
+    .replaceAll(
+      /(module )'([^"]*?)'/gi,
+      (_, p1: string, p2: string) => `${p1}"${p2}"`
+    )
     // Format string types
     .replaceAll(
       /(module|file|file name) "(.*?)"(?=[\s(.|,)])/gi,
@@ -61,7 +66,7 @@ export const formatDiagnosticMessage = (
     )
     // Format types
     .replaceAll(
-      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)])/gi,
+      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,|:)]|$)/gi,
       (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format)
     )
     // Format reversed types
@@ -88,6 +93,6 @@ export const formatDiagnosticMessage = (
     )
     // Format regular code blocks
     .replaceAll(
-      /['“]([^']+)['“]/g,
+      /['“]((?:(?!:\s*}).)*?)['“] (?!\s*:)/g,
       (_: string, p1: string) => `${unStyledCodeBlock(p1)} `
     );

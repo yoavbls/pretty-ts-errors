@@ -74,6 +74,10 @@ const ts2305Error = d`
 Module '"@pretty-ts-errors/formatter"' has no exported member 'values'.
 `;
 
+const ts2307Error = d`
+Cannot find module 'events' or its corresponding type declarations.
+`;
+
 const ts1360Error = d`
 Property 'a' is missing in type '{ b: { name: string; icon: undefined; }; c: { name: string; icon: undefined; }; d: { name: string; icon: undefined; }; e: { name: string; icon: undefined; }; f: { ...; }; g: { ...; }; h:...' but required in type '{a: {name: string; icon: undefined}}'.
 `;
