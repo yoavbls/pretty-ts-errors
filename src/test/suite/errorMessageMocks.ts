@@ -61,7 +61,3 @@ The left-hand side of an arithmetic operation must be of type 'any', 'number', '
 const theosError = d`
 Exported variable 'uploadRouter' has or is using name 'Uploader' from external module "/Users/theo/Code/Work/filething/packages/uploadthing/dist/types-dbaf1b46" but cannot be named.
 `;
-
-const ts1378Error = d`
-Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', or 'nodenext', and the 'target' option is set to 'es2017' or higher.
-`;
