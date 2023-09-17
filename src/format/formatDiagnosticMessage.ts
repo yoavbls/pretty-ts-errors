@@ -12,6 +12,9 @@ export const formatDiagnosticMessage = (
   format: (type: string) => string
 ) =>
   message
+    .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|\:|.|$)/g, (_, p1: string) =>
+      formatTypeBlock("", `"${p1}"`, format)
+    )
     // format declare module snippet
     .replaceAll(
       /['“](declare module )['”](.*)['“];['”]/g,
@@ -66,7 +69,7 @@ export const formatDiagnosticMessage = (
     )
     // Format types
     .replaceAll(
-      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,|:)]|$)/gi,
+      /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)]|$)/gi,
       (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format)
     )
     // Format reversed types
@@ -93,6 +96,6 @@ export const formatDiagnosticMessage = (
     )
     // Format regular code blocks
     .replaceAll(
-      /['“]((?:(?!:\s*}).)*?)['“] (?!\s*:)/g,
-      (_: string, p1: string) => `${unStyledCodeBlock(p1)} `
+      /(?<!.*?")(?:^|\s)['“]((?:(?!:\s*}).)*?)['“](?!\s*:)(?!.*?")/g,
+      (_: string, p1: string) => ` ${unStyledCodeBlock(p1)} `
     );

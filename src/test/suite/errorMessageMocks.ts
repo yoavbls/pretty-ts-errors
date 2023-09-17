@@ -81,3 +81,7 @@ Cannot find module 'events' or its corresponding type declarations.
 const ts1360Error = d`
 Property 'a' is missing in type '{ b: { name: string; icon: undefined; }; c: { name: string; icon: undefined; }; d: { name: string; icon: undefined; }; e: { name: string; icon: undefined; }; f: { ...; }; g: { ...; }; h:...' but required in type '{a: {name: string; icon: undefined}}'.
 `;
+
+const errorWithStringChars = d`
+Type 'null' is not assignable to type '"' 'Oh \"'no"'
+`;
