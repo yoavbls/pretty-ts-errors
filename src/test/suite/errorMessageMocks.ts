@@ -52,7 +52,16 @@ Argument of type '{ filters: Filters; } & T' is not assignable to parameter of t
     '{ filters: Filters; } & T' is assignable to the constraint of type 'F', but 'F' could be instantiated with a different subtype of constraint '{ filters: Filters; }'.
 `;
 
-("Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.");
+const missingPropertyError =
+  "\
+Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.\
+";
+
+const missingReactPropsError = d`
+Type '{ style: { backgroundColor: string; }; }' is not assignable to type 'DropDownPickerProps<Object>'.
+  Type '{ style: { backgroundColor: string; }; }' is not assignable to type 'DropDownPickerMultipleProps<Object> & DropDownPickerBaseProps<Object›'.
+    Type '{ style: { backgroundColor: string; }; }' is missing the following properties from type 'DropDownPickerMultipleProps<Object>': multiple, setValue, value
+`;
 
 const leftSideAritmeticError = d`
 The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
@@ -83,5 +92,5 @@ Property 'a' is missing in type '{ b: { name: string; icon: undefined; }; c: { n
 `;
 
 const errorWithStringChars = d`
-Type 'null' is not assignable to type '"' 'Oh \"'no"'
+Type '"' 'Oh no"' is not assignable to type '"'  'Oh n\"o\"'   "'.
 `;
