@@ -36,7 +36,7 @@ export function activate(context: ExtensionContext) {
         diagnostics
           .filter((diagnostic) =>
             diagnostic.source
-              ? has(["ts", "deno-ts", "js"], diagnostic.source)
+              ? has(["ts", "deno-ts", "js", "glint"], diagnostic.source)
               : false
           )
           .forEach(async (diagnostic) => {
