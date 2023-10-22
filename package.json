@@ -31,7 +31,9 @@
     "onLanguage:astro",
     "onLanguage:svelte",
     "onLanguage:vue",
-    "onLanguage:mdx"
+    "onLanguage:mdx",
+    "onLanguage:glimmer-js",
+    "onLanguage:glimmer-ts"
   ],
   "main": "./dist/extension.js",
   "browser": "./dist/extension.js",
