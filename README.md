@@ -43,6 +43,7 @@ and [more](https://www.youtube.com/playlist?list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c
 - JSDoc type errors (in `.js` and `.jsx` files)
 - React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
+- Ember and Glimmer TypeScript errors and template issues reported by Glint (in `.hbs`, `.gjs`, and `.gts` files)
   
   
 ## Installation
