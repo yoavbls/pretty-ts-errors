@@ -22,7 +22,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
 export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
   KNOWN_ERROR_NUMBERS.has(errorCode)
     ? d/*html*/ `
-        <a title="See detailed explanation" href="https://typescript.tv/errors/#TS${errorCode}">
+        <a title="See detailed explanation" href="https://typescript.tv/errors/#ts${errorCode}">
           <span class="codicon codicon-link-external">
           </span>
         </a>`
