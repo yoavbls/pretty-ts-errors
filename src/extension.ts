@@ -5,16 +5,21 @@ import {
   Range,
   window,
 } from "vscode";
+import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formatDiagnostic } from "./format/formatDiagnostic";
+import { prettify } from "./format/prettify";
 import { hoverProvider } from "./provider/hoverProvider";
+import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
-import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { format } from "prettier";
+
+const cache = new Map();
 
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
+
+  registerSelectedTextHoverProvider(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -31,27 +36,42 @@ export function activate(context: ExtensionContext) {
         diagnostics
           .filter((diagnostic) =>
             diagnostic.source
-              ? has(["ts", "deno-ts", "js"], diagnostic.source)
+              ? has(["ts", "deno-ts", "js", "glint"], diagnostic.source)
               : false
           )
           .forEach(async (diagnostic) => {
-
             // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
             // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-            const markdownString = new MarkdownString(formatDiagnostic(converter.asDiagnostic(diagnostic), prettify));
+            let formattedMessage = cache.get(diagnostic.message);
 
-            markdownString.isTrusted = true;
-            markdownString.supportHtml = true;
+            if (!formattedMessage) {
+              const markdownString = new MarkdownString(
+                formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+              );
+
+              markdownString.isTrusted = true;
+              markdownString.supportHtml = true;
+
+              formattedMessage = markdownString;
+              cache.set(diagnostic.message, formattedMessage);
+
+              if (cache.size > 100) {
+                const firstCacheKey = cache.keys().next().value;
+                cache.delete(firstCacheKey);
+              }
+            }
 
             items.push({
               range: diagnostic.range,
-              contents: [markdownString],
+              contents: [formattedMessage],
             });
+
             hasTsDiagnostic = true;
           });
+
         uriStore[uri.path] = items;
 
-        if (hasTsDiagnostic && uri.scheme === "file") {
+        if (hasTsDiagnostic) {
           const editor = window.visibleTextEditors.find(
             (editor) => editor.document.uri.toString() === uri.toString()
           );
@@ -60,7 +80,6 @@ export function activate(context: ExtensionContext) {
             context.subscriptions.push(
               languages.registerHoverProvider(
                 {
-                  scheme: "file",
                   language: editor.document.languageId,
                 },
                 hoverProvider
@@ -71,13 +90,4 @@ export function activate(context: ExtensionContext) {
       });
     })
   );
-}
-
-function prettify(text: string) {
-  return format(text, {
-    parser: "typescript",
-    printWidth: 60,
-    singleAttributePerLine: false,
-    arrowParens: "avoid",
-  });
 }

@@ -1,14 +1,18 @@
 import {
   inlineCodeBlock,
   multiLineCodeBlock,
-  unstyledCodeBlock,
+  unStyledCodeBlock,
 } from "../components";
 import { addMissingParentheses } from "./addMissingParentheses";
 
-export function formatTypeBlock(prefix: string, type: string, format: (type: string) => string) {
-  // Return a simple code block if it's just a parenthasis
+export function formatTypeBlock(
+  prefix: string,
+  type: string,
+  format: (type: string) => string
+) {
+  // Return a simple code block if it's just a parenthesis
   if (type.match(/^(\[\]|\{\})$/)) {
-    return `${prefix} ${unstyledCodeBlock(type)}`;
+    return `${prefix} ${unStyledCodeBlock(type)}`;
   }
 
   if (
@@ -20,7 +24,7 @@ export function formatTypeBlock(prefix: string, type: string, format: (type: str
     return `${prefix} ${inlineCodeBlock(type, "type")}`;
   }
 
-  const prettyType = convertToOriginalType(prettifyType(convertToValidType(type), format));
+  const prettyType = prettifyType(type, format);
 
   if (prettyType.includes("\n")) {
     return `${prefix}: ${multiLineCodeBlock(prettyType, "type")}`;
@@ -31,13 +35,18 @@ export function formatTypeBlock(prefix: string, type: string, format: (type: str
 /**
  * Try to make type prettier with prettier
  */
-function prettifyType(type: string, format: (type: string) => string) {
+export function prettifyType(
+  type: string,
+  format: (type: string) => string,
+  options?: { throwOnError?: boolean }
+) {
   try {
     // Wrap type with valid statement, format it and extract the type back
-    return convertToOriginalType(
-      format(convertToValidType(type))
-    );
+    return convertToOriginalType(format(convertToValidType(type)));
   } catch (e) {
+    if (options?.throwOnError) {
+      throw e;
+    }
     return type;
   }
 }
@@ -47,7 +56,7 @@ const convertToValidType = (type: string) =>
     // Add missing parentheses when the type ends with "...""
     .replace(/(.*)\.\.\.$/, (_, p1) => addMissingParentheses(p1))
     // Replace single parameter function destructuring because it's not a valid type
-    .replaceAll(/\((\{.*\})\:/g, (_, p1) => `(param: /* ${p1} */`)
+    // .replaceAll(/\((\{.*\})\:/g, (_, p1) => `(param: /* ${p1} */`)
     // Change `(...): return` which is invalid to `(...) => return`
     .replace(/^(\(.*\)): /, (_, p1) => `${p1} =>`)
     .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `___${p1}MORE___`)
@@ -62,6 +71,6 @@ const convertToOriginalType = (type: string) =>
     .replaceAll(/___MORE___: (\d{0,});/g, (_, p1) => `... ${p1} more ...;`)
     .replaceAll(/___(\d{0,})MORE___/g, (_, p1) => `... ${p1} more ...`)
     .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `/* ${p1} more */`) // ... x more ... not shown sell
-    .replaceAll(/\(param\: \/\* (\{ .* \}) \*\//g, (_, p1) => `(${p1}: `)
+    // .replaceAll(/\(param\: \/\* (\{ .* \}) \*\//g, (_, p1) => `(${p1}: `)
     .replace(/type x =[ ]?((.|\n)*);.*/g, "$1")
     .trim();

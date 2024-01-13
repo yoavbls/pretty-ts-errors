@@ -1,17 +1,20 @@
 {
   "name": "pretty-ts-errors",
   "displayName": "Pretty TypeScript Errors",
-  "publisher": "yoavbls",
+  "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.3.0",
+  "version": "0.5.3",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/yoavbls/pretty-ts-errors"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
+  "sponsor": {
+    "url": "https://github.com/sponsors/yoavbls"
+  },
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Programming Languages",
@@ -31,9 +34,12 @@
     "onLanguage:astro",
     "onLanguage:svelte",
     "onLanguage:vue",
-    "onLanguage:mdx"
+    "onLanguage:mdx",
+    "onLanguage:glimmer-js",
+    "onLanguage:glimmer-ts"
   ],
   "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
   "contributes": {
     "languages": [
       {
@@ -64,25 +70,25 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.2.0",
-    "@types/lz-string": "^1.3.34",
-    "@types/mocha": "^9.1.1",
+    "@types/glob": "^8.1.0",
+    "@types/lz-string": "^1.5.0",
+    "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
-    "@types/prettier": "^2.7.2",
+    "@types/prettier": "^2.7.3",
     "@types/vscode": "^1.70.0",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
-    "@vscode/test-electron": "^2.1.5",
-    "esbuild": "^0.17.16",
-    "eslint": "^8.20.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
-    "ts-loader": "^9.3.1",
-    "typescript": "^5.0.4"
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "@vscode/test-electron": "^2.3.3",
+    "esbuild": "^0.18.17",
+    "eslint": "^8.46.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "path-browserify": "^1.0.1",
+    "typescript": "^5.1.6"
   },
   "dependencies": {
-    "lz-string": "^1.4.4",
-    "prettier": "^2.8.7",
+    "lz-string": "^1.5.0",
+    "prettier": "^2.8.8",
     "ts-dedent": "^2.2.0",
     "vscode-languageclient": "^8.1.0",
     "vscode-languageserver-types": "^3.17.3",
