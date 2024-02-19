@@ -1,15 +1,20 @@
 import { inlineCodeBlock, unStyledCodeBlock } from "../components";
+import { Output } from "../types";
 import { formatTypeBlock } from "./formatTypeBlock";
 
-const formatTypeScriptBlock = (_: string, code: string) =>
-  inlineCodeBlock(code, "typescript");
+const formatTypeScriptBlock = (
+  _: string,
+  code: string,
+  output: Output = "html"
+) => inlineCodeBlock(code, "typescript", output);
 
 const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
 export const formatDiagnosticMessage = (
   message: string,
-  format: (type: string) => string
+  format: (type: string) => string,
+  output: Output = "html"
 ) =>
   message
     .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|\:|.|$)/g, (_, p1: string) =>
@@ -92,10 +97,11 @@ export const formatDiagnosticMessage = (
     // Format return values
     .replaceAll(
       /(return|operator) ['“](.*?)['”]/gi,
-      (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
+      (_, p1: string, p2: string) =>
+        `${p1} ${formatTypeScriptBlock("", p2, output)}`
     )
     // Format regular code blocks
     .replaceAll(
       /(?<!.*?")(?:^|\s)['“]((?:(?!:\s*}).)*?)['“](?!\s*:)(?!.*?")/g,
-      (_: string, p1: string) => ` ${unStyledCodeBlock(p1)} `
+      (_: string, p1: string) => `${unStyledCodeBlock(p1, output)}`
     );

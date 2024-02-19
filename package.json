@@ -90,7 +90,10 @@
     "lz-string": "^1.5.0",
     "prettier": "^2.8.8",
     "ts-dedent": "^2.2.0",
+    "ts-node": "^10.9.2",
     "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11",
     "vscode-languageserver-types": "^3.17.3",
     "vscode-uri": "^3.0.7"
   }
