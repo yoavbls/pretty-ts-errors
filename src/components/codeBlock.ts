@@ -1,3 +1,4 @@
+import { Output } from "../types";
 import { d } from "../utils";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
@@ -19,8 +20,18 @@ const codeBlock = (code: string, language: string) =>
   </span>
 `);
 
-export const inlineCodeBlock = (code: string, language: string) =>
-  codeBlock(` ${code} `, language);
+export const inlineCodeBlock = (
+  code: string,
+  language: string,
+  output: Output = "html"
+) => {
+  switch (output) {
+    case "html":
+      return codeBlock(` ${code} `, language);
+    case "plaintext":
+      return code;
+  }
+};
 
 export const multiLineCodeBlock = (code: string, language: string) => {
   const codeLines = code.split("\n");
