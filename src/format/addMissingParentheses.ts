@@ -39,10 +39,10 @@ export function addMissingParentheses(type: string): string {
   let validType = type;
 
   // Close the last string if it's not closed
-  if ((validType.match(/\"/g) ?? []).length % 2 === 1) {
+  if ((validType.match(/"/g) ?? []).length % 2 === 1) {
     validType = validType + '..."';
   }
-  if ((validType.match(/\'/g) ?? []).length % 2 === 1) {
+  if ((validType.match(/'/g) ?? []).length % 2 === 1) {
     validType = validType + "...'";
   }
   if (validType.at(-1) === ":") {
@@ -51,7 +51,7 @@ export function addMissingParentheses(type: string): string {
 
   validType = (validType + "\n..." + missingClosingChars).replace(
     // Change (param: ...) to (param) => __RETURN_TYPE__ if needed
-    /(\([a-zA-Z0-9]*\:.*\))/,
+    /(\([a-zA-Z0-9]*:.*\))/,
     (p1) => `${p1} => ...`
   );
 

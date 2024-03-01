@@ -11,8 +11,6 @@ import { formatDiagnostic } from "../format/formatDiagnostic";
 import { prettify } from "../format/prettify";
 import { d } from "../utils";
 
-const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
-
 /**
  * Register an hover provider in debug only.
  * It format selected text and help test things visually easier.
