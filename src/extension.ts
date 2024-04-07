@@ -36,7 +36,10 @@ export function activate(context: ExtensionContext) {
         diagnostics
           .filter((diagnostic) =>
             diagnostic.source
-              ? has(["ts", "deno-ts", "js", "glint"], diagnostic.source)
+              ? has(
+                  ["ts", "ts-plugin", "deno-ts", "js", "glint"],
+                  diagnostic.source
+                )
               : false
           )
           .forEach(async (diagnostic) => {
@@ -69,7 +72,7 @@ export function activate(context: ExtensionContext) {
             hasTsDiagnostic = true;
           });
 
-        uriStore[uri.path] = items;
+        uriStore[uri.fsPath] = items;
 
         if (hasTsDiagnostic) {
           const editor = window.visibleTextEditors.find(
