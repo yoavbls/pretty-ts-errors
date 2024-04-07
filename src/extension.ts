@@ -69,7 +69,7 @@ export function activate(context: ExtensionContext) {
             hasTsDiagnostic = true;
           });
 
-        uriStore[uri.path] = items;
+        uriStore[uri.fsPath] = items;
 
         if (hasTsDiagnostic) {
           const editor = window.visibleTextEditors.find(
