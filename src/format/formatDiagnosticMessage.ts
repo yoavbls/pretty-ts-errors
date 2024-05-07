@@ -23,7 +23,7 @@ export const formatDiagnosticMessage = (
     )
     // format missing props error
     .replaceAll(
-      /(is missing the following properties from type\s?)'(.*)': ((?:\w+, )*(?:(?!and)\w+)?)/g,
+      /(is missing the following properties from type\s?)'(.*)': ((?:#?\w+, )*(?:(?!and)\w+)?)/g,
       (_, pre, type, post) =>
         `${pre}${formatTypeBlock("", type, format)}: <ul>${post
           .split(", ")
