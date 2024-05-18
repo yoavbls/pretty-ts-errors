@@ -42,7 +42,7 @@ const variableNotUsedEror = d`
 const errorWithSimpleIndentations = d`
 Type '(newIds: number[]) => void' is not assignable to type '(selectedId: string[]) => void'.
   Types of parameters 'newIds' and 'selectedId' are incompatible.
-    Type 'string[]' is not assignable to type 'number[]'.      
+    Type 'string[]' is not assignable to type 'number[]'.
       Type 'string' is not assignable to type 'number'.
 `;
 
@@ -93,4 +93,9 @@ Property 'a' is missing in type '{ b: { name: string; icon: undefined; }; c: { n
 
 const errorWithStringChars = d`
 Type '"' 'Oh no"' is not assignable to type '"'  'Oh n\"o\"'   "'.
+`;
+
+const ts2322ErrorWithPrivateProperty = d`
+Type 'Ref<{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }>' is not assignable to type 'Ref<MpcdiConfiguration>'.
+  Type '{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }' is missing the following properties from type 'MpcdiConfiguration': ratio, #overlaps, download
 `;
