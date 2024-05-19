@@ -48,6 +48,9 @@
         "extensions": [
           ".type"
         ]
+      },
+      {
+        "id": "type-markdown-injection"
       }
     ],
     "grammars": [
@@ -55,6 +58,17 @@
         "language": "type",
         "scopeName": "source.type",
         "path": "./syntaxes/type.tmGrammar.json"
+      },
+      {
+          "language": "type-markdown-injection",
+          "scopeName": "markdown.type.codeblock",
+          "path": "./syntaxes/type-markdown-injection.tmGrammar.json",
+          "injectTo": [
+              "text.html.markdown"
+          ],
+          "embeddedLanguages": {
+              "meta.embedded.block.type": "type"
+          }
       }
     ]
   },

@@ -14,6 +14,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
   if (!symbol) {
     return diagnostic;
   }
+
   return {
     ...diagnostic,
     message: diagnostic.message.replaceAll(

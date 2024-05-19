@@ -4,6 +4,7 @@ import {
   MarkdownString,
   Range,
   window,
+  workspace,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formatDiagnostic } from "./format/formatDiagnostic";
@@ -12,6 +13,7 @@ import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
+import { PRETTY_TS_ERRORS_SCHEME, textDocumentContentProvider } from './provider/textDocumentProvider';
 
 const cache = new Map();
 
@@ -20,6 +22,10 @@ export function activate(context: ExtensionContext) {
   const converter = createConverter();
 
   registerSelectedTextHoverProvider(context);
+
+  context.subscriptions.push(
+    workspace.registerTextDocumentContentProvider(PRETTY_TS_ERRORS_SCHEME, textDocumentContentProvider),
+  );
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -49,7 +55,7 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+                formatDiagnostic(converter.asDiagnostic(diagnostic), uri, prettify)
               );
 
               markdownString.isTrusted = true;
