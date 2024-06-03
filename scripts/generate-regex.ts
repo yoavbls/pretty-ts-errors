@@ -88,5 +88,5 @@ const getMessageFromCode = (
     }
   }
 
-  console.log(regexes);
+  console.log(JSON.stringify(regexes, null, 2));
 })();
