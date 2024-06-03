@@ -3,7 +3,13 @@ import fetch from "node-fetch";
 
 type DiagnosticMessages = Record<`${string}_${number}`, string>;
 
-const templateToRegex = (template: string, names: string[]) => {
+const templateToRegexAndNamedTemplate = (
+  template: string,
+  names: string[],
+): {
+  regex: string;
+  template: string;
+} => {
   const escapedTemplate = template.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
   let maxIndex = 0;
   const regex = escapedTemplate.replace(/\\\{([0-9]+)\\\}/g, (_, index) => {
@@ -18,7 +24,12 @@ const templateToRegex = (template: string, names: string[]) => {
     );
   }
 
-  return new RegExp(regex);
+  const namedTemplate = template.replace(
+    /\{([0-9]+)\}/g,
+    (_, index) => `{${names[Number(index)]}}`,
+  );
+
+  return { regex, template: namedTemplate };
 };
 
 const getMessageFromCode = (
@@ -33,11 +44,48 @@ const getMessageFromCode = (
   throw new Error(`Could not find message for code ${code}`);
 };
 
+type Pattern = { lang: string; regex: string; template: string };
+
+const generatePatternsFromDiagnosticMessages = (
+  lang: string,
+  diagnosticMessages: DiagnosticMessages,
+): Record<string, Pattern> => {
+  const ret: Record<string, Pattern> = {};
+
+  const propertiesMissingWithoutTruncation = getMessageFromCode(
+    diagnosticMessages,
+    2739,
+  );
+  const propertiesMissingWithTruncation = getMessageFromCode(
+    diagnosticMessages,
+    2740,
+  );
+  ret.propertiesMissingWithoutTruncation = {
+    ...templateToRegexAndNamedTemplate(propertiesMissingWithoutTruncation, [
+      "actualType",
+      "expectedType",
+      "propertyProperties",
+    ]),
+    lang,
+  };
+  ret.propertiesMissingWithTruncation = {
+    ...templateToRegexAndNamedTemplate(propertiesMissingWithTruncation, [
+      "actualType",
+      "expectedType",
+      "propertyProperties",
+      "numTruncatedProperties",
+    ]),
+    lang,
+  };
+
+  return ret;
+};
+
 (async () => {
-  const regexes = {
+  const patterns = {
     propertiesMissingWithoutTruncation: [],
     propertiesMissingWithTruncation: [],
-  } as Record<string, RegExp[]>;
+  } as Record<string, Pattern[]>;
 
   // diagnosticMessages.json is not exported in typescript library, so we fetch it from the TypeScript repository
   const enDiagnosticMessages = (await fetch(
@@ -62,31 +110,46 @@ const getMessageFromCode = (
       const diagnosticMessages: DiagnosticMessages = await fs
         .readFile(diagnosticMessagesPath, "utf-8")
         .then((res) => JSON.parse(res));
-      const propertiesMissingWithoutTruncation = getMessageFromCode(
+
+      const generatedPatterns = generatePatternsFromDiagnosticMessages(
+        dir.name,
         diagnosticMessages,
-        2739,
       );
-      const propertiesMissingWithTruncation = getMessageFromCode(
-        diagnosticMessages,
-        2740,
-      );
-      regexes.propertiesMissingWithoutTruncation.push(
-        templateToRegex(propertiesMissingWithoutTruncation, [
-          "actualType",
-          "expectedType",
-          "propertyProperties",
-        ]),
-      );
-      regexes.propertiesMissingWithTruncation.push(
-        templateToRegex(propertiesMissingWithTruncation, [
-          "actualType",
-          "expectedType",
-          "propertyProperties",
-          "numTruncatedProperties",
-        ]),
-      );
+      for (const [key, pattern] of Object.entries(generatedPatterns)) {
+        patterns[key].push(pattern);
+      }
     }
   }
 
-  console.log(JSON.stringify(regexes, null, 2));
+  // Translate the English diagnostic messages to the format used for other languages, and generate the regexes
+  const enDiagnosticMessagesTranslated = {} as DiagnosticMessages;
+  const jaDiagnosticMessages: DiagnosticMessages = JSON.parse(
+    await fs.readFile(
+      "./node_modules/typescript/lib/ja/diagnosticMessages.generated.json",
+      "utf-8",
+    ),
+  );
+  for (const key of Object.keys(jaDiagnosticMessages)) {
+    const code = parseInt(key.match(/_(\d+)$/)?.[1]!);
+    const enMessage = Object.entries(enDiagnosticMessages).find(
+      ([, value]) => value.code === code,
+    )?.[0];
+    // The translation file has unused messages
+    if (!enMessage) {
+      continue;
+    }
+    enDiagnosticMessagesTranslated[key] = enMessage;
+  }
+  const generatedPatterns = generatePatternsFromDiagnosticMessages(
+    "en",
+    enDiagnosticMessagesTranslated,
+  );
+  for (const [key, pattern] of Object.entries(generatedPatterns)) {
+    patterns[key].unshift(pattern);
+  }
+
+  await fs.writeFile(
+    "./src/format/diagnosticPatterns.generated.json",
+    JSON.stringify(patterns, null, 2),
+  );
 })();

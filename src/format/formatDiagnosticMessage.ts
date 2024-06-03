@@ -1,5 +1,6 @@
 import { inlineCodeBlock, unStyledCodeBlock } from "../components";
 import { formatTypeBlock } from "./formatTypeBlock";
+import diagnosticPatterns from "./diagnosticPatterns.generated.json";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "typescript");
@@ -7,29 +8,106 @@ const formatTypeScriptBlock = (_: string, code: string) =>
 const formatSimpleTypeBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "type");
 
+type Pattern = { lang: string; regex: string; template: string };
+
+type PatternName = keyof typeof diagnosticPatterns;
+type Lang = (typeof diagnosticPatterns)[PatternName][number]["lang"];
+type Translation = Partial<Record<Lang, string>> & { fallback: string };
+
+const nMore: Translation = {
+  fallback: "+ {numTruncatedProperties} ...",
+  en: "and {numTruncatedProperties} more...",
+  ja: "その他 {numTruncatedProperties} 個...",
+};
+
+const getPattern = (name: PatternName, lang: Lang): Pattern => {
+  const pattern = diagnosticPatterns[name];
+  const matchedPattern = pattern.find((p) => p.lang === lang);
+  if (!matchedPattern) {
+    throw new Error(`Could not find pattern for ${name} in ${lang}`);
+  }
+  return matchedPattern;
+};
+
+const tryReplaceWithAllPatterns = (
+  message: string,
+  patterns: Pattern[],
+  replaceWith: (captures: Record<string, string>, lang: Lang) => string,
+) => {
+  for (const pattern of patterns) {
+    let isMatched = false;
+    const replaced = message.replace(
+      new RegExp(pattern.regex, "g"),
+      (_, ...captures) => {
+        const groups = captures.at(-1)!;
+        isMatched = true;
+        return replaceWith(groups, pattern.lang);
+      },
+    );
+    if (isMatched) {
+      return replaced;
+    }
+  }
+  return message;
+};
+
 export const formatDiagnosticMessage = (
   message: string,
-  format: (type: string) => string
-) =>
-  message
+  format: (type: string) => string,
+) => {
+  // format missing props error
+  const formattedTemp1 = tryReplaceWithAllPatterns(
+    message,
+    diagnosticPatterns.propertiesMissingWithoutTruncation,
+    ({ actualType, expectedType, propertyProperties }, lang) => {
+      const pattern = getPattern("propertiesMissingWithoutTruncation", lang);
+      return pattern.template
+        .replace("{actualType}", actualType)
+        .replace("{expectedType}", expectedType)
+        .replace(
+          "{propertyProperties}",
+          `<ul>${propertyProperties
+            .split(", ")
+            .filter(Boolean)
+            .map((prop: string) => `<li>${prop}</li>`)
+            .join("")}</ul>`,
+        );
+    },
+  );
+  const formattedTemp2 = tryReplaceWithAllPatterns(
+    formattedTemp1,
+    diagnosticPatterns.propertiesMissingWithTruncation,
+    (
+      { actualType, expectedType, propertyProperties, numTruncatedProperties },
+      lang,
+    ) => {
+      const pattern = getPattern("propertiesMissingWithoutTruncation", lang);
+      return pattern.template
+        .replace("{actualType}", actualType)
+        .replace("{expectedType}", expectedType)
+        .replace(
+          "{propertyProperties}",
+          `<ul>${[
+            ...propertyProperties.split(", ").filter(Boolean),
+            (nMore[lang] || nMore.fallback).replace(
+              "{numTruncatedProperties}",
+              numTruncatedProperties,
+            ),
+          ]
+            .map((prop: string) => `<li>${prop}</li>`)
+            .join("")}</ul>\n`,
+        );
+    },
+  );
+  const formattedTemp3 = formattedTemp2
     .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|\:|.|$)/g, (_, p1: string) =>
-      formatTypeBlock("", `"${p1}"`, format)
+      formatTypeBlock("", `"${p1}"`, format),
     )
     // format declare module snippet
     .replaceAll(
       /['“](declare module )['”](.*)['“];['”]/g,
       (_: string, p1: string, p2: string) =>
-        formatTypeScriptBlock(_, `${p1} "${p2}"`)
-    )
-    // format missing props error
-    .replaceAll(
-      /(is missing the following properties from type\s?)'(.*)': ((?:#?\w+, )*(?:(?!and)\w+)?)/g,
-      (_, pre, type, post) =>
-        `${pre}${formatTypeBlock("", type, format)}: <ul>${post
-          .split(", ")
-          .filter(Boolean)
-          .map((prop: string) => `<li>${prop}</li>`)
-          .join("")}</ul>`
+        formatTypeScriptBlock(_, `${p1} "${p2}"`),
     )
     // Format type pairs
     .replaceAll(
@@ -38,8 +116,8 @@ export const formatDiagnosticMessage = (
         `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock(
           "",
           p3,
-          format
-        )}`
+          format,
+        )}`,
     )
     // Format type annotation options
     .replaceAll(
@@ -48,54 +126,57 @@ export const formatDiagnosticMessage = (
         `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock(
           "",
           p3,
-          format
-        )}`
+          format,
+        )}`,
     )
     .replaceAll(
       /(Overload \d of \d), ['“](.*?)['”], /gi,
-      (_, p1: string, p2: string) => `${p1}${formatTypeBlock("", p2, format)}`
+      (_, p1: string, p2: string) => `${p1}${formatTypeBlock("", p2, format)}`,
     )
     // format simple strings
     .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
     // Replace module 'x' by module "x" for ts error #2307
     .replaceAll(
       /(module )'([^"]*?)'/gi,
-      (_, p1: string, p2: string) => `${p1}"${p2}"`
+      (_, p1: string, p2: string) => `${p1}"${p2}"`,
     )
     // Format string types
     .replaceAll(
       /(module|file|file name) "(.*?)"(?=[\s(.|,)])/gi,
-      (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, format)
+      (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, format),
     )
     // Format types
     .replaceAll(
       /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)]|$)/gi,
-      (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format)
+      (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format),
     )
     // Format reversed types
     .replaceAll(
       /(.*)['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
       (_: string, p1: string, p2: string, p3: string) =>
-        `${p1}${formatTypeBlock("", p2, format)} ${p3}`
+        `${p1}${formatTypeBlock("", p2, format)} ${p3}`,
     )
     // Format simple types that didn't captured before
     .replaceAll(
       /['“]((void|null|undefined|any|boolean|string|number|bigint|symbol)(\[\])?)['”]/g,
-      formatSimpleTypeBlock
+      formatSimpleTypeBlock,
     )
     // Format some typescript key words
     .replaceAll(
       /['“](import|export|require|in|continue|break|let|false|true|const|new|throw|await|for await|[0-9]+)( ?.*?)['”]/g,
       (_: string, p1: string, p2: string) =>
-        formatTypeScriptBlock(_, `${p1}${p2}`)
+        formatTypeScriptBlock(_, `${p1}${p2}`),
     )
     // Format return values
     .replaceAll(
       /(return|operator) ['“](.*?)['”]/gi,
-      (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
+      (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`,
     )
     // Format regular code blocks
     .replaceAll(
       /(?<!.*?")(?:^|\s)['“]((?:(?!:\s*}).)*?)['“](?!\s*:)(?!.*?")/g,
-      (_: string, p1: string) => ` ${unStyledCodeBlock(p1)} `
+      (_: string, p1: string) => ` ${unStyledCodeBlock(p1)} `,
     );
+
+  return formattedTemp3;
+};
