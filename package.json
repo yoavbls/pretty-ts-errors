@@ -68,7 +68,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts & tsc --noEmit",
     "test": "node ./out/test/runTest.js",
-    "generate-regex": "tsx scripts/generate-regex.ts"
+    "generate-pattern": "tsx scripts/generate-pattern.ts"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
