@@ -3,6 +3,24 @@ import fetch from "node-fetch";
 
 type DiagnosticMessages = Record<`${string}_${number}`, string>;
 
+const templateToRegex = (template: string, names: string[]) => {
+  const escapedTemplate = template.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+  let maxIndex = 0;
+  const regex = escapedTemplate.replace(/\\\{([0-9]+)\\\}/g, (_, index) => {
+    if (Number(index) > maxIndex) {
+      maxIndex = Number(index);
+    }
+    return `(?<${names[Number(index)]}>.*?)`;
+  });
+  if (maxIndex !== names.length - 1) {
+    throw new Error(
+      `Expected ${maxIndex + 1} named groups, got ${names.length}`,
+    );
+  }
+
+  return new RegExp(regex);
+};
+
 const getMessageFromCode = (
   diagnosticMessages: DiagnosticMessages,
   code: number,
@@ -16,36 +34,59 @@ const getMessageFromCode = (
 };
 
 (async () => {
+  const regexes = {
+    propertiesMissingWithoutTruncation: [],
+    propertiesMissingWithTruncation: [],
+  } as Record<string, RegExp[]>;
+
   // diagnosticMessages.json is not exported in typescript library, so we fetch it from the TypeScript repository
-  const enDiagnosticMessages: Record<
+  const enDiagnosticMessages = (await fetch(
+    "https://raw.githubusercontent.com/microsoft/TypeScript/ef514af2675389d38c793d6cc1945486c367e6fa/src/compiler/diagnosticMessages.json",
+  ).then((res) => res.json())) as Record<
     string,
     {
       category: "Error" | "Suggestion" | "Message" | "Warning";
       code: number;
     }
-  > = await fetch(
-    "https://raw.githubusercontent.com/microsoft/TypeScript/ef514af2675389d38c793d6cc1945486c367e6fa/src/compiler/diagnosticMessages.json",
-  ).then((res) => res.json());
+  >;
 
   const tsLibFiles = await fs.readdir("./node_modules/typescript/lib", {
     withFileTypes: true,
   });
-  for (const file of tsLibFiles) {
+  for (const dir of tsLibFiles) {
+    const diagnosticMessagesPath = `./node_modules/typescript/lib/${dir.name}/diagnosticMessages.generated.json`;
     if (
-      file.isDirectory() &&
-      (await fs
-        .stat(
-          `./node_modules/typescript/lib/${file.name}/diagnosticMessages.generated.json`,
-        )
-        .catch(() => false))
+      dir.isDirectory() &&
+      (await fs.stat(diagnosticMessagesPath).catch(() => false))
     ) {
       const diagnosticMessages: DiagnosticMessages = await fs
-        .readFile(
-          `./node_modules/typescript/lib/${file.name}/diagnosticMessages.generated.json`,
-          "utf-8",
-        )
+        .readFile(diagnosticMessagesPath, "utf-8")
         .then((res) => JSON.parse(res));
-      console.log(diagnosticMessages);
+      const propertiesMissingWithoutTruncation = getMessageFromCode(
+        diagnosticMessages,
+        2739,
+      );
+      const propertiesMissingWithTruncation = getMessageFromCode(
+        diagnosticMessages,
+        2740,
+      );
+      regexes.propertiesMissingWithoutTruncation.push(
+        templateToRegex(propertiesMissingWithoutTruncation, [
+          "actualType",
+          "expectedType",
+          "propertyProperties",
+        ]),
+      );
+      regexes.propertiesMissingWithTruncation.push(
+        templateToRegex(propertiesMissingWithTruncation, [
+          "actualType",
+          "expectedType",
+          "propertyProperties",
+          "numTruncatedProperties",
+        ]),
+      );
     }
   }
+
+  console.log(regexes);
 })();
