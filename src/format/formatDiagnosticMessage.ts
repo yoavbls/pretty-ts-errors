@@ -1,6 +1,7 @@
 import { inlineCodeBlock, unStyledCodeBlock } from "../components";
 import { formatTypeBlock } from "./formatTypeBlock";
 import diagnosticPatterns from "./diagnosticPatterns.generated.json";
+import { nMore, typeKeywords } from "./translations";
 
 const formatTypeScriptBlock = (_: string, code: string) =>
   inlineCodeBlock(code, "typescript");
@@ -12,13 +13,6 @@ type Pattern = { lang: string; regex: string; template: string };
 
 type PatternName = keyof typeof diagnosticPatterns;
 type Lang = (typeof diagnosticPatterns)[PatternName][number]["lang"];
-type Translation = Partial<Record<Lang, string>> & { fallback: string };
-
-const nMore: Translation = {
-  fallback: "+ {numTruncatedProperties} ...",
-  en: "and {numTruncatedProperties} more...",
-  ja: "その他 {numTruncatedProperties} 個...",
-};
 
 const createPatternWithQuotesAround = (pattern: string) => {
   const escapedPattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -181,7 +175,10 @@ export const formatDiagnosticMessage = (
       )
       // Format types
       .replaceAll(
-        /(type|type alias|interface|module|file|file name|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)]|$)/gi,
+        new RegExp(
+          `(${typeKeywords.join("|")}) ['“](.*?)['”](?=[\\s(.|,)]|$)`,
+          "gi",
+        ),
         (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format),
       )
       // Format reversed types
