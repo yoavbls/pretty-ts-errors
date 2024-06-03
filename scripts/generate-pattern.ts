@@ -12,12 +12,13 @@ const templateToRegexAndNamedTemplate = (
 } => {
   const escapedTemplate = template.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
   let maxIndex = 0;
-  const regex = escapedTemplate.replace(/\\\{([0-9]+)\\\}/g, (_, index) => {
-    if (Number(index) > maxIndex) {
-      maxIndex = Number(index);
-    }
-    return `(?<${names[Number(index)]}>.*?)`;
-  });
+  const regex =
+    escapedTemplate.replace(/\\\{([0-9]+)\\\}/g, (_, index) => {
+      if (Number(index) > maxIndex) {
+        maxIndex = Number(index);
+      }
+      return `(?<${names[Number(index)]}>.*?)`;
+    }) + "(?=$|</td>)";
   if (maxIndex !== names.length - 1) {
     throw new Error(
       `Expected ${maxIndex + 1} named groups, got ${names.length}`,
@@ -52,19 +53,24 @@ const generatePatternsFromDiagnosticMessages = (
 ): Record<string, Pattern> => {
   const ret: Record<string, Pattern> = {};
 
+  // Type '...' is missing from the following properties from type '...': foo, bar
   const propertiesMissingWithoutTruncation = getMessageFromCode(
     diagnosticMessages,
     2739,
   );
+  // Type '...' is missing from the following properties from type '...': foo, bar, and N more.
   const propertiesMissingWithTruncation = getMessageFromCode(
     diagnosticMessages,
     2740,
   );
+  // Overload N of M, '...', gave the following error.
+  const overloadError = getMessageFromCode(diagnosticMessages, 2772);
+
   ret.propertiesMissingWithoutTruncation = {
     ...templateToRegexAndNamedTemplate(propertiesMissingWithoutTruncation, [
       "actualType",
       "expectedType",
-      "propertyProperties",
+      "properties",
     ]),
     lang,
   };
@@ -72,8 +78,16 @@ const generatePatternsFromDiagnosticMessages = (
     ...templateToRegexAndNamedTemplate(propertiesMissingWithTruncation, [
       "actualType",
       "expectedType",
-      "propertyProperties",
+      "properties",
       "numTruncatedProperties",
+    ]),
+    lang,
+  };
+  ret.overloadError = {
+    ...templateToRegexAndNamedTemplate(overloadError, [
+      "overloadIndex",
+      "numOverloads",
+      "signature",
     ]),
     lang,
   };
@@ -85,6 +99,7 @@ const generatePatternsFromDiagnosticMessages = (
   const patterns = {
     propertiesMissingWithoutTruncation: [],
     propertiesMissingWithTruncation: [],
+    overloadError: [],
   } as Record<string, Pattern[]>;
 
   // diagnosticMessages.json is not exported in typescript library, so we fetch it from the TypeScript repository

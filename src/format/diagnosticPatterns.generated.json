@@ -1,145 +1,217 @@
 {
   "propertiesMissingWithoutTruncation": [
     {
-      "regex": "Type '(?<actualType>.*?)' is missing the following properties from type '(?<expectedType>.*?)': (?<propertyProperties>.*?)",
-      "template": "Type '{actualType}' is missing the following properties from type '{expectedType}': {propertyProperties}",
+      "regex": "Type '(?<actualType>.*?)' is missing the following properties from type '(?<expectedType>.*?)': (?<properties>.*?)(?=$|</td>)",
+      "template": "Type '{actualType}' is missing the following properties from type '{expectedType}': {properties}",
       "lang": "en"
     },
     {
-      "regex": "V typu (?<actualType>.*?) chybí následující vlastnosti z typu (?<expectedType>.*?): (?<propertyProperties>.*?)",
-      "template": "V typu {actualType} chybí následující vlastnosti z typu {expectedType}: {propertyProperties}",
+      "regex": "V typu (?<actualType>.*?) chybí následující vlastnosti z typu (?<expectedType>.*?): (?<properties>.*?)(?=$|</td>)",
+      "template": "V typu {actualType} chybí následující vlastnosti z typu {expectedType}: {properties}",
       "lang": "cs"
     },
     {
-      "regex": "Im Typ \"(?<actualType>.*?)\" fehlen die folgenden Eigenschaften von Typ \"(?<expectedType>.*?)\": \"(?<propertyProperties>.*?)\"\\.",
-      "template": "Im Typ \"{actualType}\" fehlen die folgenden Eigenschaften von Typ \"{expectedType}\": \"{propertyProperties}\".",
+      "regex": "Im Typ \"(?<actualType>.*?)\" fehlen die folgenden Eigenschaften von Typ \"(?<expectedType>.*?)\": \"(?<properties>.*?)\"\\.(?=$|</td>)",
+      "template": "Im Typ \"{actualType}\" fehlen die folgenden Eigenschaften von Typ \"{expectedType}\": \"{properties}\".",
       "lang": "de"
     },
     {
-      "regex": "Al tipo \"(?<actualType>.*?)\" le faltan las propiedades siguientes del tipo \"(?<expectedType>.*?)\": (?<propertyProperties>.*?)",
-      "template": "Al tipo \"{actualType}\" le faltan las propiedades siguientes del tipo \"{expectedType}\": {propertyProperties}",
+      "regex": "Al tipo \"(?<actualType>.*?)\" le faltan las propiedades siguientes del tipo \"(?<expectedType>.*?)\": (?<properties>.*?)(?=$|</td>)",
+      "template": "Al tipo \"{actualType}\" le faltan las propiedades siguientes del tipo \"{expectedType}\": {properties}",
       "lang": "es"
     },
     {
-      "regex": "Le type '(?<actualType>.*?)' n'a pas les propriétés suivantes du type '(?<expectedType>.*?)': (?<propertyProperties>.*?)",
-      "template": "Le type '{actualType}' n'a pas les propriétés suivantes du type '{expectedType}': {propertyProperties}",
+      "regex": "Le type '(?<actualType>.*?)' n'a pas les propriétés suivantes du type '(?<expectedType>.*?)': (?<properties>.*?)(?=$|</td>)",
+      "template": "Le type '{actualType}' n'a pas les propriétés suivantes du type '{expectedType}': {properties}",
       "lang": "fr"
     },
     {
-      "regex": "Nel tipo '(?<actualType>.*?)' mancano le proprietà seguenti del tipo '(?<expectedType>.*?)': (?<propertyProperties>.*?)",
-      "template": "Nel tipo '{actualType}' mancano le proprietà seguenti del tipo '{expectedType}': {propertyProperties}",
+      "regex": "Nel tipo '(?<actualType>.*?)' mancano le proprietà seguenti del tipo '(?<expectedType>.*?)': (?<properties>.*?)(?=$|</td>)",
+      "template": "Nel tipo '{actualType}' mancano le proprietà seguenti del tipo '{expectedType}': {properties}",
       "lang": "it"
     },
     {
-      "regex": "型 '(?<actualType>.*?)' には 型 '(?<expectedType>.*?)' からの次のプロパティがありません: (?<propertyProperties>.*?)",
-      "template": "型 '{actualType}' には 型 '{expectedType}' からの次のプロパティがありません: {propertyProperties}",
+      "regex": "型 '(?<actualType>.*?)' には 型 '(?<expectedType>.*?)' からの次のプロパティがありません: (?<properties>.*?)(?=$|</td>)",
+      "template": "型 '{actualType}' には 型 '{expectedType}' からの次のプロパティがありません: {properties}",
       "lang": "ja"
     },
     {
-      "regex": "'(?<actualType>.*?)' 형식에 '(?<expectedType>.*?)' 형식의 (?<propertyProperties>.*?) 속성이 없습니다\\.",
-      "template": "'{actualType}' 형식에 '{expectedType}' 형식의 {propertyProperties} 속성이 없습니다.",
+      "regex": "'(?<actualType>.*?)' 형식에 '(?<expectedType>.*?)' 형식의 (?<properties>.*?) 속성이 없습니다\\.(?=$|</td>)",
+      "template": "'{actualType}' 형식에 '{expectedType}' 형식의 {properties} 속성이 없습니다.",
       "lang": "ko"
     },
     {
-      "regex": "W typie „(?<actualType>.*?)” brakuje następujących właściwości z typu „(?<expectedType>.*?)”: (?<propertyProperties>.*?)",
-      "template": "W typie „{actualType}” brakuje następujących właściwości z typu „{expectedType}”: {propertyProperties}",
+      "regex": "W typie „(?<actualType>.*?)” brakuje następujących właściwości z typu „(?<expectedType>.*?)”: (?<properties>.*?)(?=$|</td>)",
+      "template": "W typie „{actualType}” brakuje następujących właściwości z typu „{expectedType}”: {properties}",
       "lang": "pl"
     },
     {
-      "regex": "O tipo '(?<actualType>.*?)' não tem as propriedades a seguir do tipo '(?<expectedType>.*?)': (?<propertyProperties>.*?)",
-      "template": "O tipo '{actualType}' não tem as propriedades a seguir do tipo '{expectedType}': {propertyProperties}",
+      "regex": "O tipo '(?<actualType>.*?)' não tem as propriedades a seguir do tipo '(?<expectedType>.*?)': (?<properties>.*?)(?=$|</td>)",
+      "template": "O tipo '{actualType}' não tem as propriedades a seguir do tipo '{expectedType}': {properties}",
       "lang": "pt-br"
     },
     {
-      "regex": "В типе \"(?<actualType>.*?)\" отсутствуют следующие свойства из типа \"(?<expectedType>.*?)\": (?<propertyProperties>.*?)",
-      "template": "В типе \"{actualType}\" отсутствуют следующие свойства из типа \"{expectedType}\": {propertyProperties}",
+      "regex": "В типе \"(?<actualType>.*?)\" отсутствуют следующие свойства из типа \"(?<expectedType>.*?)\": (?<properties>.*?)(?=$|</td>)",
+      "template": "В типе \"{actualType}\" отсутствуют следующие свойства из типа \"{expectedType}\": {properties}",
       "lang": "ru"
     },
     {
-      "regex": "'(?<actualType>.*?)' türünde, '(?<expectedType>.*?)' türündeki şu özellikler eksik: (?<propertyProperties>.*?)",
-      "template": "'{actualType}' türünde, '{expectedType}' türündeki şu özellikler eksik: {propertyProperties}",
+      "regex": "'(?<actualType>.*?)' türünde, '(?<expectedType>.*?)' türündeki şu özellikler eksik: (?<properties>.*?)(?=$|</td>)",
+      "template": "'{actualType}' türünde, '{expectedType}' türündeki şu özellikler eksik: {properties}",
       "lang": "tr"
     },
     {
-      "regex": "类型“(?<actualType>.*?)”缺少类型“(?<expectedType>.*?)”中的以下属性: (?<propertyProperties>.*?)",
-      "template": "类型“{actualType}”缺少类型“{expectedType}”中的以下属性: {propertyProperties}",
+      "regex": "类型“(?<actualType>.*?)”缺少类型“(?<expectedType>.*?)”中的以下属性: (?<properties>.*?)(?=$|</td>)",
+      "template": "类型“{actualType}”缺少类型“{expectedType}”中的以下属性: {properties}",
       "lang": "zh-cn"
     },
     {
-      "regex": "類型 '(?<actualType>.*?)' 在類型 '(?<expectedType>.*?)' 中缺少下列屬性: (?<propertyProperties>.*?)",
-      "template": "類型 '{actualType}' 在類型 '{expectedType}' 中缺少下列屬性: {propertyProperties}",
+      "regex": "類型 '(?<actualType>.*?)' 在類型 '(?<expectedType>.*?)' 中缺少下列屬性: (?<properties>.*?)(?=$|</td>)",
+      "template": "類型 '{actualType}' 在類型 '{expectedType}' 中缺少下列屬性: {properties}",
       "lang": "zh-tw"
     }
   ],
   "propertiesMissingWithTruncation": [
     {
-      "regex": "Type '(?<actualType>.*?)' is missing the following properties from type '(?<expectedType>.*?)': (?<propertyProperties>.*?), and (?<numTruncatedProperties>.*?) more\\.",
-      "template": "Type '{actualType}' is missing the following properties from type '{expectedType}': {propertyProperties}, and {numTruncatedProperties} more.",
+      "regex": "Type '(?<actualType>.*?)' is missing the following properties from type '(?<expectedType>.*?)': (?<properties>.*?), and (?<numTruncatedProperties>.*?) more\\.(?=$|</td>)",
+      "template": "Type '{actualType}' is missing the following properties from type '{expectedType}': {properties}, and {numTruncatedProperties} more.",
       "lang": "en"
     },
     {
-      "regex": "V typu (?<actualType>.*?) chybí následující vlastnosti z typu (?<expectedType>.*?): (?<propertyProperties>.*?) a ještě (?<numTruncatedProperties>.*?)",
-      "template": "V typu {actualType} chybí následující vlastnosti z typu {expectedType}: {propertyProperties} a ještě {numTruncatedProperties}",
+      "regex": "V typu (?<actualType>.*?) chybí následující vlastnosti z typu (?<expectedType>.*?): (?<properties>.*?) a ještě (?<numTruncatedProperties>.*?)(?=$|</td>)",
+      "template": "V typu {actualType} chybí následující vlastnosti z typu {expectedType}: {properties} a ještě {numTruncatedProperties}",
       "lang": "cs"
     },
     {
-      "regex": "Im Typ \"(?<actualType>.*?)\" fehlen die folgenden Eigenschaften von Typ \"(?<expectedType>.*?)\": \"(?<propertyProperties>.*?)\" und (?<numTruncatedProperties>.*?) weitere\\.",
-      "template": "Im Typ \"{actualType}\" fehlen die folgenden Eigenschaften von Typ \"{expectedType}\": \"{propertyProperties}\" und {numTruncatedProperties} weitere.",
+      "regex": "Im Typ \"(?<actualType>.*?)\" fehlen die folgenden Eigenschaften von Typ \"(?<expectedType>.*?)\": \"(?<properties>.*?)\" und (?<numTruncatedProperties>.*?) weitere\\.(?=$|</td>)",
+      "template": "Im Typ \"{actualType}\" fehlen die folgenden Eigenschaften von Typ \"{expectedType}\": \"{properties}\" und {numTruncatedProperties} weitere.",
       "lang": "de"
     },
     {
-      "regex": "Al tipo \"(?<actualType>.*?)\" le faltan las propiedades siguientes del tipo \"(?<expectedType>.*?)\": (?<propertyProperties>.*?) y (?<numTruncatedProperties>.*?) más\\.",
-      "template": "Al tipo \"{actualType}\" le faltan las propiedades siguientes del tipo \"{expectedType}\": {propertyProperties} y {numTruncatedProperties} más.",
+      "regex": "Al tipo \"(?<actualType>.*?)\" le faltan las propiedades siguientes del tipo \"(?<expectedType>.*?)\": (?<properties>.*?) y (?<numTruncatedProperties>.*?) más\\.(?=$|</td>)",
+      "template": "Al tipo \"{actualType}\" le faltan las propiedades siguientes del tipo \"{expectedType}\": {properties} y {numTruncatedProperties} más.",
       "lang": "es"
     },
     {
-      "regex": "Le type '(?<actualType>.*?)' n'a pas les propriétés suivantes du type '(?<expectedType>.*?)': (?<propertyProperties>.*?) et de (?<numTruncatedProperties>.*?) autres\\.",
-      "template": "Le type '{actualType}' n'a pas les propriétés suivantes du type '{expectedType}': {propertyProperties} et de {numTruncatedProperties} autres.",
+      "regex": "Le type '(?<actualType>.*?)' n'a pas les propriétés suivantes du type '(?<expectedType>.*?)': (?<properties>.*?) et de (?<numTruncatedProperties>.*?) autres\\.(?=$|</td>)",
+      "template": "Le type '{actualType}' n'a pas les propriétés suivantes du type '{expectedType}': {properties} et de {numTruncatedProperties} autres.",
       "lang": "fr"
     },
     {
-      "regex": "Nel tipo '(?<actualType>.*?)' mancano le proprietà seguenti del tipo '(?<expectedType>.*?)': (?<propertyProperties>.*?) e altre (?<numTruncatedProperties>.*?)\\.",
-      "template": "Nel tipo '{actualType}' mancano le proprietà seguenti del tipo '{expectedType}': {propertyProperties} e altre {numTruncatedProperties}.",
+      "regex": "Nel tipo '(?<actualType>.*?)' mancano le proprietà seguenti del tipo '(?<expectedType>.*?)': (?<properties>.*?) e altre (?<numTruncatedProperties>.*?)\\.(?=$|</td>)",
+      "template": "Nel tipo '{actualType}' mancano le proprietà seguenti del tipo '{expectedType}': {properties} e altre {numTruncatedProperties}.",
       "lang": "it"
     },
     {
-      "regex": "型 '(?<actualType>.*?)' には 型 '(?<expectedType>.*?)' からの次のプロパティがありません: (?<propertyProperties>.*?)、(?<numTruncatedProperties>.*?) など。",
-      "template": "型 '{actualType}' には 型 '{expectedType}' からの次のプロパティがありません: {propertyProperties}、{numTruncatedProperties} など。",
+      "regex": "型 '(?<actualType>.*?)' には 型 '(?<expectedType>.*?)' からの次のプロパティがありません: (?<properties>.*?)、(?<numTruncatedProperties>.*?) など。(?=$|</td>)",
+      "template": "型 '{actualType}' には 型 '{expectedType}' からの次のプロパティがありません: {properties}、{numTruncatedProperties} など。",
       "lang": "ja"
     },
     {
-      "regex": "'(?<actualType>.*?)' 형식에 '(?<expectedType>.*?)' 형식의 (?<propertyProperties>.*?) 외 (?<numTruncatedProperties>.*?)개 속성이 없습니다\\.",
-      "template": "'{actualType}' 형식에 '{expectedType}' 형식의 {propertyProperties} 외 {numTruncatedProperties}개 속성이 없습니다.",
+      "regex": "'(?<actualType>.*?)' 형식에 '(?<expectedType>.*?)' 형식의 (?<properties>.*?) 외 (?<numTruncatedProperties>.*?)개 속성이 없습니다\\.(?=$|</td>)",
+      "template": "'{actualType}' 형식에 '{expectedType}' 형식의 {properties} 외 {numTruncatedProperties}개 속성이 없습니다.",
       "lang": "ko"
     },
     {
-      "regex": "W typie „(?<actualType>.*?)” brakuje następujących właściwości z typu „(?<expectedType>.*?)”: (?<propertyProperties>.*?) i jeszcze (?<numTruncatedProperties>.*?)\\.",
-      "template": "W typie „{actualType}” brakuje następujących właściwości z typu „{expectedType}”: {propertyProperties} i jeszcze {numTruncatedProperties}.",
+      "regex": "W typie „(?<actualType>.*?)” brakuje następujących właściwości z typu „(?<expectedType>.*?)”: (?<properties>.*?) i jeszcze (?<numTruncatedProperties>.*?)\\.(?=$|</td>)",
+      "template": "W typie „{actualType}” brakuje następujących właściwości z typu „{expectedType}”: {properties} i jeszcze {numTruncatedProperties}.",
       "lang": "pl"
     },
     {
-      "regex": "O tipo '(?<actualType>.*?)' não tem as propriedades a seguir do tipo '(?<expectedType>.*?)': (?<propertyProperties>.*?) e mais (?<numTruncatedProperties>.*?)\\.",
-      "template": "O tipo '{actualType}' não tem as propriedades a seguir do tipo '{expectedType}': {propertyProperties} e mais {numTruncatedProperties}.",
+      "regex": "O tipo '(?<actualType>.*?)' não tem as propriedades a seguir do tipo '(?<expectedType>.*?)': (?<properties>.*?) e mais (?<numTruncatedProperties>.*?)\\.(?=$|</td>)",
+      "template": "O tipo '{actualType}' não tem as propriedades a seguir do tipo '{expectedType}': {properties} e mais {numTruncatedProperties}.",
       "lang": "pt-br"
     },
     {
-      "regex": "В типе \"(?<actualType>.*?)\" отсутствуют следующие свойства из типа \"(?<expectedType>.*?)\": (?<propertyProperties>.*?) и еще (?<numTruncatedProperties>.*?)\\.",
-      "template": "В типе \"{actualType}\" отсутствуют следующие свойства из типа \"{expectedType}\": {propertyProperties} и еще {numTruncatedProperties}.",
+      "regex": "В типе \"(?<actualType>.*?)\" отсутствуют следующие свойства из типа \"(?<expectedType>.*?)\": (?<properties>.*?) и еще (?<numTruncatedProperties>.*?)\\.(?=$|</td>)",
+      "template": "В типе \"{actualType}\" отсутствуют следующие свойства из типа \"{expectedType}\": {properties} и еще {numTruncatedProperties}.",
       "lang": "ru"
     },
     {
-      "regex": "'(?<actualType>.*?)' türünde, '(?<expectedType>.*?)' türündeki şu özellikler eksik: (?<propertyProperties>.*?) ve diğer (?<numTruncatedProperties>.*?) özellik\\.",
-      "template": "'{actualType}' türünde, '{expectedType}' türündeki şu özellikler eksik: {propertyProperties} ve diğer {numTruncatedProperties} özellik.",
+      "regex": "'(?<actualType>.*?)' türünde, '(?<expectedType>.*?)' türündeki şu özellikler eksik: (?<properties>.*?) ve diğer (?<numTruncatedProperties>.*?) özellik\\.(?=$|</td>)",
+      "template": "'{actualType}' türünde, '{expectedType}' türündeki şu özellikler eksik: {properties} ve diğer {numTruncatedProperties} özellik.",
       "lang": "tr"
     },
     {
-      "regex": "类型“(?<actualType>.*?)”缺少类型“(?<expectedType>.*?)”的以下属性: (?<propertyProperties>.*?) 及其他 (?<numTruncatedProperties>.*?) 项。",
-      "template": "类型“{actualType}”缺少类型“{expectedType}”的以下属性: {propertyProperties} 及其他 {numTruncatedProperties} 项。",
+      "regex": "类型“(?<actualType>.*?)”缺少类型“(?<expectedType>.*?)”的以下属性: (?<properties>.*?) 及其他 (?<numTruncatedProperties>.*?) 项。(?=$|</td>)",
+      "template": "类型“{actualType}”缺少类型“{expectedType}”的以下属性: {properties} 及其他 {numTruncatedProperties} 项。",
       "lang": "zh-cn"
     },
     {
-      "regex": "類型 '(?<actualType>.*?)' 在類型 '(?<expectedType>.*?)' 中缺少下列屬性: (?<propertyProperties>.*?)，以及另外 (?<numTruncatedProperties>.*?) 個。",
-      "template": "類型 '{actualType}' 在類型 '{expectedType}' 中缺少下列屬性: {propertyProperties}，以及另外 {numTruncatedProperties} 個。",
+      "regex": "類型 '(?<actualType>.*?)' 在類型 '(?<expectedType>.*?)' 中缺少下列屬性: (?<properties>.*?)，以及另外 (?<numTruncatedProperties>.*?) 個。(?=$|</td>)",
+      "template": "類型 '{actualType}' 在類型 '{expectedType}' 中缺少下列屬性: {properties}，以及另外 {numTruncatedProperties} 個。",
+      "lang": "zh-tw"
+    }
+  ],
+  "overloadError": [
+    {
+      "regex": "Overload (?<overloadIndex>.*?) of (?<numOverloads>.*?), '(?<signature>.*?)', gave the following error\\.(?=$|</td>)",
+      "template": "Overload {overloadIndex} of {numOverloads}, '{signature}', gave the following error.",
+      "lang": "en"
+    },
+    {
+      "regex": "Přetížení (?<overloadIndex>.*?) z (?<numOverloads>.*?), (?<signature>.*?), vrátilo následující chybu\\.(?=$|</td>)",
+      "template": "Přetížení {overloadIndex} z {numOverloads}, {signature}, vrátilo následující chybu.",
+      "lang": "cs"
+    },
+    {
+      "regex": "Die Überladung (?<overloadIndex>.*?) von (?<numOverloads>.*?) \\((?<signature>.*?)\\) hat den folgenden Fehler verursacht\\.(?=$|</td>)",
+      "template": "Die Überladung {overloadIndex} von {numOverloads} ({signature}) hat den folgenden Fehler verursacht.",
+      "lang": "de"
+    },
+    {
+      "regex": "La sobrecarga (?<overloadIndex>.*?) de (?<numOverloads>.*?), \"(?<signature>.*?)\", dio el error siguiente\\.(?=$|</td>)",
+      "template": "La sobrecarga {overloadIndex} de {numOverloads}, \"{signature}\", dio el error siguiente.",
+      "lang": "es"
+    },
+    {
+      "regex": "La surcharge (?<overloadIndex>.*?) sur (?<numOverloads>.*?), '(?<signature>.*?)', a généré l'erreur suivante\\.(?=$|</td>)",
+      "template": "La surcharge {overloadIndex} sur {numOverloads}, '{signature}', a généré l'erreur suivante.",
+      "lang": "fr"
+    },
+    {
+      "regex": "L'overload (?<overloadIndex>.*?) di (?<numOverloads>.*?),'(?<signature>.*?)', ha restituito l'errore seguente\\.(?=$|</td>)",
+      "template": "L'overload {overloadIndex} di {numOverloads},'{signature}', ha restituito l'errore seguente.",
+      "lang": "it"
+    },
+    {
+      "regex": "(?<numOverloads>.*?) 中 (?<overloadIndex>.*?) のオーバーロード, '(?<signature>.*?)' により、次のエラーが発生しました。(?=$|</td>)",
+      "template": "{numOverloads} 中 {overloadIndex} のオーバーロード, '{signature}' により、次のエラーが発生しました。",
+      "lang": "ja"
+    },
+    {
+      "regex": "오버로드 (?<overloadIndex>.*?)\\/(?<numOverloads>.*?)\\('(?<signature>.*?)'\\)에서 다음 오류가 발생했습니다\\.(?=$|</td>)",
+      "template": "오버로드 {overloadIndex}/{numOverloads}('{signature}')에서 다음 오류가 발생했습니다.",
+      "lang": "ko"
+    },
+    {
+      "regex": "Przeciążenie (?<overloadIndex>.*?) z (?<numOverloads>.*?), „(?<signature>.*?)”, zwróciło następujący błąd\\.(?=$|</td>)",
+      "template": "Przeciążenie {overloadIndex} z {numOverloads}, „{signature}”, zwróciło następujący błąd.",
+      "lang": "pl"
+    },
+    {
+      "regex": "A sobrecarga (?<overloadIndex>.*?) de (?<numOverloads>.*?), '(?<signature>.*?)', gerou o seguinte erro\\.(?=$|</td>)",
+      "template": "A sobrecarga {overloadIndex} de {numOverloads}, '{signature}', gerou o seguinte erro.",
+      "lang": "pt-br"
+    },
+    {
+      "regex": "Перегрузка (?<overloadIndex>.*?) из (?<numOverloads>.*?), \"(?<signature>.*?)\", возвратила следующую ошибку\\.(?=$|</td>)",
+      "template": "Перегрузка {overloadIndex} из {numOverloads}, \"{signature}\", возвратила следующую ошибку.",
+      "lang": "ru"
+    },
+    {
+      "regex": "(?<overloadIndex>.*?)\\/(?<numOverloads>.*?) aşırı yükleme '(?<signature>.*?)' imzası, aşağıdaki hatayı verdi\\.(?=$|</td>)",
+      "template": "{overloadIndex}/{numOverloads} aşırı yükleme '{signature}' imzası, aşağıdaki hatayı verdi.",
+      "lang": "tr"
+    },
+    {
+      "regex": "第 (?<overloadIndex>.*?) 个重载\\(共 (?<numOverloads>.*?) 个\\)，“(?<signature>.*?)”，出现以下错误。(?=$|</td>)",
+      "template": "第 {overloadIndex} 个重载(共 {numOverloads} 个)，“{signature}”，出现以下错误。",
+      "lang": "zh-cn"
+    },
+    {
+      "regex": "多載 (?<overloadIndex>.*?) \\(共 (?<numOverloads>.*?)\\)，'(?<signature>.*?)'，發生下列錯誤。(?=$|</td>)",
+      "template": "多載 {overloadIndex} (共 {numOverloads})，'{signature}'，發生下列錯誤。",
       "lang": "zh-tw"
     }
   ]
