@@ -31,8 +31,8 @@ export const has = (
  * inverted as { [value]: key }
  */
 export const invert = <
-  TKey extends string | number | symbol,
-  TValue extends string | number | symbol
+  TKey extends PropertyKey,
+  TValue extends PropertyKey
 >(
   obj: Record<TKey, TValue>
 ): Record<TValue, TKey> => {
