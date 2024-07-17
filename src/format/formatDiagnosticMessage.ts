@@ -12,7 +12,7 @@ export const formatDiagnosticMessage = (
   format: (type: string) => string
 ) =>
   message
-    .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|\:|.|$)/g, (_, p1: string) =>
+    .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g, (_, p1: string) =>
       formatTypeBlock("", `"${p1}"`, format)
     )
     // format declare module snippet
@@ -33,7 +33,7 @@ export const formatDiagnosticMessage = (
     )
     // Format type pairs
     .replaceAll(
-      /(types) ['“](.*?)['”] and ['“](.*?)['”][\.]?/gi,
+      /(types) ['“](.*?)['”] and ['“](.*?)['”][.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
         `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock(
           "",
@@ -43,7 +43,7 @@ export const formatDiagnosticMessage = (
     )
     // Format type annotation options
     .replaceAll(
-      /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][\.]?/gi,
+      /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
       (_: string, p1: string, p2: string, p3: string) =>
         `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock(
           "",
@@ -64,7 +64,7 @@ export const formatDiagnosticMessage = (
     )
     // Format string types
     .replaceAll(
-      /(module|file|file name) "(.*?)"(?=[\s(.|,)])/gi,
+      /(module|file|file name|imported via) ['"“](.*?)['"“](?=[\s(.|,]|$)/gi,
       (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, format)
     )
     // Format types
