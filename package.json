@@ -15,7 +15,7 @@
   },
   "engines": {
     "vscode": "^1.77.0",
-    "node": "20.x"
+    "node": "18.18.x"
   },
   "categories": [
     "Programming Languages",
@@ -82,7 +82,7 @@
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.23.0",
     "eslint": "^9.7.0",
-    "glob": "^11.0.0",
+    "glob": "^8.1.0",
     "mocha": "^10.6.0",
     "path-browserify": "^1.0.1",
     "typescript": "^5.5.3",
