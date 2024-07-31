@@ -132,7 +132,7 @@ export const formatDiagnosticMessage = (
 
   return (
     formattedTemp3
-      .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|\:|.|$)/g, (_, p1: string) =>
+      .replaceAll(/(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g, (_, p1: string) =>
         formatTypeBlock("", `"${p1}"`, format),
       )
       // format declare module snippet
@@ -143,7 +143,7 @@ export const formatDiagnosticMessage = (
       )
       // Format type pairs
       .replaceAll(
-        /(types) ['“](.*?)['”] and ['“](.*?)['”][\.]?/gi,
+        /(types) ['“](.*?)['”] and ['“](.*?)['”][.]?/gi,
         (_: string, p1: string, p2: string, p3: string) =>
           `${formatTypeBlock(p1, p2, format)} and ${formatTypeBlock(
             "",
@@ -153,13 +153,18 @@ export const formatDiagnosticMessage = (
       )
       // Format type annotation options
       .replaceAll(
-        /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][\.]?/gi,
+        /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
         (_: string, p1: string, p2: string, p3: string) =>
           `${formatTypeBlock(p1, p2, format)} or ${formatTypeBlock(
             "",
             p3,
             format,
           )}`,
+      )
+      .replaceAll(
+        /(Overload \d of \d), ['“](.*?)['”], /gi,
+        (_, p1: string, p2: string) =>
+          `${p1}${formatTypeBlock("", p2, format)}`,
       )
       // format simple strings
       .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
@@ -170,15 +175,12 @@ export const formatDiagnosticMessage = (
       )
       // Format string types
       .replaceAll(
-        /(module|file|file name) "(.*?)"(?=[\s(.|,)])/gi,
+        /(module|file|file name|imported via) ['"“](.*?)['"“](?=[\s(.|,]|$)/gi,
         (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, format),
       )
       // Format types
       .replaceAll(
-        new RegExp(
-          `(${typeKeywords.join("|")}) ['“](.*?)['”](?=[\\s(.|,)]|$)`,
-          "gi",
-        ),
+        /(type|type alias|interface|module|file|file name|class|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)]|$)/gi,
         (_, p1: string, p2: string) => formatTypeBlock(p1, p2, format),
       )
       // Format reversed types
@@ -205,7 +207,7 @@ export const formatDiagnosticMessage = (
       )
       // Format regular code blocks
       .replaceAll(
-        /(?<!.*?")(?:^|\s)['“]((?:(?!:\s*}).)*?)['“](?!\s*:)(?!.*?")/g,
+        /(?<!\w)'((?:(?!["]).)*?)'(?!\w)/g,
         (_: string, p1: string) => ` ${unStyledCodeBlock(p1)} `,
       )
   );

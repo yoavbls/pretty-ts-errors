@@ -3,7 +3,7 @@
   "displayName": "Pretty TypeScript Errors",
   "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
     "url": "https://github.com/sponsors/yoavbls"
   },
   "engines": {
-    "vscode": "^1.77.0"
+    "vscode": "^1.77.0",
+    "node": "18.18.x"
   },
   "categories": [
     "Programming Languages",
@@ -71,30 +72,32 @@
     "generate-pattern": "tsx scripts/generate-pattern.ts"
   },
   "devDependencies": {
+    "@eslint/js": "^9.7.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/glob": "^8.1.0",
     "@types/lz-string": "^1.5.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^20",
     "@types/prettier": "^2.7.3",
     "@types/vscode": "^1.70.0",
-    "@typescript-eslint/eslint-plugin": "^6.2.0",
-    "@typescript-eslint/parser": "^6.2.0",
-    "@vscode/test-electron": "^2.3.9",
-    "esbuild": "^0.18.17",
-    "eslint": "^8.46.0",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.23.0",
+    "eslint": "^9.7.0",
     "glob": "^8.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^10.6.0",
     "node-fetch": "^3.3.2",
     "path-browserify": "^1.0.1",
     "tsx": "^4.11.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.0-alpha.44"
   },
   "dependencies": {
     "lz-string": "^1.5.0",
     "prettier": "^2.8.8",
     "ts-dedent": "^2.2.0",
-    "vscode-languageclient": "^8.1.0",
-    "vscode-languageserver-types": "^3.17.3",
-    "vscode-uri": "^3.0.7"
+    "typedash": "^3.2.5",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver-types": "^3.17.5",
+    "vscode-uri": "^3.0.8"
   }
 }

@@ -1,4 +1,4 @@
-import { has, invert, keys, values } from "../utils";
+import { has, invert, objectKeys } from "../utils";
 
 const parentheses = {
   "(": ")",
@@ -6,11 +6,11 @@ const parentheses = {
   "[": "]",
 } as const;
 
-const openParentheses = keys(parentheses);
-const closeParentheses = values(parentheses);
+const openParentheses = objectKeys(parentheses);
+const closeParentheses = Object.values(parentheses);
 
 export function addMissingParentheses(type: string): string {
-  let openStack: (typeof openParentheses)[number][] = [];
+  const openStack: (typeof openParentheses)[number][] = [];
   let missingClosingChars = "";
 
   for (const char of type) {

@@ -99,3 +99,11 @@ const ts2322ErrorWithPrivateProperty = d`
 Type 'Ref<{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }>' is not assignable to type 'Ref<MpcdiConfiguration>'.
   Type '{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }' is missing the following properties from type 'MpcdiConfiguration': ratio, #overlaps, download
 `;
+
+const ts4113Error = d`
+This member cannot have an 'override' modifier because it is not declared in the base class 'A<T["nested"]>'.
+`;
+
+const ts4117Error = d`
+This member cannot have an 'override' modifier because it is not declared in the base class 'A<T["nested"]>'. Did you mean 'testA'?
+`;
