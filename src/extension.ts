@@ -43,20 +43,23 @@ export function activate(context: ExtensionContext) {
               : false
           )
           .forEach(async (diagnostic) => {
-            // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-            // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-            let formattedMessage = cache.get(diagnostic.message);
+            // Use the original, non-localized message for caching and formatting
+            const originalMessage = diagnostic.source === 'ts' && diagnostic.code ? `TS${diagnostic.code}: ${diagnostic.message}` : diagnostic.message;
+            let formattedMessage = cache.get(originalMessage);
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+                formatDiagnostic(converter.asDiagnostic({
+                  ...diagnostic,
+                  message: originalMessage
+                }), prettify)
               );
 
               markdownString.isTrusted = true;
               markdownString.supportHtml = true;
 
               formattedMessage = markdownString;
-              cache.set(diagnostic.message, formattedMessage);
+              cache.set(originalMessage, formattedMessage);
 
               if (cache.size > 100) {
                 const firstCacheKey = cache.keys().next().value;
