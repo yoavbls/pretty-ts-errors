@@ -68,7 +68,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts & tsc --noEmit",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "generate-pattern": "tsx scripts/generate-pattern.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
@@ -84,7 +85,9 @@
     "eslint": "^9.15.0",
     "glob": "^8.1.0",
     "mocha": "^10.6.0",
+    "node-fetch": "^3.3.2",
     "path-browserify": "^1.0.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.15.0"
   },
