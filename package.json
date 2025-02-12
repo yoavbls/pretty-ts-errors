@@ -80,7 +80,7 @@
     "@types/prettier": "^2.7.3",
     "@types/vscode": "^1.70.0",
     "@vscode/test-electron": "^2.4.1",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "eslint": "^9.15.0",
     "glob": "^8.1.0",
     "mocha": "^10.6.0",
