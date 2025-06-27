@@ -21,7 +21,17 @@ export const textDocumentContentProvider: TextDocumentContentProvider = {
         if (!item) {
             return `no diagnostic found for ${fsPath} with range ${JSON.stringify(range)}`;
         }
-        return item.contents.map((content) => content.value).join('\n');
+        const content = item.contents.map(
+            (content) => content.value
+                            .replaceAll("```type\n", '```typescript\n'))
+                            .join('\n');
+        /*
+            Explanation
+            At this point the user has seen the tooltip and needs to see the markdown preview
+            The preview needed ```type to be formatted correctly to the user but this is no longer needed.
+            The markdown preview needs ```typescript to be formatted correctly.
+        */
+        return content;
     },
 };
 
