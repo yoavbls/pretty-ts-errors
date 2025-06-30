@@ -48,9 +48,6 @@
         "extensions": [
           ".type"
         ]
-      },
-      {
-        "id": "type-markdown-injection"
       }
     ],
     "grammars": [
