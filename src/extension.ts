@@ -14,6 +14,7 @@ import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverP
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
 import { PRETTY_TS_ERRORS_SCHEME, textDocumentContentProvider } from './provider/textDocumentProvider';
+import './extension.css'
 
 const cache = new Map();
 
