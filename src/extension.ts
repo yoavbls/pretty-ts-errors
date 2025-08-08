@@ -13,20 +13,33 @@ import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { has } from "./utils";
-import { PRETTY_TS_ERRORS_SCHEME, textDocumentContentProvider } from './provider/textDocumentProvider';
-import './extension.css'
+import {
+  PRETTY_TS_ERRORS_SCHEME,
+  textDocumentContentProvider,
+} from "./provider/textDocumentProvider";
+import { MarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
+import "./extension.css";
 
 const cache = new Map();
 
 export function activate(context: ExtensionContext) {
+  console.log("Pretty TS Errors extension activating...");
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
 
   registerSelectedTextHoverProvider(context);
 
   context.subscriptions.push(
-    workspace.registerTextDocumentContentProvider(PRETTY_TS_ERRORS_SCHEME, textDocumentContentProvider),
+    workspace.registerTextDocumentContentProvider(
+      PRETTY_TS_ERRORS_SCHEME,
+      textDocumentContentProvider
+    )
   );
+
+  // Register the markdown webview provider
+  console.log("Registering markdown webview provider...");
+  context.subscriptions.push(MarkdownWebviewProvider.register(context));
+  console.log("Markdown webview provider registered successfully!");
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -56,7 +69,11 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic), uri, prettify)
+                formatDiagnostic(
+                  converter.asDiagnostic(diagnostic),
+                  uri,
+                  prettify
+                )
               );
 
               markdownString.isTrusted = true;

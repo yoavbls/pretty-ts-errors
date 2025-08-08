@@ -1,3 +1,15 @@
 span.hljs-title.class_ {
-    color: #4ec9b0
+    color: #4ec9b0;
+    vertical-align: top;
+}
+
+pre {
+    display: inline-block;
+    padding: 0 !important;
+    margin: 0 !important;
+    vertical-align: top;
+}
+
+span {
+    display: inline-block;
 }

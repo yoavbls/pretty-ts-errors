@@ -57,6 +57,13 @@
         "path": "./syntaxes/type.tmGrammar.json"
       }
     ],
+    "commands": [
+      {
+        "command": "prettyTsErrors.openMarkdownPreview",
+        "title": "Open Markdown Preview with Custom Types",
+        "category": "Pretty TS Errors"
+      }
+    ],
     "markdown.previewStyles": [
       "./dist/extension.css"
     ]
