@@ -37,7 +37,8 @@
     "onLanguage:vue",
     "onLanguage:mdx",
     "onLanguage:glimmer-js",
-    "onLanguage:glimmer-ts"
+    "onLanguage:glimmer-ts",
+    "onCommand:prettyTsErrors.openMarkdownPreview"
   ],
   "main": "./dist/extension.js",
   "browser": "./dist/extension.js",
@@ -82,6 +83,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@shikijs/types": "^3.9.2",
     "@types/eslint__js": "^8.42.3",
     "@types/glob": "^8.1.0",
     "@types/lz-string": "^1.5.0",
@@ -99,8 +101,10 @@
     "typescript-eslint": "^8.15.0"
   },
   "dependencies": {
+    "jsonc-parser": "^3.3.1",
     "lz-string": "^1.5.0",
     "prettier": "^2.8.8",
+    "shiki": "^3.9.2",
     "ts-dedent": "^2.2.0",
     "typedash": "^3.2.5",
     "vscode-languageclient": "^9.0.1",

@@ -1,10 +1,18 @@
 import * as vscode from "vscode";
 import { createHighlighter, Highlighter } from "shiki";
+import type {
+  LanguageRegistration,
+  RawGrammar,
+  ThemeRegistration,
+  ThemeRegistrationRaw,
+} from "@shikijs/types";
+import { parse } from "jsonc-parser";
 import * as path from "path";
 
 export class MarkdownWebviewProvider {
   private static readonly viewType = "prettyTsErrors.markdownPreview";
   private highlighter: Highlighter | null = null;
+  private shikiThemeName: string | null = null;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -26,22 +34,82 @@ export class MarkdownWebviewProvider {
     return disposable;
   }
 
+  private async loadActiveVscodeTheme(): Promise<
+    ThemeRegistration | ThemeRegistrationRaw | null
+  > {
+    try {
+      const label = vscode.workspace
+        .getConfiguration("workbench")
+        .get<string>("colorTheme");
+      console.log("label", label);
+      if (!label) {
+        return null;
+      }
+
+      interface VSCodeThemeContribution {
+        id?: string;
+        label?: string;
+        path: string;
+      }
+
+      for (const ext of vscode.extensions.all) {
+        const contrib = (ext.packageJSON?.contributes?.themes ??
+          []) as VSCodeThemeContribution[];
+        const match = contrib.find((t) => t.id === label || t.label === label);
+        if (!match) {
+          continue;
+        }
+
+        const themeUri = vscode.Uri.joinPath(ext.extensionUri, match.path);
+        const raw = await vscode.workspace.fs.readFile(themeUri);
+        console.log({ raw });
+        console.log({ parse });
+        const json = parse(new TextDecoder("utf-8").decode(raw));
+        console.log("json", json);
+        return json as ThemeRegistrationRaw;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
   private async initializeHighlighter() {
     if (this.highlighter) {
       return;
     }
 
     try {
-      this.highlighter = await createHighlighter({
-        themes: ["dark-plus", "light-plus"],
-        langs: ["typescript", "javascript"],
-      });
+      const [typeGrammar, userTheme] = await Promise.all([
+        this.loadTypeGrammar(),
+        this.loadActiveVscodeTheme(),
+      ]);
+
+      const themes: (string | ThemeRegistration | ThemeRegistrationRaw)[] =
+        userTheme ? [userTheme] : ["dark-plus", "light-plus"];
+      this.shikiThemeName = userTheme?.name ?? null;
+
+      console.log({ typeGrammar, userTheme, themes });
+
+      const langs: (string | LanguageRegistration)[] = [
+        "typescript",
+        "javascript",
+      ];
+      if (typeGrammar) {
+        const customLang: LanguageRegistration = {
+          ...(typeGrammar as RawGrammar),
+          // Allow using "type" as a language id when calling codeToHtml
+          aliases: ["type"],
+        } as LanguageRegistration;
+        langs.push(customLang);
+      }
+
+      this.highlighter = await createHighlighter({ themes, langs });
 
       console.log(
         "Highlighter initialized with languages:",
         this.highlighter.getLoadedLanguages()
       );
-
     } catch (error) {
       console.error("Failed to initialize highlighter:", error);
       // Fallback to basic highlighter
@@ -49,6 +117,21 @@ export class MarkdownWebviewProvider {
         themes: ["dark-plus", "light-plus"],
         langs: ["typescript", "javascript"],
       });
+    }
+  }
+
+  private async loadTypeGrammar(): Promise<RawGrammar | null> {
+    try {
+      const uri = vscode.Uri.joinPath(
+        this.context.extensionUri,
+        "syntaxes",
+        "type.tmGrammar.json"
+      );
+      const raw = await vscode.workspace.fs.readFile(uri);
+      const json = JSON.parse(new TextDecoder("utf-8").decode(raw));
+      return json as RawGrammar;
+    } catch {
+      return null;
     }
   }
 
@@ -97,14 +180,42 @@ export class MarkdownWebviewProvider {
     }
 
     const content = markdownContent || this.getDefaultMarkdown();
-    const htmlContent = await this.renderMarkdown(content);
+    // const htmlContent = await this.renderMarkdown(content);
 
-    // Get actual theme colors from VS Code
     const currentTheme = vscode.window.activeColorTheme;
     const isDark = currentTheme.kind === vscode.ColorThemeKind.Dark;
+    const realThemeName = await this.loadActiveVscodeTheme();
+
+    const themeName =
+      this.shikiThemeName ?? (isDark ? "dark-plus" : "light-plus");
+    const useLang = this.highlighter?.getLoadedLanguages().includes("type")
+      ? "type"
+      : "typescript";
+
+    let htmlContent = this.highlighter?.codeToHtml(
+      `string | "hello" | 3 | number | Partial<User> | Array<Status> | typeof JSON.parse`,
+      {
+        lang: useLang,
+        theme: themeName,
+      }
+    );
+
+    if (htmlContent) {
+      htmlContent =
+        htmlContent +
+        this.highlighter?.codeToHtml(
+          `string | "hello" | 3 | number | Partial<User> | Array<Status> | typeof JSON.parse`,
+          {
+            lang: "typescript",
+            theme: themeName,
+          }
+        );
+    }
+
+    // Get actual theme colors from VS Code
 
     // Try to extract Monaco token styles from VS Code
-    let monacoTokenStyles = '';
+    let monacoTokenStyles = "";
     try {
       // Get the webview HTML that VS Code uses
       const activeEditor = vscode.window.activeTextEditor;
@@ -124,7 +235,11 @@ export class MarkdownWebviewProvider {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pretty TS Errors - Markdown Preview</title>
-    ${monacoTokenStyles ? `<style type="text/css" media="screen" class="vscode-tokens-styles">${monacoTokenStyles}</style>` : ''}
+    ${
+      monacoTokenStyles
+        ? `<style type="text/css" media="screen" class="vscode-tokens-styles">${monacoTokenStyles}</style>`
+        : ""
+    }
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -224,13 +339,11 @@ export class MarkdownWebviewProvider {
       let highlightedCode: string;
 
       try {
-        // For now, treat 'type' language as TypeScript
-        const highlightLang =
-          language === "type"
-            ? "typescript" // Use TypeScript for 'type' language
-            : this.highlighter!.getLoadedLanguages().includes(language)
-            ? language
-            : "typescript";
+        const highlightLang = this.highlighter!.getLoadedLanguages().includes(
+          language
+        )
+          ? language
+          : "typescript";
 
         console.log(
           `Highlighting with language: ${highlightLang} (requested: ${language})`
@@ -245,19 +358,21 @@ export class MarkdownWebviewProvider {
               pre(node) {
                 // Only remove background-color from pre tag, keep other styles
                 if (node.properties.style) {
-                  node.properties.style = (node.properties.style as string)
-                    .replace(/background-color:[^;]+;?/g, '');
+                  node.properties.style = (
+                    node.properties.style as string
+                  ).replace(/background-color:[^;]+;?/g, "");
                 }
               },
               code(node) {
                 // Only remove background-color from code tag
                 if (node.properties.style) {
-                  node.properties.style = (node.properties.style as string)
-                    .replace(/background-color:[^;]+;?/g, '');
+                  node.properties.style = (
+                    node.properties.style as string
+                  ).replace(/background-color:[^;]+;?/g, "");
                 }
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
 
         console.log("Raw Shiki output:", highlightedCode.substring(0, 400));
@@ -319,6 +434,10 @@ type UserWithStatus = User & {
 string | "hello" | 3 | number | Partial<User> | Array<Status>
 \`\`\`
 
+\`\`\`typescript
+string | "hello" | 3 | number | Partial<User> | Array<Status>
+\`\`\`
+
 
 ## Comparison with regular TypeScript:
 
@@ -338,7 +457,7 @@ Your custom \`type\` grammar is now working in this preview!`;
     // For now, we'll use a hardcoded version of common Monaco styles
     // In a real implementation, you could try to extract this from VS Code's DOM
     // but that's complex from an extension context
-    
+
     // Using the styles you provided as a starting point
     return `
 .mtk1 { color: #cccccc; }
