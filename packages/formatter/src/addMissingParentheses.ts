@@ -17,10 +17,8 @@ export function addMissingParentheses(type: string): string {
     if (has(openParentheses, char)) {
       openStack.push(char);
     } else if (has(closeParentheses, char)) {
-      if (
-        openStack.length === 0 ||
-        parentheses[openStack[openStack.length - 1]] !== char
-      ) {
+      const lastOpen = openStack[openStack.length - 1];
+      if (lastOpen === undefined || parentheses[lastOpen] !== char) {
         // Add the correct opening character before the current closing character
         openStack.push(invert(parentheses)[char]);
       } else {

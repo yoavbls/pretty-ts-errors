@@ -1,27 +1,18 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ES2021",
-    "lib": ["ES2021", "ES2021.String"],
-    "sourceMap": true,
-
-    "baseUrl": ".",
-    "paths": {
-      "@pretty-ts-errors/utils": ["../utils/src"],
-      "@pretty-ts-errors/utils/*": ["../utils/src/*"],
-      "@pretty-ts-errors/formatter": ["../formatter/src"],
-      "@pretty-ts-errors/formatter/*": ["../formatter/src/*"],
-      "@pretty-ts-errors/vscode-formatter": ["../vscode-formatter/src"],
-      "@pretty-ts-errors/vscode-formatter/*": ["../vscode-formatter/src/*"]
-    },
+    "target": "ES2022",
+    "rootDir": "src",
+    "outDir": "out",
     "checkJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
     "moduleResolution": "node",
-    "strict": true /* enable all strict type-checking options */,
-    /* Additional Checks */
-    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */
+    "composite": true
   },
+  "references": [
+    { "path": "../utils" },
+    { "path": "../formatter" },
+    { "path": "../vscode-formatter" }
+  ],
   "include": ["src/**/*.ts"]
 }

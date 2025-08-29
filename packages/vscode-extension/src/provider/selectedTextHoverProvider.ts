@@ -30,31 +30,30 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
         provideHover(document, position) {
           const editor = window.activeTextEditor;
           const range = document.getWordRangeAtPosition(position);
-          const message = document.getText(editor!.selection);
+          const message = editor ? document.getText(editor.selection) : "";
 
-          const contents =
-            range && message
-              ? [
-                  new MarkdownString(
-                    debugHoverHeader +
-                      formatDiagnostic(
-                        converter.asDiagnostic({
-                          message,
-                          range,
-                          severity: 0,
-                          source: "ts",
-                          code: 1337,
-                        })
-                      )
-                  ),
-                ]
-              : [];
+          if (!range || !message) {
+            return null;
+          }
 
-          contents[0].isTrusted = true;
-          contents[0].supportHtml = true;
+          const markdown = new MarkdownString(
+            debugHoverHeader +
+              formatDiagnostic(
+                converter.asDiagnostic({
+                  message,
+                  range,
+                  severity: 0,
+                  source: "ts",
+                  code: 1337,
+                })
+              )
+          );
+
+          markdown.isTrusted = true;
+          markdown.supportHtml = true;
 
           return {
-            contents,
+            contents: [markdown],
           };
         },
       }

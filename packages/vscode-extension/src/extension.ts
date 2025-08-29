@@ -1,5 +1,5 @@
 import { has } from "@pretty-ts-errors/utils";
-import { formatDiagnostic, prettify } from "@pretty-ts-errors/vscode-formatter";
+import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -48,7 +48,7 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
+                formatDiagnostic(converter.asDiagnostic(diagnostic))
               );
 
               markdownString.isTrusted = true;

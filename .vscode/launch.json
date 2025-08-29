@@ -9,21 +9,26 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-extension"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode-extension/dist/**/*.js",
+        "${workspaceFolder}/packages/vscode-extension/out/**/*.js"
+      ],
+      "preLaunchTask": "watch - packages/vscode-extension"
     },
     {
       "name": "Extension Tests",
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-extension",
+        "--extensionTestsPath=${workspaceFolder}/packages/vscode-extension/out/test/suite/index"
       ],
       "outFiles": [
-        "${workspaceFolder}/out/**/*.js",
-        "${workspaceFolder}/dist/**/*.js"
+        "${workspaceFolder}/packages/vscode-extension/out/**/*.js",
+        "${workspaceFolder}/packages/vscode-extension/dist/**/*.js"
       ],
       "preLaunchTask": "tasks: watch-tests"
     }

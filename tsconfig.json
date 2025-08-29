@@ -1,29 +1,4 @@
 {
-  "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "target": "ESNext",
-    "lib": ["ES2021", "ES2021.String"],
-    "sourceMap": true,
-    "rootDir": ".",
-    "checkJs": true,
-    "strict": true /* enable all strict type-checking options */,
-    "skipLibCheck": true,
-    /* Additional Checks */
-    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@pretty-ts-errors/utils": ["packages/utils/src"],
-      "@pretty-ts-errors/utils/*": ["packages/utils/src/*"],
-      "@pretty-ts-errors/formatter": ["packages/formatter/src"],
-      "@pretty-ts-errors/formatter/*": ["packages/formatter/src/*"],
-      "@pretty-ts-errors/vscode-formatter": ["packages/vscode-formatter/src"],
-      "@pretty-ts-errors/vscode-formatter/*": [
-        "packages/vscode-formatter/src/*"
-      ]
-    }
-  },
-  "include": ["packages/*/src", "packages/*/tests"]
+  "extends": "./tsconfig.base.json",
+  "files": []
 }

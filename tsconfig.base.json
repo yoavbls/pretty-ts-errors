@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2022", "ES2021.String"],
+    "baseUrl": ".",
+    "paths": {
+      "@pretty-ts-errors/utils": ["packages/utils/src"],
+      "@pretty-ts-errors/utils/*": ["packages/utils/src/*"],
+      "@pretty-ts-errors/formatter": ["packages/formatter/src"],
+      "@pretty-ts-errors/formatter/*": ["packages/formatter/src/*"],
+      "@pretty-ts-errors/vscode-formatter": ["packages/vscode-formatter/src"],
+      "@pretty-ts-errors/vscode-formatter/*": [
+        "packages/vscode-formatter/src/*"
+      ]
+    },
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useDefineForClassFields": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "sourceMap": true
+  }
+}
+

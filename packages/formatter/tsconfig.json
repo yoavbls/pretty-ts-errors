@@ -1,13 +1,13 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@pretty-ts-errors/utils": ["../utils/src"],
-      "@pretty-ts-errors/utils/*": ["../utils/src/*"]
-    }
+    "rootDir": "src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
   },
+  "references": [{ "path": "../utils" }],
   "include": ["src/**/*"]
 }

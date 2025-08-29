@@ -39,7 +39,7 @@ export const formatDiagnosticMessage = (
       )
       // Format type pairs
       .replaceAll(
-        /(types) '(.*?)' and '(.*?)'[\.]?/gi,
+        /(types) '(.*?)' and '(.*?)'[.]?/gi,
         (_: string, p1: string, p2: string, p3: string) =>
           `${formatTypeBlock(p1, p2, codeBlock)} and ${formatTypeBlock(
             "",
@@ -49,7 +49,7 @@ export const formatDiagnosticMessage = (
       )
       // Format type annotation options
       .replaceAll(
-        /type annotation must be '(.*?)' or '(.*?)'[\.]?/gi,
+        /type annotation must be '(.*?)' or '(.*?)'[.]?/gi,
         (_: string, p1: string, p2: string, p3: string) =>
           `${formatTypeBlock(p1, p2, codeBlock)} or ${formatTypeBlock(
             "",

@@ -2,7 +2,7 @@ import { HoverProvider } from "vscode";
 import { uriStore } from "./uriStore";
 
 export const hoverProvider: HoverProvider = {
-  provideHover(document, position) {
+  provideHover(document, position, _token) {
     const itemsInUriStore = uriStore[document.uri.fsPath];
 
     if (!itemsInUriStore) {
@@ -13,8 +13,16 @@ export const hoverProvider: HoverProvider = {
       item.range.contains(position)
     );
 
+    if (itemInRange.length === 0) {
+      return null;
+    }
+
+    const first = itemInRange[0];
+    if (!first) {
+      return null;
+    }
     return {
-      range: itemInRange?.[0]?.range,
+      range: first.range,
       contents: itemInRange.flatMap((item) => item.contents),
     };
   },

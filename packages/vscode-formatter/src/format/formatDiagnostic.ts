@@ -6,10 +6,7 @@ import { d } from "../deps";
 import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
 
-export function formatDiagnostic(
-  diagnostic: Diagnostic,
-  format?: (type: string) => string
-) {
+export function formatDiagnostic(diagnostic: Diagnostic) {
   const newDiagnostic = embedSymbolLinks(diagnostic);
 
   return d/*html*/ `

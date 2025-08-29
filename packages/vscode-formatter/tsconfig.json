@@ -1,18 +1,13 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
-    "rootDir": "../..",
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@pretty-ts-errors/formatter": ["../formatter/src"],
-      "@pretty-ts-errors/formatter/*": ["../formatter/src/*"],
-      "@pretty-ts-errors/utils": ["../utils/src"],
-      "@pretty-ts-errors/utils/*": ["../utils/src/*"]
-    }
+    "rootDir": "src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
   },
+  "references": [{ "path": "../utils" }, { "path": "../formatter" }],
   "include": ["src/**/*"]
 }

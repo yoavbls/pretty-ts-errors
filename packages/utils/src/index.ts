@@ -10,17 +10,19 @@ export function objectKeys<T extends Record<string, unknown>>(
 
 export function invert<T extends Record<string, string>>(
   obj: T
-): {
+): Partial<{
   [K in T[keyof T]]: { [P in keyof T]: K extends T[P] ? P : never }[keyof T];
-} {
+}> {
   const result: Partial<{
     [K in T[keyof T]]: { [P in keyof T]: K extends T[P] ? P : never }[keyof T];
   }> = {};
   for (const key in obj) {
     const value = obj[key];
-    (result as any)[value] = key;
+    if (value !== undefined) {
+      result[value] = key;
+    }
   }
-  return result as any;
+  return result;
 }
 
 /**
