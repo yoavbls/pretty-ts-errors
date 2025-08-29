@@ -2,8 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "out",
-    "rootDir": "src"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@pretty-ts-errors/utils": ["../utils/src"],
+      "@pretty-ts-errors/utils/*": ["../utils/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }

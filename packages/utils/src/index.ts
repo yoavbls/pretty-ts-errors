@@ -1,12 +1,33 @@
-export { dedent as d } from "ts-dedent";
+// We re-export modules to be able to replace/change them easily across all the usages
+export { compressToEncodedURIComponent } from "lz-string";
+import dedent from "ts-dedent";
 
-/** Similar to `Object.keys` but with stricter types */
-export const keys = <const T extends {}>(object: T): Array<keyof T> =>
-  <Array<keyof T>>Object.keys(object);
+export function objectKeys<T extends Record<string, unknown>>(
+  obj: T
+): (keyof T & string)[] {
+  return Object.keys(obj) as (keyof T & string)[];
+}
 
-/** Similar to `Object.values` but with stricter types */
-export const values = <const T extends {}>(object: T): Array<T[keyof T]> =>
-  <Array<T[keyof T]>>Object.values(object);
+export function invert<T extends Record<string, string>>(
+  obj: T
+): {
+  [K in T[keyof T]]: { [P in keyof T]: K extends T[P] ? P : never }[keyof T];
+} {
+  const result: Partial<{
+    [K in T[keyof T]]: { [P in keyof T]: K extends T[P] ? P : never }[keyof T];
+  }> = {};
+  for (const key in obj) {
+    const value = obj[key];
+    (result as any)[value] = key;
+  }
+  return result as any;
+}
+
+/**
+ * d stands for dedent.
+ * it allow us to indent html in template literals without affecting the output
+ */
+export const d = dedent;
 
 /**
  * Check if an array contains a string.
@@ -16,24 +37,3 @@ export const has = (
   array: unknown[],
   item: string
 ): item is Extract<(typeof array)[number], string> => array.includes(item);
-
-/**
- * Copied from radash library
- * Returns an object with { [keys]: value }
- * inverted as { [value]: key }
- */
-export const invert = <
-  TKey extends string | number | symbol,
-  TValue extends string | number | symbol
->(
-  obj: Record<TKey, TValue>
-): Record<TValue, TKey> => {
-  if (!obj) {
-    return {} as Record<TValue, TKey>;
-  }
-  const keys = Object.keys(obj) as TKey[];
-  return keys.reduce((acc, key) => {
-    acc[obj[key]] = key;
-    return acc;
-  }, {} as Record<TValue, TKey>);
-};

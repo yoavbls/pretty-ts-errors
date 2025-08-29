@@ -5,4 +5,5 @@ node_modules
 *.vsix
 .turbo
 .vercel
+.idea
 **/.DS_Store

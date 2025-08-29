@@ -2,8 +2,17 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "out",
-    "rootDir": "src"
+    "outDir": "dist",
+    "rootDir": "../..",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@pretty-ts-errors/formatter": ["../formatter/src"],
+      "@pretty-ts-errors/formatter/*": ["../formatter/src/*"],
+      "@pretty-ts-errors/utils": ["../utils/src"],
+      "@pretty-ts-errors/utils/*": ["../utils/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }

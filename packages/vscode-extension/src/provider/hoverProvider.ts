@@ -3,7 +3,7 @@ import { uriStore } from "./uriStore";
 
 export const hoverProvider: HoverProvider = {
   provideHover(document, position) {
-    const itemsInUriStore = uriStore[document.uri.path];
+    const itemsInUriStore = uriStore[document.uri.fsPath];
 
     if (!itemsInUriStore) {
       return null;

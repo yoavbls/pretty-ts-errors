@@ -9,7 +9,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
   }
   const ref = diagnostic.relatedInformation[0];
   const symbol = ref?.message.match(/(?<symbol>'.*?') is declared here./)
-    ?.groups?.symbol!;
+    ?.groups?.symbol;
 
   if (!symbol) {
     return diagnostic;
@@ -18,7 +18,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
     ...diagnostic,
     message: diagnostic.message.replaceAll(
       symbol,
-      `${symbol} <a href="${URI.parse(ref.location.uri).path}#${
+      `${symbol} <a href="${URI.parse(ref.location.uri).fsPath}#${
         ref.location.range.start.line + 1
       },${
         ref.location.range.start.character + 1

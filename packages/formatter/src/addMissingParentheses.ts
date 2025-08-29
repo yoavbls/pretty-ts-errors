@@ -1,4 +1,4 @@
-import { has, invert, keys, values } from "@pretty-ts-errors/utils";
+import { has, invert, objectKeys } from "@pretty-ts-errors/utils";
 
 const parentheses = {
   "(": ")",
@@ -6,12 +6,12 @@ const parentheses = {
   "[": "]",
 } as const;
 
-const openParentheses = keys(parentheses);
-const closeParentheses = values(parentheses);
+const openParentheses = objectKeys(parentheses);
+const closeParentheses = Object.values(parentheses);
 
 export function addMissingParentheses(type: string): string {
-  let openStack: (typeof openParentheses)[number][] = [];
-  let missingClosingChars = "";
+  const openStack: (typeof openParentheses)[number][] = [];
+  const missingClosingChars: string[] = [];
 
   for (const char of type) {
     if (has(openParentheses, char)) {
@@ -33,22 +33,27 @@ export function addMissingParentheses(type: string): string {
   while (openStack.length > 0) {
     const openChar = openStack.pop()!;
     const closingChar = parentheses[openChar];
-    missingClosingChars += closingChar;
+    missingClosingChars.push(closingChar);
   }
 
   let validType = type;
 
   // Close the last string if it's not closed
-  if ((validType.match(/\"/g) ?? []).length % 2 === 1) {
-    validType = validType + '..."';
-  }
-  if ((validType.match(/\'/g) ?? []).length % 2 === 1) {
-    validType = validType + "...'";
+  const quoteMatches = validType.match(/['"]/g);
+  if (quoteMatches) {
+    const lastQuote = quoteMatches[quoteMatches.length - 1];
+    if (quoteMatches.length % 2 === 1) {
+      validType += `...${lastQuote}`;
+    }
   }
 
-  validType = (validType + missingClosingChars).replace(
+  if (validType.endsWith(":")) {
+    validType += "...";
+  }
+
+  validType = (validType + "\n..." + missingClosingChars.join("")).replace(
     // Change (param: ...) to (param) => __RETURN_TYPE__ if needed
-    /(\([a-zA-Z0-9]*\:.*\))/,
+    /(\([a-zA-Z0-9]*:.*\))/,
     (p1) => `${p1} => ...`
   );
 

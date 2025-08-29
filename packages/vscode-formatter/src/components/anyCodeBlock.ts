@@ -1,5 +1,5 @@
 import { inlineCodeBlock, multiLineCodeBlock } from "./codeBlock";
-import { unstyledCodeBlock } from "./unstyledCodeBlock";
+import { unstyledCodeBlock } from "./plainCodeBlock";
 
 export const anyCodeBlock = (
   code: string,

@@ -1,5 +1,5 @@
 import { format } from "prettier";
-import { CodeBlock } from ".";
+import type { CodeBlock } from "./index";
 import { addMissingParentheses } from "./addMissingParentheses";
 
 export function formatTypeBlock(

@@ -10,10 +10,9 @@
 
 <b>Make TypeScript errors prettier and human-readable in VSCode.</b>
 
-[![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;![visitor badge](https://visitor-badge.glitch.me/badge?page_id=pretty-ts-errors)
 [![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
-
-<a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43"><img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/vote.png" width="490px" /></a>
+[![Visual Studio Code](https://img.shields.io/badge/--007ACC?logo=visual%20studio%20code&logoColor=ffffff)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;[![Visual Studio Code](https://img.shields.io/visual-studio-marketplace/i/yoavbls.pretty-ts-errors)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+<a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43#user-content-jetbrains-support"><img src="https://cdn.icon-icons.com/icons2/2530/PNG/512/jetbrains_webstorm_button_icon_151873.png" height="20" alt="Webstorm logo"></a>
 
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
 This extension will help you understand what's going on. For example, in this relatively simple error:
@@ -25,6 +24,12 @@ This extension will help you understand what's going on. For example, in this re
 <a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
  <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-video.png" alt="Watch theo's video" width="600" />
 </a>
+
+and others from:
+[Web Dev Simplified](https://www.youtube.com/watch?v=ccg-erZYO4k&list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c7OR&index=1),
+[Josh tried coding](https://www.youtube.com/watch?v=_9y29Cyo9uU&list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c7OR&index=3),
+[trash dev](https://www.youtube.com/watch?v=WJeD3DKlWT4&list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c7OR&index=4&t=208),
+and [more](https://www.youtube.com/playlist?list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c7OR)
 
 ## Features
 
@@ -39,6 +44,7 @@ This extension will help you understand what's going on. For example, in this re
 - JSDoc type errors (in `.js` and `.jsx` files)
 - React, Solid and Qwik errors (in `.tsx` and `.mdx` files)
 - Astro, Svelte and Vue files when TypeScript is enabled (in `.astro`, `.svelte` and `.vue` files)
+- Ember and Glimmer TypeScript errors and template issues reported by Glint (in `.hbs`, `.gjs`, and `.gts` files)
 
 ## Installation
 
@@ -47,6 +53,10 @@ code --install-extension yoavbls.pretty-ts-errors
 ```
 
 Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+
+#### How to hide the original errors and make the types copyable
+
+Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, this hack is required because of VSCode limitations.
 
 ## Why isn't it trivial
 
@@ -58,25 +68,30 @@ Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https:
 
 ## Hype section
 
-<a href="https://twitter.com/t3dotgg/status/1647759462709747713">
-  <picture>    
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
-  </picture>
-</a>
-<a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
+<a href="https://www.youtube.com/live/Zze1y2iZ3bQ?si=Yj1Qw2S8FbGbTA5c&t=11589">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+    <img width="400" src="https://github.com/yoavbls/pretty-ts-errors/blob/assets/assets/mentions/js-nation.png?raw=true" alt="Winning the Productivity Booster category at JSNation 2023">
   </picture>
 </a>
 <a href="https://twitter.com/tannerlinsley/status/1647982562026090496">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-light-mode-only">
      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-dark-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/tanner-dark.png#gh-dark-mode-only" alt="Tanner's tweet">
+  </picture>
+</a>
+<a href="https://twitter.com/t3dotgg/status/1647759462709747713">
+  <picture>    
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/theo-dark.png#gh-dark-mode-only" alt="Theo's tweet">
+  </picture>
+</a>
+<a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/assets/assets/mentions/johnson-dark.png#gh-dark-mode-only" alt="Johnson's tweet">
   </picture>
 </a>
 

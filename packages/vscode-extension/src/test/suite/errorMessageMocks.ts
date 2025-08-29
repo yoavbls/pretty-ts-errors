@@ -35,11 +35,75 @@ const errorWithTruncatedType2 = d`
 Type '{ '!top': string[]; 'xsl:declaration': { attrs: { 'default-collation': null; 'exclude-result-prefixes': null; 'extension-element-prefixes': null; 'use-when': null; 'xpath-default-namespace': null; }; }; 'xsl:instruction': { ...; }; ... 49 more ...; 'xsl:literal-result-element': {}; }' is missing the following properties from type 'GraphQLSchema': description, extensions, astNode, extensionASTNodes, and 21 more.
 `;
 
+const variableNotUsedEror = d`
+'a' is declared but its value is never read.
+`;
+
 const errorWithSimpleIndentations = d`
 Type '(newIds: number[]) => void' is not assignable to type '(selectedId: string[]) => void'.
   Types of parameters 'newIds' and 'selectedId' are incompatible.
-    Type 'string[]' is not assignable to type 'number[]'.      
+    Type 'string[]' is not assignable to type 'number[]'.
       Type 'string' is not assignable to type 'number'.
 `;
 
-("Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.");
+const errorWithComma = d`
+Argument of type '{ filters: Filters; } & T' is not assignable to parameter of type 'T & F'.
+  Type '{ filters: Filters; } & T' is not assignable to type 'F'.
+    '{ filters: Filters; } & T' is assignable to the constraint of type 'F', but 'F' could be instantiated with a different subtype of constraint '{ filters: Filters; }'.
+`;
+
+const missingPropertyError =
+  "\
+Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.\
+";
+
+const missingReactPropsError = d`
+Type '{ style: { backgroundColor: string; }; }' is not assignable to type 'DropDownPickerProps<Object>'.
+  Type '{ style: { backgroundColor: string; }; }' is not assignable to type 'DropDownPickerMultipleProps<Object> & DropDownPickerBaseProps<Object›'.
+    Type '{ style: { backgroundColor: string; }; }' is missing the following properties from type 'DropDownPickerMultipleProps<Object>': multiple, setValue, value
+`;
+
+const leftSideAritmeticError = d`
+The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+`;
+
+const theosError = d`
+Exported variable 'uploadRouter' has or is using name 'Uploader' from external module "/Users/theo/Code/Work/filething/packages/uploadthing/dist/types-dbaf1b46" but cannot be named.
+`;
+
+const ts1378Error = d`
+Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', or 'nodenext', and the 'target' option is set to 'es2017' or higher.
+`;
+
+const ts2304Error = d`
+Cannot find name 'varname'.
+`;
+
+const ts2305Error = d`
+Module '"@pretty-ts-errors/formatter"' has no exported member 'values'.
+`;
+
+const ts2307Error = d`
+Cannot find module 'events' or its corresponding type declarations.
+`;
+
+const ts1360Error = d`
+Property 'a' is missing in type '{ b: { name: string; icon: undefined; }; c: { name: string; icon: undefined; }; d: { name: string; icon: undefined; }; e: { name: string; icon: undefined; }; f: { ...; }; g: { ...; }; h:...' but required in type '{a: {name: string; icon: undefined}}'.
+`;
+
+const errorWithStringChars = d`
+Type '"' 'Oh no"' is not assignable to type '"'  'Oh n\"o\"'   "'.
+`;
+
+const ts2322ErrorWithPrivateProperty = d`
+Type 'Ref<{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }>' is not assignable to type 'Ref<MpcdiConfiguration>'.
+  Type '{ name: string; readonly type: "json"; mm: <T extends Convertible = Convertible>(px: T) => T; px: <T extends Convertible = Convertible>(mm: T) => T; ... 18 more ...; toJson: () => string; }' is missing the following properties from type 'MpcdiConfiguration': ratio, #overlaps, download
+`;
+
+const ts4113Error = d`
+This member cannot have an 'override' modifier because it is not declared in the base class 'A<T["nested"]>'.
+`;
+
+const ts4117Error = d`
+This member cannot have an 'override' modifier because it is not declared in the base class 'A<T["nested"]>'. Did you mean 'testA'?
+`;

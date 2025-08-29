@@ -1,9 +1,13 @@
 import { d } from "@pretty-ts-errors/utils";
 import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
-import { ExtensionContext, MarkdownString, languages, window } from "vscode";
+import {
+  ExtensionContext,
+  ExtensionMode,
+  MarkdownString,
+  languages,
+  window,
+} from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-
-const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
 
 /**
  * Register an hover provider in debug only.
@@ -12,7 +16,7 @@ const isDebugMode = () => process.env.VSCODE_DEBUG_MODE === "true";
 export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   const converter = createConverter();
 
-  if (!isDebugMode()) {
+  if (context.extensionMode !== ExtensionMode.Development) {
     return;
   }
 
