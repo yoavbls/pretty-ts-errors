@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+  "build": "turbo run build",
+  "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
@@ -29,6 +29,7 @@
   "name": "pretty-ts-errors-mono",
   "packageManager": "npm@10.0.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ]
 }

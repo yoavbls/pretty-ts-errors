@@ -8,6 +8,5 @@
     "declaration": true,
     "declarationMap": true
   },
-  "references": [{ "path": "../utils" }],
   "include": ["src/**/*"]
 }

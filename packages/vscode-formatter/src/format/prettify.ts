@@ -1,5 +1,5 @@
 import parserTypescript from "prettier/parser-typescript";
-import { format } from "prettier/standalone";
+import { format } from "prettier";
 
 export function prettify(text: string) {
   return format(text, {

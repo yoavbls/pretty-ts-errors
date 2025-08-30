@@ -13,14 +13,20 @@ async function main() {
     },
     bundle: true,
     outdir: "./dist",
-    external: ["vscode"],
+    external: [
+      "vscode",
+      // Avoid bundling Prettier to keep Node runtime behavior and smaller bundle
+      "prettier",
+      "prettier/parser-typescript",
+    ],
     format: "cjs",
-    inject: ["./scripts/process-shim.js"],
+  platform: "node",
+  // Use the real Node.js globals provided by the VS Code extension host
     tsconfig: "./tsconfig.json",
     define: production ? { "process.env.NODE_ENV": '"production"' } : undefined,
     minify: production,
     sourcemap: !production,
-    plugins: [nodeDepsPlugin, esbuildProblemMatcherPlugin],
+  plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
   });
   if (watch) {
     await ctx.watch();
@@ -54,15 +60,34 @@ const esbuildProblemMatcherPlugin = {
 /**
  * @type {import('esbuild').Plugin}
  */
-const nodeDepsPlugin = {
-  name: "node-deps",
+// Node core modules are available in the VS Code extension host.
+
+/**
+ * Resolve internal workspace packages to their source files so we bundle them in watch/debug.
+ * This makes changes in packages/* reflected immediately without separate watchers.
+ * @type {import('esbuild').Plugin}
+ */
+const workspacePackagesPlugin = {
+  name: "workspace-packages",
   setup(build) {
-    build.onResolve({ filter: /^path$/ }, (args) => {
-      const path = require.resolve("../node_modules/path-browserify", {
-        paths: [__dirname],
-      });
-      return { path };
-    });
+    const path = require("node:path");
+  const pkgRoot = path.resolve(__dirname, "../../../packages");
+    /** @type {Record<string, string>} */
+    const alias = {
+      "@pretty-ts-errors/utils": path.join(pkgRoot, "utils/src/index.ts"),
+      "@pretty-ts-errors/formatter": path.join(pkgRoot, "formatter/src/index.ts"),
+      "@pretty-ts-errors/vscode-formatter": path.join(
+        pkgRoot,
+        "vscode-formatter/src/index.ts"
+      ),
+    };
+    build.onResolve(
+      { filter: /^@pretty-ts-errors\/(utils|formatter|vscode-formatter)$/ },
+      (args) => {
+        const target = alias[args.path];
+        return target ? { path: target } : undefined;
+      }
+    );
   },
 };
 

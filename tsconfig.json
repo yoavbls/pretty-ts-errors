@@ -1,4 +1,11 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.base.json",
-  "files": []
+  "files": [],
+  "references": [
+    { "path": "packages/utils" },
+    { "path": "packages/formatter" },
+    { "path": "packages/vscode-formatter" },
+    { "path": "apps/vscode-extension" }
+  ]
 }
