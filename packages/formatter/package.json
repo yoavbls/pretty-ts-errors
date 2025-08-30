@@ -12,6 +12,8 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "lint": "tsc -p . --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "publish": "npm run build && npm publish --access public"
   },
   "repository": {
@@ -31,7 +33,8 @@
   "dependencies": {},
   "devDependencies": {
     "@types/prettier": "^2.7.2",
-    "tsup": "^6.7.0"
+    "tsup": "^6.7.0",
+    "vitest": "^2.1.3"
   },
   "peerDependencies": {
     "prettier": "^2.8.7"
