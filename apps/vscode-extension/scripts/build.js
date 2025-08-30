@@ -20,13 +20,13 @@ async function main() {
       "prettier/parser-typescript",
     ],
     format: "cjs",
-  platform: "node",
-  // Use the real Node.js globals provided by the VS Code extension host
+    platform: "node",
+    // Use the real Node.js globals provided by the VS Code extension host
     tsconfig: "./tsconfig.json",
     define: production ? { "process.env.NODE_ENV": '"production"' } : undefined,
     minify: production,
     sourcemap: !production,
-  plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
+    plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
   });
   if (watch) {
     await ctx.watch();
@@ -71,11 +71,14 @@ const workspacePackagesPlugin = {
   name: "workspace-packages",
   setup(build) {
     const path = require("node:path");
-  const pkgRoot = path.resolve(__dirname, "../../../packages");
+    const pkgRoot = path.resolve(__dirname, "../../../packages");
     /** @type {Record<string, string>} */
     const alias = {
       "@pretty-ts-errors/utils": path.join(pkgRoot, "utils/src/index.ts"),
-      "@pretty-ts-errors/formatter": path.join(pkgRoot, "formatter/src/index.ts"),
+      "@pretty-ts-errors/formatter": path.join(
+        pkgRoot,
+        "formatter/src/index.ts"
+      ),
       "@pretty-ts-errors/vscode-formatter": path.join(
         pkgRoot,
         "vscode-formatter/src/index.ts"

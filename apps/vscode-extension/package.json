@@ -39,7 +39,7 @@
   ],
   "main": "./dist/extension.js",
   "files": [
-  "dist/**/*"
+    "dist/**/*"
   ],
   "contributes": {
     "languages": [
@@ -59,13 +59,13 @@
     ]
   },
   "scripts": {
-  "vscode:prepublish": "npm run package",
-  "compile": "node scripts/build",
-  "watch": "npm run compile -- --watch",
-  "dev": "npm-run-all --parallel _dev:*",
-  "_dev:ext": "npm run watch",
-  "_dev:formatter": "npm run -w @pretty-ts-errors/formatter dev",
-  "_dev:vscode-formatter": "npm run -w @pretty-ts-errors/vscode-formatter dev",
+    "vscode:prepublish": "npm run package",
+    "compile": "node scripts/build",
+    "watch": "npm run compile -- --watch",
+    "dev": "npm-run-all --parallel _dev:*",
+    "_dev:ext": "npm run watch",
+    "_dev:formatter": "npm run -w @pretty-ts-errors/formatter dev",
+    "_dev:vscode-formatter": "npm run -w @pretty-ts-errors/vscode-formatter dev",
     "build": "vsce package",
     "package": "node scripts/build -- --production",
     "compile-tests": "tsc -p . --outDir out",
@@ -75,7 +75,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-  "npm-run-all": "^4.1.5",
+    "npm-run-all": "^4.1.5",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
