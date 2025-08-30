@@ -7,7 +7,7 @@ import {
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { miniLine } from "../components";
-import { formatDiagnostic } from "../format/formatDiagnostic";
+import { formatDiagnostic } from "../../packages/core/dist";
 import { prettify } from "../format/prettify";
 import { d } from "../utils";
 

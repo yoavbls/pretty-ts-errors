@@ -6,7 +6,14 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { formatDiagnostic } from "./format/formatDiagnostic";
+import { configureRenderers, formatDiagnostic } from "../packages/core/dist";
+import {
+  inlineCodeBlock,
+  multiLineCodeBlock,
+  unStyledCodeBlock,
+} from "./components";
+import { title } from "./components/title";
+import { d } from "./utils";
 import { prettify } from "./format/prettify";
 import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
@@ -16,6 +23,13 @@ import { has } from "./utils";
 const cache = new Map();
 
 export function activate(context: ExtensionContext) {
+  configureRenderers({
+    inlineCodeBlock,
+    multiLineCodeBlock,
+    unStyledCodeBlock,
+    title,
+    html: d,
+  });
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
 

@@ -1,0 +1,34 @@
+{
+  "name": "@pretty-ts-errors/core",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "prettier": "^2.8.8",
+    "vscode-languageserver-types": "^3.17.5"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2"
+  }
+}
+

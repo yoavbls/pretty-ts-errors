@@ -1,0 +1,24 @@
+{
+  "name": "@pretty-ts-errors/ts-lsp-plugin",
+  "version": "0.0.0",
+  "private": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@pretty-ts-errors/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "tsup": "^8.0.1",
+    "rimraf": "^6.0.1"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts",
+    "clean": "rimraf dist"
+  }
+}
+
+

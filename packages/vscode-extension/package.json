@@ -1,0 +1,16 @@
+{
+  "name": "@pretty-ts-errors/vscode-extension",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/extension.js",
+  "scripts": {
+    "compile": "node ../../scripts/build",
+    "watch": "npm run compile -- --watch",
+    "package": "node ../../scripts/build -- --production"
+  },
+  "dependencies": {
+    "@pretty-ts-errors/core": "workspace:*"
+  }
+}
+
+

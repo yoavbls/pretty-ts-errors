@@ -6,6 +6,11 @@
     "lib": ["ES2021", "ES2021.String"],
     "sourceMap": true,
     "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@pretty-ts-errors/core": ["packages/core/dist/index.d.ts"],
+      "@pretty-ts-errors/core/*": ["packages/core/dist/*"]
+    },
     "checkJs": true,
     "strict": true /* enable all strict type-checking options */,
     "skipLibCheck": true,
@@ -14,5 +19,5 @@
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "types/**/*.d.ts"]
 }

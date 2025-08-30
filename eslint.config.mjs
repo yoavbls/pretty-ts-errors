@@ -16,6 +16,10 @@ export default tseslint.config(
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
+        // Enable type-aware linting with the workspace tsconfig
+        projectService: true,
+        tsconfigRootDir: new URL(".", import.meta.url).pathname,
+        project: ["./tsconfig.json"],
       },
     },
     plugins: {

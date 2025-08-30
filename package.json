@@ -59,6 +59,8 @@
     ]
   },
   "scripts": {
+    "build:core": "pnpm --filter @pretty-ts-errors/core build",
+    "build:ts-plugin": "pnpm --filter @pretty-ts-errors/ts-lsp-plugin build",
     "vscode:prepublish": "npm run package",
     "compile": "node scripts/build",
     "watch": "npm run compile -- --watch",
@@ -89,6 +91,7 @@
     "typescript-eslint": "^8.15.0"
   },
   "dependencies": {
+    "@pretty-ts-errors/core": "workspace:*",
     "lz-string": "^1.5.0",
     "prettier": "^2.8.8",
     "ts-dedent": "^2.2.0",
