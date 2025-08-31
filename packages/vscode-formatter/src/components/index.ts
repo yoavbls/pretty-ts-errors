@@ -1,5 +1,2 @@
-export * from "./codeBlock";
-export * from "./miniLine";
-export * from "./spanBreak";
-export * from "./title";
+export { inlineCodeBlock, multiLineCodeBlock } from "./codeBlock";
 export { unstyledCodeBlock } from "./plainCodeBlock";

@@ -20,7 +20,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
     ${miniLine}
 `;
 
-export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
+const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
   KNOWN_ERROR_NUMBERS.has(errorCode)
     ? d/*html*/ `
         <a title="See detailed explanation" href="https://typescript.tv/errors/#ts${errorCode}">
@@ -29,7 +29,7 @@ export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
         </a>`
     : "";
 
-export const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
+const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
   const encodedMessage = compressToEncodedURIComponent(message);
 
   return d/*html*/ `
