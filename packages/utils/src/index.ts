@@ -1,5 +1,3 @@
-// We re-export modules to be able to replace/change them easily across all the usages
-export { compressToEncodedURIComponent } from "lz-string";
 import dedent from "ts-dedent";
 
 export function objectKeys<T extends Record<string, unknown>>(
