@@ -1,9 +1,16 @@
 {
   "private": true,
   "name": "@pretty-ts-errors/utils",
-  "main": "src/index.ts",
+  "files": [
+    "dist/**"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ."
+  },
   "devDependencies": {},
   "dependencies": {
-  "ts-dedent": "^2.2.0"
+    "ts-dedent": "^2.2.0"
   }
 }
