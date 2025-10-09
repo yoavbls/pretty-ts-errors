@@ -18,7 +18,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
     ...diagnostic,
     message: diagnostic.message.replaceAll(
       symbol,
-      `${symbol} <a href="${URI.parse(ref.location.uri).fsPath}#${
+      `${symbol} <a href="${URI.parse(ref.location.uri).path}#${
         ref.location.range.start.line + 1
       },${
         ref.location.range.start.character + 1
