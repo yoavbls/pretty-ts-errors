@@ -16,12 +16,11 @@ import { d } from "../utils";
  * It format selected text and help test things visually easier.
  */
 export function registerSelectedTextHoverProvider(context: ExtensionContext) {
-  const converter = createConverter();
-
   if (context.extensionMode !== ExtensionMode.Development) {
     return;
   }
 
+  const converter = createConverter();
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
@@ -31,8 +30,13 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
       {
         provideHover(document, position) {
           const editor = window.activeTextEditor;
+
+          if (!editor) {
+            return;
+          }
+
           const range = document.getWordRangeAtPosition(position);
-          const message = document.getText(editor!.selection);
+          const message = document.getText(editor.selection);
 
           const contents =
             range && message
@@ -65,7 +69,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `                        
+const debugHoverHeader = d/*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

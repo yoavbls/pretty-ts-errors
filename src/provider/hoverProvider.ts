@@ -3,19 +3,23 @@ import { uriStore } from "./uriStore";
 
 export const hoverProvider: HoverProvider = {
   provideHover(document, position) {
-    const itemsInUriStore = uriStore[document.uri.fsPath];
+    const itemsInUriStore = uriStore.get(document.uri.fsPath);
 
     if (!itemsInUriStore) {
       return null;
     }
 
-    const itemInRange = itemsInUriStore.filter((item) =>
-      item.range.contains(position)
+    const itemsInRange = itemsInUriStore.filter((item) =>
+      item.range!.contains(position)
     );
 
+    if (itemsInRange.length === 0) {
+      return;
+    }
+
     return {
-      range: itemInRange?.[0]?.range,
-      contents: itemInRange.flatMap((item) => item.contents),
+      range: itemsInRange[0].range,
+      contents: itemsInRange.flatMap((item) => item.contents),
     };
   },
 };
