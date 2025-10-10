@@ -16,6 +16,7 @@ import { has } from "./utils";
 import * as logger from "./logger";
 
 const cache = new Map<string, MarkdownString>();
+const CACHE_SIZE_MAX = 100;
 
 export function activate(context: ExtensionContext) {
   logger.info('activating pretty-ts-errors');
@@ -40,24 +41,23 @@ export function activate(context: ExtensionContext) {
               )) {
                 return items;
               }
-              let formattedMessage = cache.get(diagnostic.message);
 
+              let formattedMessage = cache.get(diagnostic.message);
               if (!formattedMessage) {
                 // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
                 // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-                const markdownString = new MarkdownString(
+                formattedMessage = new MarkdownString(
                   formatDiagnostic(converter.asDiagnostic(diagnostic), prettify)
                 );
-                markdownString.isTrusted = true;
-                markdownString.supportHtml = true;
+                formattedMessage.isTrusted = true;
+                formattedMessage.supportHtml = true;
 
-                formattedMessage = markdownString;
-                cache.set(diagnostic.message, formattedMessage);
-
-                if (cache.size > 100) {
+                if (cache.size > CACHE_SIZE_MAX) {
                   const firstCacheKey = cache.keys().next().value!;
                   cache.delete(firstCacheKey);
                 }
+
+                cache.set(diagnostic.message, formattedMessage);
               }
 
               items.push({
