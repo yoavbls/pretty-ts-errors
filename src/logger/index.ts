@@ -40,17 +40,17 @@ const defaultThresholds: Record<LogLevel, number> = {
 };
 
 export function measure<T = unknown>(name: string, task: () => T, logLevelThresholds: Partial<Record<LogLevel, number>> = {}): T {
-    const performanceMarkStart = performance.mark(`${name}-start`);
+    const start = performance.now();
     const result = task();
-    const performanceMarkEnd = performance.mark(`${name}-end`);
-    const performanceMeasure = performance.measure(name, performanceMarkStart.name, performanceMarkEnd.name);
+    const end = performance.now();
+    const duration = end - start;
     logLevelThresholds = Object.assign({}, defaultThresholds, logLevelThresholds);
     const thresholds = Object.entries(logLevelThresholds) as [LogLevel, number][];
     // sort thresholds from high to low
     // { info: 100, warn: 1000, trace: 0 } => [[warn, 1000], [info, 100], [trace, 0]]
     thresholds.sort(([_a, a], [_b, b]) => b - a);
-    const level: LogLevel = thresholds.find(([_, threshold]) => performanceMeasure.duration > threshold)?.[0] || 'trace';
-    logger()[level](`${name} took ${performanceMeasure.duration}ms`);
+    const level: LogLevel = thresholds.find(([_, threshold]) => duration > threshold)?.[0] || 'trace';
+    logger()[level](`${name} took ${duration.toFixed(3)}ms`);
     return result;
 }
 
