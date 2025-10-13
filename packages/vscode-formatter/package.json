@@ -37,7 +37,6 @@
     "@pretty-ts-errors/utils": "*",
     "@pretty-ts-errors/formatter": "*",
     "vscode-languageserver-types": "^3.17.3",
-    "vscode-uri": "^3.0.7",
     "lz-string": "^1.4.4"
   }
 }

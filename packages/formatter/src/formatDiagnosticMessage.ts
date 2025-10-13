@@ -50,12 +50,22 @@ export const formatDiagnosticMessage = (
       // Format type annotation options
       .replaceAll(
         /type annotation must be '(.*?)' or '(.*?)'[.]?/gi,
-        (_: string, p1: string, p2: string, p3: string) =>
-          `${formatTypeBlock(p1, p2, codeBlock)} or ${formatTypeBlock(
-            "",
-            p3,
-            codeBlock
-          )}`
+        (_: string, p1: string, p2: string, p3: string | number) => {
+          if (typeof p3 === "string") {
+            return `${formatTypeBlock(p1, p2, codeBlock)} or ${formatTypeBlock(
+              "",
+              p3,
+              codeBlock
+            )}`;
+          } else {
+            // If p3 is a number, it is matching a ts(1196) error, see #121
+            return `${formatTypeBlock("", p1, codeBlock)} or ${formatTypeBlock(
+              "",
+              p2,
+              codeBlock
+            )}`;
+          }
+        }
       )
       .replaceAll(
         /(Overload \d of \d), '(.*?)', /gi,

@@ -7,4 +7,3 @@ import { d } from "../deps";
 export const unstyledCodeBlock = (content: string) => d/*html*/ `
   <code>${content}</code>
 `;
-
