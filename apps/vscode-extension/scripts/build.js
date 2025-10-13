@@ -20,13 +20,16 @@ async function main() {
       "prettier/parser-typescript",
     ],
     format: "cjs",
-    platform: "node",
-    // Use the real Node.js globals provided by the VS Code extension host
+    inject: ["./scripts/process-shim.js"],
     tsconfig: "./tsconfig.json",
     define: production ? { "process.env.NODE_ENV": '"production"' } : undefined,
     minify: production,
     sourcemap: !production,
-    plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
+    plugins: [
+      nodeDepsPlugin,
+      workspacePackagesPlugin,
+      esbuildProblemMatcherPlugin,
+    ],
   });
   if (watch) {
     await ctx.watch();
@@ -58,9 +61,20 @@ const esbuildProblemMatcherPlugin = {
 };
 
 /**
+ * resolve "path" to path-browserify, allows for use of the extension in web environments as well
  * @type {import('esbuild').Plugin}
  */
-// Node core modules are available in the VS Code extension host.
+const nodeDepsPlugin = {
+  name: "node-deps",
+  setup(build) {
+    build.onResolve({ filter: /^path$/ }, (args) => {
+      const path = require.resolve("../node_modules/path-browserify", {
+        paths: [__dirname],
+      });
+      return { path };
+    });
+  },
+};
 
 /**
  * Resolve internal workspace packages to their source files so we bundle them in watch/debug.

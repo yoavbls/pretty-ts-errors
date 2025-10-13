@@ -1,7 +1,7 @@
 {
   "name": "pretty-ts-errors",
   "displayName": "Pretty TypeScript Errors",
-  "publisher": "yoavbls",
+  "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
   "version": "0.6.1",
   "icon": "assets/icon.png",
@@ -35,9 +35,12 @@
     "onLanguage:astro",
     "onLanguage:svelte",
     "onLanguage:vue",
-    "onLanguage:mdx"
+    "onLanguage:mdx",
+    "onLanguage:glimmer-js",
+    "onLanguage:glimmer-ts"
   ],
   "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
   "files": [
     "dist/**/*",
     "assets/**/*",
