@@ -42,3 +42,13 @@ function run<T extends Animal>(animal: T) {
 }
 
 run({ firstName: "John", weight: 20 });
+
+type MyError = {
+  code: number;
+};
+
+try {
+  // ...
+} catch (error: MyError) {
+  console.log(error.code);
+}
