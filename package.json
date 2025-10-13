@@ -74,7 +74,6 @@
     "@eslint/js": "^9.15.0",
     "@types/eslint__js": "^8.42.3",
     "@types/glob": "^8.1.0",
-    "@types/lz-string": "^1.5.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.17.7",
     "@types/prettier": "^2.7.3",
