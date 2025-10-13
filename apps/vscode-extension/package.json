@@ -39,7 +39,9 @@
   ],
   "main": "./dist/extension.js",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "assets/**/*",
+    "LICENSE"
   ],
   "contributes": {
     "languages": [
