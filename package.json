@@ -94,7 +94,6 @@
     "ts-dedent": "^2.2.0",
     "typedash": "^3.2.5",
     "vscode-languageclient": "^9.0.1",
-    "vscode-languageserver-types": "^3.17.5",
-    "vscode-uri": "^3.0.8"
+    "vscode-languageserver-types": "^3.17.5"
   }
 }

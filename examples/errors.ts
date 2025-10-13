@@ -52,3 +52,5 @@ try {
 } catch (error: MyError) {
   console.log(error.code);
 }
+
+export {}
