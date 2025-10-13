@@ -2,12 +2,12 @@
 
 /**
  * @typedef {Object} Person
- * @property {string} name - The person's name.
- * @property {number} age - The person's age.
- * @property {Object} address - The person's address.
- * @property {string} address.street - The street address.
- * @property {string} address.city - The city.
- * @property {string} address.country - The country.
+ * @property {string} name
+ * @property {number} age
+ * @property {Object} address
+ * @property {string} address.street
+ * @property {string} address.city
+ * @property {string} address.country
  */
 
 /**
@@ -23,9 +23,8 @@ const john = {
 };
 
 /**
- * Represents a function that returns a user object.
  * @typedef {Function} GetUserFunction
- * @returns {{ user: { name: string, email: string, age: number } }} The user object.
+ * @returns {{ user: { name: string, email: string, age: number } }}
  */
 
 const getPerson = () => ({
@@ -37,13 +36,13 @@ const getPerson = () => ({
 
 
 /**
- * @typedef {Object} Animal
+ * @typedef {Object} JSAnimal
  * @property {string} name
  * @property {number} age
  */
 
 /**
- * @template {Animal} T
+ * @template {JSAnimal} T
  * @param {T} animal
  * @returns
  */
