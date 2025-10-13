@@ -73,7 +73,7 @@
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.7",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.17.7",
     "@types/prettier": "^2.7.3",
     "@types/vscode": "^1.70.0",
@@ -81,7 +81,7 @@
     "esbuild": "^0.24.0",
     "eslint": "^9.37.0",
     "glob": "^8.1.0",
-    "mocha": "^10.6.0",
+    "mocha": "^10.8.2",
     "path-browserify": "^1.0.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0"
