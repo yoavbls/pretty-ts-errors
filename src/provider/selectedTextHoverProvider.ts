@@ -10,6 +10,7 @@ import { miniLine } from "../components";
 import { formatDiagnostic } from "../format/formatDiagnostic";
 import { prettify } from "../format/prettify";
 import { d } from "../utils";
+import { uriStore } from './uriStore';
 
 /**
  * Register an hover provider in debug only.
@@ -47,14 +48,21 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                           source: "ts",
                           code: 1337,
                         }),
+                        document.uri,
                         prettify
                       )
                   ),
                 ]
               : [];
 
-          contents[0].isTrusted = true;
-          contents[0].supportHtml = true;
+          if (contents.length) {
+            contents[0].isTrusted = true;
+            contents[0].supportHtml = true;
+          }
+
+          if (range) {
+            uriStore[document.uri.fsPath] = [{ range, contents }];
+          }
 
           return {
             contents,
@@ -65,7 +73,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `                        
+const debugHoverHeader = d/*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

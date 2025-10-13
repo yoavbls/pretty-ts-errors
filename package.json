@@ -56,6 +56,9 @@
         "scopeName": "source.type",
         "path": "./syntaxes/type.tmGrammar.json"
       }
+    ],
+    "markdown.previewStyles": [
+      "./dist/extension.css"
     ]
   },
   "scripts": {
