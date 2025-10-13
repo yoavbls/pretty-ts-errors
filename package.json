@@ -76,7 +76,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.17.7",
     "@types/prettier": "^2.7.3",
-    "@types/vscode": "^1.70.0",
+    "@types/vscode": "^1.77.0",
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
     "eslint": "^9.37.0",
