@@ -67,12 +67,11 @@
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts & tsc --noEmit",
+    "lint": "eslint src --ext ts && tsc --noEmit",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "@types/eslint__js": "^8.42.3",
+    "@eslint/js": "^9.37.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.17.7",
@@ -80,12 +79,12 @@
     "@types/vscode": "^1.70.0",
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
-    "eslint": "^9.15.0",
+    "eslint": "^9.37.0",
     "glob": "^8.1.0",
     "mocha": "^10.6.0",
     "path-browserify": "^1.0.1",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
   },
   "dependencies": {
     "lz-string": "^1.5.0",
