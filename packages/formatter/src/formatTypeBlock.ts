@@ -1,6 +1,6 @@
-import { format } from "prettier";
 import type { CodeBlock } from "./index";
 import { addMissingParentheses } from "./addMissingParentheses";
+import { prettify } from "./prettify";
 
 export function formatTypeBlock(
   prefix: string,
@@ -38,14 +38,7 @@ export function prettifyType(
 ) {
   try {
     // Wrap type with valid statement, format it and extract the type back
-    return convertToOriginalType(
-      format(convertToValidType(type), {
-        parser: "typescript",
-        printWidth: 60,
-        singleAttributePerLine: false,
-        arrowParens: "avoid",
-      })
-    );
+    return convertToOriginalType(prettify(convertToValidType(type)));
   } catch (e) {
     if (options?.throwOnError) {
       throw e;
