@@ -29,14 +29,12 @@
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "devDependencies": {
-    "@types/lz-string": "^1.3.34",
-    "@types/prettier": "^2.7.2",
     "tsdown": "^0.15.6"
   },
   "dependencies": {
-    "@pretty-ts-errors/utils": "*",
     "@pretty-ts-errors/formatter": "*",
-    "vscode-languageserver-types": "^3.17.3",
-    "lz-string": "^1.4.4"
+    "@pretty-ts-errors/utils": "*",
+    "lz-string": "^1.5.0",
+    "vscode-languageserver-types": "^3.17.5"
   }
 }
