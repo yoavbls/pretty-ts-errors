@@ -19,6 +19,20 @@
       "preLaunchTask": "watch - apps/vscode-extension"
     },
     {
+      "name": "Run Extension (all extensions disabled)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
+        "${workspaceFolder}/apps/vscode-extension/out/**/*.js"
+      ],
+      "preLaunchTask": "watch - apps/vscode-extension"
+    },
+    {
       "name": "Extension Tests",
       "type": "extensionHost",
       "request": "launch",
