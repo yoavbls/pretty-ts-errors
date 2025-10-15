@@ -1,0 +1,40 @@
+{
+  "name": "@pretty-ts-errors/vscode-formatter",
+  "version": "0.1.0",
+  "description": "Pretty TypeScript Errors Formatter for VSCode hovers",
+  "files": [
+    "src/**",
+    "dist/**"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown  src/index.ts --format cjs,esm --dts",
+    "dev": "tsdown src/index.ts --format cjs,esm --dts --watch",
+    "lint": "tsc -p . --noEmit",
+    "publish": "npm run build && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoavbls/pretty-ts-errors.git"
+  },
+  "keywords": [
+    "typescript",
+    "errors"
+  ],
+  "author": "yoavbls",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yoavbls/pretty-ts-errors/issues"
+  },
+  "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
+  "devDependencies": {
+    "tsdown": "^0.15.6"
+  },
+  "dependencies": {
+    "@pretty-ts-errors/formatter": "*",
+    "@pretty-ts-errors/utils": "*",
+    "lz-string": "^1.5.0",
+    "vscode-languageserver-types": "^3.17.5"
+  }
+}

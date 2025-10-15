@@ -3,5 +3,8 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+.turbo
+.vercel
 .idea
-.DS_Store
+**/.DS_Store
+tsconfig.tsbuildinfo

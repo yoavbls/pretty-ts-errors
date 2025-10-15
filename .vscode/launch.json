@@ -9,21 +9,40 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
+        "${workspaceFolder}/apps/vscode-extension/out/**/*.js"
+      ],
+      "preLaunchTask": "watch - apps/vscode-extension"
+    },
+    {
+      "name": "Run Extension (all extensions disabled)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
+        "${workspaceFolder}/apps/vscode-extension/out/**/*.js"
+      ],
+      "preLaunchTask": "watch - apps/vscode-extension"
     },
     {
       "name": "Extension Tests",
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
+        "--extensionTestsPath=${workspaceFolder}/apps/vscode-extension/out/test/suite/index"
       ],
       "outFiles": [
-        "${workspaceFolder}/out/**/*.js",
-        "${workspaceFolder}/dist/**/*.js"
+        "${workspaceFolder}/apps/vscode-extension/out/**/*.js",
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js"
       ],
       "preLaunchTask": "tasks: watch-tests"
     }

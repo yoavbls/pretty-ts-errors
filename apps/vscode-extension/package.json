@@ -1,0 +1,101 @@
+{
+  "name": "pretty-ts-errors",
+  "displayName": "Pretty TypeScript Errors",
+  "publisher": "YoavBls",
+  "description": "Make TypeScript errors prettier and more human-readable in VSCode",
+  "version": "0.6.1",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoavbls/pretty-ts-errors",
+    "directory": "apps/vscode-extension"
+  },
+  "homepage": "https://github.com/yoavbls/pretty-ts-errors",
+  "engines": {
+    "vscode": "^1.77.0"
+  },
+  "vsce": {
+    "dependencies": false
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "Visualization",
+    "Other"
+  ],
+  "galleryBanner": {
+    "color": "#133b55",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact",
+    "onLanguage:astro",
+    "onLanguage:svelte",
+    "onLanguage:vue",
+    "onLanguage:mdx",
+    "onLanguage:glimmer-js",
+    "onLanguage:glimmer-ts"
+  ],
+  "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
+  "files": [
+    "dist/**/*",
+    "assets/**/*",
+    "LICENSE"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "type",
+        "extensions": [
+          ".type"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "type",
+        "scopeName": "source.type",
+        "path": "./syntaxes/type.tmGrammar.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node scripts/build",
+    "watch": "npm run compile -- --watch",
+    "dev": "npm-run-all --parallel _dev:*",
+    "_dev:ext": "npm run watch",
+    "_dev:formatter": "npm run -w @pretty-ts-errors/formatter dev",
+    "_dev:vscode-formatter": "npm run -w @pretty-ts-errors/vscode-formatter dev",
+    "build": "vsce package",
+    "package": "node scripts/build -- --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "tsc -p . --noEmit",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.7",
+    "@types/vscode": "^1.70.0",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.15.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.8.2",
+    "npm-run-all": "^4.1.5"
+  },
+  "dependencies": {
+    "@pretty-ts-errors/formatter": "*",
+    "@pretty-ts-errors/vscode-formatter": "*",
+    "vscode-languageclient": "^9.0.1"
+  }
+}

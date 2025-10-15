@@ -53,4 +53,4 @@ try {
   console.log(error.code);
 }
 
-export {}
+export {};

@@ -1,18 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ESNext",
-    "lib": ["ES2021", "ES2021.String"],
-    "sourceMap": true,
-    "rootDir": "src",
-    "checkJs": true,
-    "strict": true /* enable all strict type-checking options */,
-    "skipLibCheck": true,
-    /* Additional Checks */
-    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
-    "esModuleInterop": true
-  },
-  "include": ["src/**/*.ts"]
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "packages/utils" },
+    { "path": "packages/formatter" },
+    { "path": "packages/vscode-formatter" },
+    { "path": "apps/vscode-extension" }
+  ]
 }
