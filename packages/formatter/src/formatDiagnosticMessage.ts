@@ -21,6 +21,11 @@ export const formatDiagnosticMessage = (
 
   return (
     message
+      // format strings wrapped like '"..."' (double quotes inside single quotes)
+      .replaceAll(
+        /(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g,
+        (_: string, p1: string) => formatTypeBlock("", `"${p1}"`, codeBlock)
+      )
       // format declare module snippet
       .replaceAll(
         /['“](declare module )['”](.*)['“];['”]/g,
@@ -114,7 +119,7 @@ export const formatDiagnosticMessage = (
       // Format regular code blocks
       .replaceAll(
         /(?<!\w)'((?:(?!["]).)*?)'(?!\w)/g,
-        (_: string, p1: string) => `${codeBlock(p1)} `
+        (_: string, p1: string) => ` ${codeBlock(p1)} `
       )
   );
 };
