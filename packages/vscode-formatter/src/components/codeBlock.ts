@@ -1,4 +1,4 @@
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
 

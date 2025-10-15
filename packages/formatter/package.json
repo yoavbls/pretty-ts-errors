@@ -1,6 +1,6 @@
 {
   "name": "@pretty-ts-errors/formatter",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Pretty TypeScript Errors Formatter",
   "files": [
     "src/**",
@@ -34,11 +34,11 @@
     "@pretty-ts-errors/utils": "*"
   },
   "devDependencies": {
-    "@types/prettier": "^2.7.2",
+    "@types/prettier": "^2.7.3",
     "tsdown": "^0.15.6",
-    "vitest": "^2.1.3"
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.8"
   }
 }

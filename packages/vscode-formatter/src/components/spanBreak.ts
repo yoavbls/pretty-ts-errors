@@ -1,4 +1,4 @@
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 
 /**
  * Since every thing in the extension hover split into spans,

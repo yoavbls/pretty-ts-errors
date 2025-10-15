@@ -1,6 +1,6 @@
 import { compressToEncodedURIComponent } from "lz-string";
 import { Diagnostic } from "vscode-languageserver-types";
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
 import { miniLine } from "./miniLine";
 

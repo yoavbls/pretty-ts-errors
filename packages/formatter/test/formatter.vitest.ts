@@ -6,7 +6,7 @@ import {
   inlineCodeBlock,
   multiLineCodeBlock,
 } from "@pretty-ts-errors/vscode-formatter/src/components";
-import { d } from "@pretty-ts-errors/vscode-formatter/src/deps";
+import { d } from "@pretty-ts-errors/utils";
 import {
   errorWithDashInObjectKeys,
   errorWithSpecialCharsInObjectKeys,

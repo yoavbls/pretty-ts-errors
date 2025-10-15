@@ -2,7 +2,7 @@ import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
 import { Diagnostic } from "vscode-languageserver-types";
 import { title } from "../components/title";
 import { anyCodeBlock } from "../components/anyCodeBlock";
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
 

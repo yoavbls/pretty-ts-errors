@@ -1,4 +1,4 @@
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 
 export const identSentences = (message: string): string =>
   message

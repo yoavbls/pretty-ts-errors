@@ -1,4 +1,4 @@
-import { d } from "../deps";
+import { d } from "@pretty-ts-errors/utils";
 
 /**
  * Code block without syntax highlighting like.
