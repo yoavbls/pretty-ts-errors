@@ -20,11 +20,7 @@ async function main() {
     define: production ? { "process.env.NODE_ENV": '"production"' } : undefined,
     minify: production,
     sourcemap: !production,
-    plugins: [
-      nodeDepsPlugin,
-      workspacePackagesPlugin,
-      esbuildProblemMatcherPlugin,
-    ],
+    plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
   });
   if (watch) {
     await ctx.watch();
@@ -51,22 +47,6 @@ const esbuildProblemMatcherPlugin = {
         );
       });
       console.log("[watch] build finished");
-    });
-  },
-};
-
-/**
- * resolve "path" to path-browserify, allows for use of the extension in web environments as well
- * @type {import('esbuild').Plugin}
- */
-const nodeDepsPlugin = {
-  name: "node-deps",
-  setup(build) {
-    build.onResolve({ filter: /^path$/ }, (args) => {
-      const path = require.resolve("../node_modules/path-browserify", {
-        paths: [__dirname],
-      });
-      return { path };
     });
   },
 };
