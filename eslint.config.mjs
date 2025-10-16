@@ -10,7 +10,7 @@ export default tseslint.config(
   ...tseslint.configs.stylistic,
   {
     ignores: [
-      "apps/scripts/*",
+      "apps/*/scripts/*",
       "apps/*/dist/*",
       "packages/*/scripts/*",
       "packages/*/dist/*",
