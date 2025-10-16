@@ -3,7 +3,7 @@
   "displayName": "Pretty TypeScript Errors",
   "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -44,6 +44,7 @@
   "files": [
     "dist/**/*",
     "assets/**/*",
+    "syntaxes/**/*",
     "LICENSE"
   ],
   "contributes": {
@@ -64,7 +65,7 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
+    "vscode:prepublish": "cp ../../README.md README.md && npm run package",
     "compile": "node scripts/build",
     "watch": "npm run compile -- --watch",
     "dev": "npm-run-all --parallel _dev:*",

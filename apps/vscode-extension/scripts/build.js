@@ -13,12 +13,7 @@ async function main() {
     },
     bundle: true,
     outdir: "./dist",
-    external: [
-      "vscode",
-      // Avoid bundling Prettier to keep Node runtime behavior and smaller bundle
-      "prettier",
-      "prettier/parser-typescript",
-    ],
+    external: ["vscode"],
     format: "cjs",
     inject: ["./scripts/process-shim.js"],
     tsconfig: "./tsconfig.json",
