@@ -83,13 +83,10 @@
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.17.7",
-    "@types/vscode": "^1.70.0",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
-    "@vscode/test-electron": "^2.4.1",
+    "@types/node": "^16.11.68",
+    "@types/vscode": "^1.77.0",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.24.0",
-    "eslint": "^9.15.0",
     "glob": "^8.1.0",
     "mocha": "^10.8.2",
     "npm-run-all": "^4.1.5"
