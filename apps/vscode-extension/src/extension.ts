@@ -11,6 +11,7 @@ import { createConverter } from "vscode-languageclient/lib/common/codeConverter"
 import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
+import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
 
 const cache = new Map();
 
@@ -19,6 +20,7 @@ export function activate(context: ExtensionContext) {
   const converter = createConverter();
 
   registerSelectedTextHoverProvider(context);
+  registerTextDocumentProvider(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -48,7 +50,7 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic))
+                formatDiagnostic(converter.asDiagnostic(diagnostic), uri)
               );
 
               markdownString.isTrusted = true;
