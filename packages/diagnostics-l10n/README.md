@@ -77,4 +77,4 @@ The script [`scripts/create-diagnostics-maps.js`](./scripts/create-diagnostics-m
 
 - String encoding and multibyte characters are a thing. Some of the other locale's use non-ASCII characters in the diagnostics. How does the implementation handle this? Does it need to?
 - RTL languages exist, are any of them in the locales TypeScript supports? If so, do we need special handling?
-- How stable are the error codes? There was a big discussion about error codes regarding [`@ts-ignore`](https://github.com/microsoft/TypeScript/issues/19139). Searching the TypeScript discord shows the latest message mentioning it dates from 2022.
+- How stable are the error codes? According to [this reply](https://github.com/microsoft/TypeScript-Website/issues/298#issuecomment-592252428) from the TypeScript team in 2020 the error codes are unstable.
