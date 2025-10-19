@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "@pretty-ts-errors/diagnostics-l10n",
+  "description": "A tool to generate & distribute lookup tables for diagnostic messages to locales that are supported by the TypeScript compiler.",
+  "files": [
+    "dist/**"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p .",
+    "generate": "node scripts/create-diagnostics-maps.js"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
