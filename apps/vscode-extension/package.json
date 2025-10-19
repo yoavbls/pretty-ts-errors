@@ -81,14 +81,13 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.68",
     "@types/vscode": "^1.77.0",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.25.11",
-    "glob": "^8.1.0",
-    "mocha": "^10.8.2",
+    "glob": "^11.0.3",
+    "mocha": "^11.7.4",
     "npm-run-all": "^4.1.5"
   },
   "dependencies": {
