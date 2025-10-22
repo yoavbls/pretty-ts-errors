@@ -1,14 +1,15 @@
 import type {
   DiagnosticMessageErrorCodeMap,
   DiagnosticMessageLocalesMap,
+  Locale,
 } from ".";
 
 export async function load(): Promise<DiagnosticMessageLocalesMap>;
-export async function load(
-  locale: string
+export async function load<TLocale extends Locale>(
+  locale: TLocale
 ): Promise<DiagnosticMessageErrorCodeMap>;
-export async function load(
-  locale?: string
+export async function load<TLocale extends Locale>(
+  locale?: TLocale
 ): Promise<DiagnosticMessageLocalesMap | DiagnosticMessageErrorCodeMap> {
   if (!locale) {
     const exports = await import("./locales/diagnosticMessagesMap.json", {
@@ -18,22 +19,93 @@ export async function load(
   }
   const normalizedLocale = normalizeLocale(locale);
   switch (normalizedLocale) {
-    case "cs":
-    case "de":
-    case "en":
-    case "es":
-    case "fr":
-    case "it":
-    case "ja":
-    case "ko":
-    case "pl":
-    case "pt-br":
-    case "ru":
-    case "tr":
-    case "zh-cn":
+    case "cs": {
+      const exports = await import(`./locales/diagnosticMessagesMap.cs.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "de": {
+      const exports = await import(`./locales/diagnosticMessagesMap.de.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "en": {
+      const exports = await import(`./locales/diagnosticMessagesMap.en.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "es": {
+      const exports = await import(`./locales/diagnosticMessagesMap.es.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "fr": {
+      const exports = await import(`./locales/diagnosticMessagesMap.fr.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "it": {
+      const exports = await import(`./locales/diagnosticMessagesMap.it.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "ja": {
+      const exports = await import(`./locales/diagnosticMessagesMap.ja.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "ko": {
+      const exports = await import(`./locales/diagnosticMessagesMap.ko.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "pl": {
+      const exports = await import(`./locales/diagnosticMessagesMap.pl.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "pt-br": {
+      const exports = await import(
+        `./locales/diagnosticMessagesMap.pt-br.json`,
+        {
+          with: { type: "json" },
+        }
+      );
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "ru": {
+      const exports = await import(`./locales/diagnosticMessagesMap.ru.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "tr": {
+      const exports = await import(`./locales/diagnosticMessagesMap.tr.json`, {
+        with: { type: "json" },
+      });
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
+    case "zh-cn": {
+      const exports = await import(
+        `./locales/diagnosticMessagesMap.zh-cn.json`,
+        {
+          with: { type: "json" },
+        }
+      );
+      return exports.default as DiagnosticMessageErrorCodeMap;
+    }
     case "zh-tw": {
       const exports = await import(
-        `./locales/diagnosticMessagesMap.${normalizedLocale}.json`,
+        `./locales/diagnosticMessagesMap.zh-tw.json`,
         {
           with: { type: "json" },
         }

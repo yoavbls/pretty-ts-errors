@@ -73,6 +73,45 @@ The script [`scripts/create-diagnostics-maps.js`](./scripts/create-diagnostics-m
 - writes out the map to `src/diagnosticMessagesMap.json`
 - writes out a map to `src/diagnosticMessagesMap.<locale>.json` for each locale
 
+A draft of an API has been implemented:
+
+```ts
+declare function load(): Promise<DiagnosticMessageLocalesMap>;
+declare function load<TLocale extends Locale>(
+  locale: TLocale
+): Promise<DiagnosticMessageErrorCodeMap>;
+
+declare function parseTemplate(
+  template: DiagnosticMessageTemplate
+): TemplatePart[];
+
+const { code, diagnostic, locale } = {
+  code: 2322,
+  diagnostic: "Type 'string' is not assignable to type 'number'.",
+  locale: "en",
+};
+
+const map = await load(locale);
+const template = map[code];
+// "Type '{0}' is not assignable to type '{1}'."
+const templateParts = parseTemplate(template);
+// [
+//  { type: 'text', text: "Type '" },
+//  { type: 'param', identifier: 0 },
+//  { type: 'text', text: "' is not assignable to type '" },
+//  { type: 'param', identifier: 1 },
+//  { type: 'text', text: "'." }
+// ]
+const diagnosticParts = parseDiagnostic(templateParts, diagnostic);
+// [
+//  { type: 'text', text: "Type '" },
+//  { type: 'param', identifier: 0, argument: "string" },
+//  { type: 'text', text: "' is not assignable to type '" },
+//  { type: 'param', identifier: 1, argument: "number" },
+//  { type: 'text', text: "'." }
+// ]
+```
+
 ### Remaining questions
 
 - String encoding and multibyte characters are a thing. Some of the other locale's use non-ASCII characters in the diagnostics. How does the implementation handle this? Does it need to?

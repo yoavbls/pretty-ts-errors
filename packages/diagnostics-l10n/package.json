@@ -6,10 +6,24 @@
     "dist/**"
   ],
   "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.js"
+  },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsdown src/index.ts --format cjs,esm --dts",
+    "dev": "tsdown src/index.ts --format cjs,esm --dts --watch",
+    "lint": "tsc -p . --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "generate": "node scripts/create-diagnostics-maps.js"
   },
-  "devDependencies": {},
-  "dependencies": {}
+  "tsdown": {
+    "hash": false
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.9",
+    "vitest": "^3.2.4"
+  }
 }
