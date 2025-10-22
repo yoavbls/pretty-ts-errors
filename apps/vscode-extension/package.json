@@ -48,6 +48,13 @@
     "LICENSE"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "prettyTsErrors.openMarkdownPreview",
+        "title": "Open Markdown Preview with Custom Types",
+        "category": "Pretty TS Errors"
+      }
+    ],
     "languages": [
       {
         "id": "type",
@@ -81,6 +88,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@shikijs/types": "^3.13.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.68",
     "@types/vscode": "^1.77.0",
@@ -93,6 +101,8 @@
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",
     "@pretty-ts-errors/vscode-formatter": "*",
-    "vscode-languageclient": "^9.0.1"
+    "shiki": "^3.13.0",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-shiki-bridge": "^0.2.0"
   }
 }

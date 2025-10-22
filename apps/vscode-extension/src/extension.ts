@@ -12,6 +12,7 @@ import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
 import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
+import { registerMarkdownWebviewProvider } from "./provider/markdownWebiewProvider";
 
 const cache = new Map();
 
@@ -21,6 +22,7 @@ export function activate(context: ExtensionContext) {
 
   registerSelectedTextHoverProvider(context);
   registerTextDocumentProvider(context);
+  registerMarkdownWebviewProvider(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
