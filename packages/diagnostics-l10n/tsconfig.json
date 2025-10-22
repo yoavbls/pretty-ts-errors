@@ -6,7 +6,13 @@
     "rootDir": "src",
     "composite": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "noUnusedLocals": false,
+    "noUncheckedIndexedAccess": false,
+    "noUnusedParameters": false,
+    "module": "esnext",
+    "target": "esnext"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts", "src/locales/*.json"]
 }

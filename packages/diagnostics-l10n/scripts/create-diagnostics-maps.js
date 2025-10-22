@@ -171,7 +171,7 @@ async function main() {
     diagnosticMessageReference,
     localizedDiagnosticMessagesMaps
   );
-  const destinationDirectoryPath = path.join(dirname, "..", "src");
+  const destinationDirectoryPath = path.join(dirname, "..", "src", "locales");
   return Promise.all([
     writeFile(
       path.join(destinationDirectoryPath, "diagnosticMessagesMap.json"),
