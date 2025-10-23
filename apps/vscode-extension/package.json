@@ -45,6 +45,7 @@
     "dist/**/*",
     "assets/**/*",
     "syntaxes/**/*",
+    "webview/**/*",
     "LICENSE"
   ],
   "contributes": {
@@ -86,13 +87,15 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "tsc -p . --noEmit",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "webview": "npx http-server ./webview -a localhost -p 8080"
   },
   "devDependencies": {
     "@shikijs/types": "^3.13.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.68",
     "@types/vscode": "^1.77.0",
+    "@types/vscode-webview": "^1.57.5",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.25.11",
     "glob": "^11.0.3",

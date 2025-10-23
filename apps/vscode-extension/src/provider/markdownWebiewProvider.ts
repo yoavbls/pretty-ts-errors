@@ -20,11 +20,34 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
   );
 }
 
+/**
+ * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
+ */
 export class MarkdownWebviewProvider {
   private static readonly viewType = "prettyTsErrors.markdownPreview";
   private highlighter: Highlighter | null = null;
+  private webviewRootUri: vscode.Uri;
+  private webviewHtmlTemplate: Promise<string>;
 
-  constructor(private readonly context: vscode.ExtensionContext) {}
+  constructor(private readonly context: vscode.ExtensionContext) {
+    this.webviewRootUri = vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "webview"
+    );
+    this.webviewHtmlTemplate = this.loadWebviewHtmlTemplate();
+  }
+
+  private async loadWebviewHtmlTemplate(): Promise<string> {
+    const htmlTemplateUri = vscode.Uri.joinPath(
+      this.webviewRootUri,
+      "index.html"
+    );
+    const htmlTemplateBytes = await vscode.workspace.fs.readFile(
+      htmlTemplateUri
+    );
+    const htmlTemplate = new TextDecoder("utf-8").decode(htmlTemplateBytes);
+    return htmlTemplate;
+  }
 
   private async loadTypeGrammar(): Promise<RawGrammar | null> {
     try {
@@ -35,11 +58,8 @@ export class MarkdownWebviewProvider {
 
         "type.tmGrammar.json"
       );
-
       const raw = await vscode.workspace.fs.readFile(uri);
-
       const json = JSON.parse(new TextDecoder("utf-8").decode(raw));
-
       return json as RawGrammar;
     } catch {
       console.log("failed to load type grammar");
@@ -94,11 +114,12 @@ export class MarkdownWebviewProvider {
         enableCommandUris: [],
         enableScripts: true,
         enableFindWidget: true,
-        localResourceRoots: [],
+        enableForms: false,
+        localResourceRoots: [this.webviewRootUri],
       }
     );
 
-    panel.webview.html = await this.getWebviewContent(content);
+    panel.webview.html = await this.getWebviewContent(panel.webview, content);
     panel.webview.onDidReceiveMessage(
       (message: { command: string; [key: string]: unknown }) => {
         console.log(message);
@@ -113,105 +134,67 @@ export class MarkdownWebviewProvider {
         }
       }
     );
-
-    vscode.window.onDidChangeActiveColorTheme(async () => {
-      panel.webview.html = await this.getWebviewContent(content);
-    });
   }
 
-  private async getWebviewContent(content: string): Promise<string> {
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pretty TS Errors - Markdown Preview</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: var(--vscode-editor-background);
-            color: var(--vscode-editor-foreground);
-        }
+  private async getWebviewContent(
+    webview: vscode.Webview,
+    markdown: string
+  ): Promise<string> {
+    let html = await this.webviewHtmlTemplate;
 
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--vscode-foreground);
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-        }
+    // NOTE: I need to open a vscode issues about the injected styles and aquireVsCodeApi script not working when setting CSP headers properly
+    //       If they fix that this code works just fine
+    // vscode classes, styles and acquireVsCodeApi are injected with inline scripts/styles, thus what is even the point of CSP headers?
 
-        pre {
-            background-color: var(--vscode-textCodeBlock-background) !important;
-            border: 1px solid var(--vscode-widget-border);
-            border-radius: 4px;
-            padding: 16px;
-            overflow-x: auto;
-            margin: 1em 0;
-        }
-
-        /* Override Shiki's background to match VS Code */
-        pre code {
-            background-color: transparent !important;
-            border-radius: 3px;
-            padding: 0 !important;
-            font-weight: var(--vscode-editor-font-weight, normal);
-            font-size: var(--vscode-editor-font-size, 16px);
-            font-family: var(--vscode-editor-font-family), 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-        }
-
-        .copy-button {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: var(--vscode-button-background);
-            color: var(--vscode-button-foreground);
-            border: none;
-            border-radius: 3px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .code-container {
-            position: relative;
-        }
-
-        .code-container:hover .copy-button {
-            opacity: 1;
-        }
-
-        .copy-button:hover {
-            background: var(--vscode-button-hoverBackground);
-        }
-    </style>
-</head>
-<body>
-    ${content}
-    <!-- TODO: this should **NOT** be an inline script, see https://code.visualstudio.com/api/extension-guides/webview#content-security-policy -->
-    <script>
-      // wrap this in IIFE because vscode should **NEVER** be leaked into the global scope
-      // @see https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension
-      const api = (function () {
-        const vscode = acquireVsCodeApi()
-        return {
-          notify(text) {
-            vscode.postMessage({ command: 'notify', text });
-          }
-        }
-      })();
-
-      async function copyToClipboard(text) {
-        await navigator.clipboard.writeText(text);
-        api.notify('Copied text to clipboard!');
+    // replace stylesheet href's to webview uri's
+    html = html.replaceAll(
+      /<link\s+rel="stylesheet"\s+href="(\.\/.+)"\s+data-href-as-webview-uri\s*\/?>/gm,
+      (match, filePath) => {
+        const path = vscode.Uri.joinPath(this.webviewRootUri, filePath);
+        const uri = webview.asWebviewUri(path);
+        return match.replace(filePath, uri.toString());
       }
-    </script>
-</body>
-</html>`;
+    );
+
+    // replace script src's to webiew uri's
+    html = html.replaceAll(
+      /<script\s+src="(\.\/.+)"\s+data-src-as-webview-uri\s*>/gm,
+      (match, filePath) => {
+        const path = vscode.Uri.joinPath(this.webviewRootUri, filePath);
+        const uri = webview.asWebviewUri(path);
+        return match.replace(filePath, uri.toString());
+      }
+    );
+
+    // replace the local development csp header with `webview.cspSource`
+    // @see https://code.visualstudio.com/api/extension-guides/webview#content-security-policy
+    html = html.replace(
+      /<meta\s+http-equiv="Content-Security-Policy"\s+data-csp-replace-content\s+content="(.+)"\s*\/>/m,
+      (match, content) => {
+        return match.replace(
+          content,
+          `${content
+            .replaceAll(
+              "style-src http://localhost:8080",
+              // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
+              `style-src ${webview.cspSource} 'unsafe-inline'`
+            )
+            .replaceAll(
+              "script-src http://localhost:8080",
+              // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
+              `script-src ${webview.cspSource} 'unsafe-inline'`
+            )}`
+        );
+      }
+    );
+
+    // insert the content
+    html = html.replace(
+      '<div id="content"></div>',
+      `<div id="content">${this.renderMarkdown(markdown)}</div>`
+    );
+
+    return html;
   }
 
   private renderMarkdown(markdown: string): string {
@@ -274,9 +257,9 @@ export class MarkdownWebviewProvider {
         const innerHtml = preMatch ? preMatch[1] : code;
 
         return `<div class="code-container">
-          <button class="copy-button" onclick="copyToClipboard(\`${code
+          <button class="copy-button" data-copy-content="${code
             .trim()
-            .replace(/`/g, "\\`")}\`)">Copy</button>
+            .replace(/`/g, "\\`")}">Copy</button>
           <pre><code>${innerHtml}</code></pre>
         </div>`;
       } catch (error) {
@@ -300,62 +283,14 @@ export class MarkdownWebviewProvider {
 
     return html;
   }
+}
 
-  // TODO: What does this do? Do we need it?
-  private async extractMonacoTokenStyles(): Promise<string> {
-    // For now, we'll use a hardcoded version of common Monaco styles
-    // In a real implementation, you could try to extract this from VS Code's DOM
-    // but that's complex from an extension context
-
-    // Using the styles you provided as a starting point
-    return `
-.mtk1 { color: #cccccc; }
-.mtk2 { color: #1f1f1f; }
-.mtk3 { color: #569cd6; }
-.mtk4 { color: #9cdcfe; }
-.mtk5 { color: #ce9178; }
-.mtk6 { color: #d16969; }
-.mtk7 { color: #676767; }
-.mtk8 { color: #d85560; }
-.mtk9 { color: #9c7bff; }
-.mtk10 { color: #c4c4c4; }
-.mtk11 { color: #d0bf62; }
-.mtk12 { color: #daa971; }
-.mtk13 { color: #8cc96e; }
-.mtk14 { color: #e97561; }
-.mtk15 { color: #54a5ec; }
-.mtk16 { color: #a4a4a4; }
-.mtk17 { color: #fcb76e; }
-.mtk18 { color: #3cb6c1; }
-.mtk19 { color: #a8cdd0; }
-.mtk20 { color: #8acdd2; }
-.mtk21 { color: #ea4a5f; }
-.mtk22 { color: #dcdcaa; }
-.mtk23 { color: #d7ba7d; }
-.mtk24 { color: #c8c8c8; }
-.mtk25 { color: #ffffff; }
-.mtk26 { color: #6796e6; }
-.mtk27 { color: #cd9731; }
-.mtk28 { color: #f44747; }
-.mtk29 { color: #b267e6; }
-.mtk30 { color: #c586c0; }
-.mtk31 { color: #b5cea8; }
-.mtki { font-style: italic; }
-.mtkb { font-weight: bold; }
-.mtku { text-decoration: underline; text-underline-position: under; }
-.mtks { text-decoration: line-through; }
-.mtks.mtku { text-decoration: underline line-through; text-underline-position: under; }
-
-/* Map Shiki colors to Monaco token classes */
-span[style*="color:#569CD6"] { color: #569cd6 !important; } /* keyword */
-span[style*="color:#C586C0"] { color: #c586c0 !important; } /* keyword alt */
-span[style*="color:#CE9178"] { color: #ce9178 !important; } /* string */
-span[style*="color:#6A9955"] { color: #6a9955 !important; } /* comment */
-span[style*="color:#B5CEA8"] { color: #b5cea8 !important; } /* number */
-span[style*="color:#DCDCAA"] { color: #dcdcaa !important; } /* function */
-span[style*="color:#4EC9B0"] { color: #4ec9b0 !important; } /* type */
-span[style*="color:#9CDCFE"] { color: #9cdcfe !important; } /* variable */
-span[style*="color:#D4D4D4"] { color: #d4d4d4 !important; } /* default */
-`;
+function generateNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
+  return text;
 }

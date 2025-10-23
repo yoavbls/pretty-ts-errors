@@ -1,0 +1,62 @@
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--vscode-foreground);
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+pre {
+    background-color: var(--vscode-textCodeBlock-background) !important;
+    border: 1px solid var(--vscode-widget-border);
+    border-radius: 4px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+/* Override Shiki's background to match VS Code */
+pre code {
+    background-color: transparent !important;
+    border-radius: 3px;
+    padding: 0 !important;
+    font-weight: var(--vscode-editor-font-weight, normal);
+    font-size: var(--vscode-editor-font-size, medium);
+    font-family: var(--vscode-editor-font-family), 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.copy-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.code-container {
+    position: relative;
+}
+
+.code-container:hover .copy-button {
+    opacity: 1;
+}
+
+.copy-button:hover {
+    background: var(--vscode-button-hoverBackground);
+}
