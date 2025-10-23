@@ -72,6 +72,7 @@ The script [`scripts/create-diagnostics-maps.js`](./scripts/create-diagnostics-m
 - merges the files to a `DiagnosticMessageLocalesMap` as in the example above
 - writes out the map to `src/diagnosticMessagesMap.json`
 - writes out a map to `src/diagnosticMessagesMap.<locale>.json` for each locale
+- to drastically reduce the file and bundle size, templates without paramters are not part of the generated files/lookup tables
 
 A draft of an API has been implemented:
 

@@ -4,6 +4,10 @@
 export type Locale =
   | "cs"
   | "de"
+  /**
+   * NOTE: 'en' is not a seperate locale in typescript, but the default of diagnostic messages
+   */
+  | "en"
   | "es"
   | "fr"
   | "it"

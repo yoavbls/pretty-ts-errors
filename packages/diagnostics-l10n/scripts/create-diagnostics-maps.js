@@ -92,12 +92,14 @@ function mergeToDiagnosticMessageLocalesMap(
   /**
    * @type {import('../src/').DiagnosticMessageLocalesMap}
    */
+  // @ts-ignore
   const result = {};
   result[defaultLocale] =
     transformDiagnosticMessagesReferenceToDiagnosticMessageErrorCodeMap(
       diagnosticMessageReference
     );
   localizedDiagnosticMessagesMaps.forEach(({ locale, json }) => {
+    // @ts-ignore
     result[locale] =
       transformLocalizedDiagnosticMessagesToDiagnosticMessageErrorCodeMap(json);
   });
@@ -117,7 +119,9 @@ function transformDiagnosticMessagesReferenceToDiagnosticMessageErrorCodeMap(
   const map = {};
   return Object.entries(diagnosticMessageReference).reduce(
     (map, [template, { code }]) => {
-      map[code] = template;
+      if (template.includes("{0}")) {
+        map[code] = template;
+      }
       return map;
     },
     map
@@ -149,7 +153,9 @@ function transformLocalizedDiagnosticMessagesToDiagnosticMessageErrorCodeMap(
           `identifier did not result into a valid code '${code}': ${identifier}`
         );
       }
-      map[code] = template;
+      if (template.includes("{0}")) {
+        map[code] = template;
+      }
       return map;
     },
     map

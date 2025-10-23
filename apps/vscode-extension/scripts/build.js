@@ -72,9 +72,16 @@ const workspacePackagesPlugin = {
         pkgRoot,
         "vscode-formatter/src/index.ts"
       ),
+      "@pretty-ts-errors/diagnostics-l10n": path.join(
+        pkgRoot,
+        "diagnostics-l10n/src/index.ts"
+      ),
     };
     build.onResolve(
-      { filter: /^@pretty-ts-errors\/(utils|formatter|vscode-formatter)$/ },
+      {
+        filter:
+          /^@pretty-ts-errors\/(utils|formatter|vscode-formatter|diagnostics-l10n)$/,
+      },
       (args) => {
         const target = alias[args.path];
         return target ? { path: target } : undefined;
