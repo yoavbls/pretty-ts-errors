@@ -8,9 +8,11 @@
     <meta
         http-equiv="Content-Security-Policy"
         data-csp-replace-content
-        content="default-src 'none'; script-src http://localhost:8080; style-src http://localhost:8080;"
+        content="default-src 'none'; script-src http://localhost:8080; style-src http://localhost:8080; font-src http://localhost:8080;"
     />
     <title>Pretty TS Errors - Markdown Preview</title>
+    <!-- TODO: add script to copy vendor/codicon files from node_modules/ to ./vendor-->
+    <link rel="stylesheet" href="./vendor/codicon.css" data-href-as-webview-uri />
     <link rel="stylesheet" href="./style.css" data-href-as-webview-uri />
 </head>
 <body>

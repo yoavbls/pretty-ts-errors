@@ -32,12 +32,20 @@ window.document.addEventListener("click", (event) => {
     element.tagName.toLowerCase() === "button" &&
     element.hasAttribute("data-copy-content")
   ) {
-    const content = element.getAttribute("data-copy-content");
-    if (content) {
-      copyToClipboard(content);
-    }
+    handleCopyContentEvent(element);
   }
 });
+
+/**
+ *
+ * @param {HTMLElement} element
+ */
+function handleCopyContentEvent(element) {
+  const content = element.getAttribute("data-copy-content");
+  if (content) {
+    copyToClipboard(content);
+  }
+}
 
 /**
  * Copy `text` to the user's clipboard

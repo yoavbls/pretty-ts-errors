@@ -14,6 +14,13 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
     vscode.commands.registerCommand(
       "prettyTsErrors.openMarkdownPreview",
       async (uri: vscode.Uri) => {
+        if (!uri || !(uri instanceof vscode.Uri)) {
+          console.error(
+            "expected uri to be an instance of vscode.Uri, instead got: ",
+            uri
+          );
+          return;
+        }
         await provider.openMarkdownPreview(uri);
       }
     )
@@ -24,7 +31,7 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
  * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
  */
 export class MarkdownWebviewProvider {
-  private static readonly viewType = "prettyTsErrors.markdownPreview";
+  static readonly viewType = "prettyTsErrors.markdownPreview";
   private highlighter: Highlighter | null = null;
   private webviewRootUri: vscode.Uri;
   private webviewHtmlTemplate: Promise<string>;
@@ -62,7 +69,7 @@ export class MarkdownWebviewProvider {
       const json = JSON.parse(new TextDecoder("utf-8").decode(raw));
       return json as RawGrammar;
     } catch {
-      console.log("failed to load type grammar");
+      console.error("failed to load type grammar");
       return null;
     }
   }
@@ -84,7 +91,7 @@ export class MarkdownWebviewProvider {
 
     this.highlighter = await createHighlighter({
       themes: ["dark-plus", "light-plus"],
-      langs: ["typescript", ...customLangs].filter(Boolean),
+      langs: ["typescript", ...customLangs],
     });
 
     console.log(
@@ -111,7 +118,7 @@ export class MarkdownWebviewProvider {
       vscode.ViewColumn.Beside,
       {
         // TODO: make symbol reference links work
-        enableCommandUris: [],
+        enableCommandUris: ["prettyTsErrors.revealSelection", "vscode.open"],
         enableScripts: true,
         enableFindWidget: true,
         enableForms: false,
@@ -122,13 +129,13 @@ export class MarkdownWebviewProvider {
     panel.webview.html = await this.getWebviewContent(panel.webview, content);
     panel.webview.onDidReceiveMessage(
       (message: { command: string; [key: string]: unknown }) => {
-        console.log(message);
         if (message && message.command) {
           switch (message.command) {
             case "notify": {
               if (typeof message["text"] === "string") {
                 vscode.window.showInformationMessage(message["text"]);
               }
+              break;
             }
           }
         }
@@ -173,7 +180,7 @@ export class MarkdownWebviewProvider {
       (match, content) => {
         return match.replace(
           content,
-          `${content
+          content
             .replaceAll(
               "style-src http://localhost:8080",
               // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
@@ -183,7 +190,11 @@ export class MarkdownWebviewProvider {
               "script-src http://localhost:8080",
               // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
               `script-src ${webview.cspSource} 'unsafe-inline'`
-            )}`
+            )
+            .replaceAll(
+              "font-src http://localhost:8080",
+              `font-src ${webview.cspSource}`
+            )
         );
       }
     );
@@ -197,13 +208,21 @@ export class MarkdownWebviewProvider {
     return html;
   }
 
-  private renderMarkdown(markdown: string): string {
-    // Get VS Code's current theme
-    const currentTheme = vscode.window.activeColorTheme;
-    const isDark = currentTheme.kind === vscode.ColorThemeKind.Dark;
-
+  private renderMarkdown2(markdown: string): string {
     // TODO: Use the appropriate Shiki theme based on VS Code's theme
-    const theme = isDark ? "dark-plus" : "light-plus";
+    const theme =
+      vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
+        ? "dark-plus"
+        : "light-plus";
+    return "";
+  }
+
+  private renderMarkdown(markdown: string): string {
+    // TODO: Use the appropriate Shiki theme based on VS Code's theme
+    const theme =
+      vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
+        ? "dark-plus"
+        : "light-plus";
 
     // Simple markdown parsing for fenced code blocks
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
@@ -274,7 +293,6 @@ export class MarkdownWebviewProvider {
     html = html.replace(/^### (.*$)/gm, "<h3>$1</h3>");
     html = html.replace(/^\* (.*$)/gm, "<li>$1</li>");
     html = html.replace(/\n\n/g, "</p><p>");
-    html = `<p>${html}</p>`;
     html = html.replace(/<p><\/p>/g, "");
     html = html.replace(/<p>(<h[1-6]>)/g, "$1");
     html = html.replace(/(<\/h[1-6]>)<\/p>/g, "$1");
@@ -283,14 +301,4 @@ export class MarkdownWebviewProvider {
 
     return html;
   }
-}
-
-function generateNonce() {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }

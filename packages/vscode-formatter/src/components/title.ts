@@ -13,7 +13,14 @@ export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
             (TS${diagnostic.code})
             ${errorCodeExplanationLink(diagnostic.code)}  |
             ${errorMessageTranslationLink(diagnostic.message)}
-            ${uri ? `  | ${errorMessageInANewFile(uri, diagnostic.range)}` : ""}
+            ${
+              uri
+                ? `  | ${errorMessageOpenMarkdownPreview(
+                    uri,
+                    diagnostic.range
+                  )}`
+                : ""
+            }
             </span>
           `
         : ""
@@ -43,7 +50,7 @@ const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
 
 const PRETTY_TS_ERRORS_SCHEME = "pretty-ts-errors";
 
-export const errorMessageInANewFile = (uri: URI, range: Range) => {
+export const errorMessageOpenMarkdownPreview = (uri: URI, range: Range) => {
   const rangeParameter = `${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
   const virtualFileUri = URI.parse(
     `${PRETTY_TS_ERRORS_SCHEME}:${encodeURIComponent(
@@ -58,7 +65,7 @@ export const errorMessageInANewFile = (uri: URI, range: Range) => {
   );
   return d/*html*/ `
     <a title="Open in new tab" href="${href}">
-      <span class="codicon codicon-go-to-file">
+      <span class="codicon codicon-open-preview">
       </span>
     </a>`;
 };

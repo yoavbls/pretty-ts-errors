@@ -60,3 +60,7 @@ pre code {
 .copy-button:hover {
     background: var(--vscode-button-hoverBackground);
 }
+
+#content a {
+    text-decoration: none;
+}

@@ -13,6 +13,7 @@ import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverP
 import { uriStore } from "./provider/uriStore";
 import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
 import { registerMarkdownWebviewProvider } from "./provider/markdownWebiewProvider";
+import { registerRevealSelection } from "./commands/revealSelection";
 
 const cache = new Map();
 
@@ -23,6 +24,7 @@ export function activate(context: ExtensionContext) {
   registerSelectedTextHoverProvider(context);
   registerTextDocumentProvider(context);
   registerMarkdownWebviewProvider(context);
+  registerRevealSelection(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
