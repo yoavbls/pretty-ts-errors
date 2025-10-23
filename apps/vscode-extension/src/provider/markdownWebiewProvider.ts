@@ -42,6 +42,7 @@ export class MarkdownWebviewProvider {
 
       return json as RawGrammar;
     } catch {
+      console.log("failed to load type grammar");
       return null;
     }
   }
@@ -63,7 +64,7 @@ export class MarkdownWebviewProvider {
 
     this.highlighter = await createHighlighter({
       themes: ["dark-plus", "light-plus"],
-      langs: ["typescript"],
+      langs: ["typescript", ...customLangs].filter(Boolean),
     });
 
     console.log(
@@ -71,31 +72,47 @@ export class MarkdownWebviewProvider {
       this.highlighter.getLoadedLanguages()
     );
     console.log(
-      "Highlighter initialized with themes: " +
-        this.highlighter.getLoadedThemes()
+      "Highlighter initialized with themes: ",
+      this.highlighter.getLoadedThemes()
     );
-  }
-
-  private getFallbackThemeName() {
-    const currentTheme = vscode.window.activeColorTheme;
-    const isDark = currentTheme.kind === vscode.ColorThemeKind.Dark;
-    return isDark ? "dark-plus" : "light-plus";
   }
 
   async openMarkdownPreview(uri: vscode.Uri) {
     await this.initializeHighlighter();
 
-    const panel = vscode.window.createWebviewPanel(
-      MarkdownWebviewProvider.viewType,
-      "Pretty TS Errors - Markdown Preview",
-      vscode.ViewColumn.Beside,
-      {}
-    );
-
     const document = await vscode.workspace.openTextDocument(uri);
     const markdown = document.getText();
     const content = this.renderMarkdown(markdown);
+    const fileName = document.fileName.slice(0, -3);
+
+    const panel = vscode.window.createWebviewPanel(
+      MarkdownWebviewProvider.viewType,
+      `Pretty TS Errors - ${fileName}`,
+      vscode.ViewColumn.Beside,
+      {
+        // TODO: make symbol reference links work
+        enableCommandUris: [],
+        enableScripts: true,
+        enableFindWidget: true,
+        localResourceRoots: [],
+      }
+    );
+
     panel.webview.html = await this.getWebviewContent(content);
+    panel.webview.onDidReceiveMessage(
+      (message: { command: string; [key: string]: unknown }) => {
+        console.log(message);
+        if (message && message.command) {
+          switch (message.command) {
+            case "notify": {
+              if (typeof message["text"] === "string") {
+                vscode.window.showInformationMessage(message["text"]);
+              }
+            }
+          }
+        }
+      }
+    );
 
     vscode.window.onDidChangeActiveColorTheme(async () => {
       panel.webview.html = await this.getWebviewContent(content);
@@ -140,7 +157,9 @@ export class MarkdownWebviewProvider {
             background-color: transparent !important;
             border-radius: 3px;
             padding: 0 !important;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-weight: var(--vscode-editor-font-weight, normal);
+            font-size: var(--vscode-editor-font-size, 16px);
+            font-family: var(--vscode-editor-font-family), 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
         }
 
         .copy-button {
@@ -173,12 +192,23 @@ export class MarkdownWebviewProvider {
 </head>
 <body>
     ${content}
+    <!-- TODO: this should **NOT** be an inline script, see https://code.visualstudio.com/api/extension-guides/webview#content-security-policy -->
     <script>
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Could show a toast notification here
-            });
+      // wrap this in IIFE because vscode should **NEVER** be leaked into the global scope
+      // @see https://code.visualstudio.com/api/extension-guides/webview#passing-messages-from-a-webview-to-an-extension
+      const api = (function () {
+        const vscode = acquireVsCodeApi()
+        return {
+          notify(text) {
+            vscode.postMessage({ command: 'notify', text });
+          }
         }
+      })();
+
+      async function copyToClipboard(text) {
+        await navigator.clipboard.writeText(text);
+        api.notify('Copied text to clipboard!');
+      }
     </script>
 </body>
 </html>`;
@@ -189,7 +219,7 @@ export class MarkdownWebviewProvider {
     const currentTheme = vscode.window.activeColorTheme;
     const isDark = currentTheme.kind === vscode.ColorThemeKind.Dark;
 
-    // Use the appropriate Shiki theme based on VS Code's theme
+    // TODO: Use the appropriate Shiki theme based on VS Code's theme
     const theme = isDark ? "dark-plus" : "light-plus";
 
     // Simple markdown parsing for fenced code blocks
@@ -198,7 +228,7 @@ export class MarkdownWebviewProvider {
     let html = markdown;
 
     // Replace code blocks with highlighted versions
-    html = html.replace(codeBlockRegex, (match, lang, code) => {
+    html = html.replace(codeBlockRegex, (_match, lang, code) => {
       const language = lang || "text";
       let highlightedCode: string;
 
@@ -271,50 +301,7 @@ export class MarkdownWebviewProvider {
     return html;
   }
 
-  private getDefaultMarkdown(): string {
-    return `# Pretty TS Errors - Custom Type Preview
-
-This preview supports your custom \`type\` language with proper syntax highlighting!
-
-## Example with custom type language:
-
-\`\`\`type
-interface User {
-  name: string;
-  age: number;
-}
-
-type Status = "active" | "inactive" | "pending";
-
-type UserWithStatus = User & {
-  status: Status;
-};
-\`\`\`
-
-
-\`\`\`type
-string | "hello" | 3 | number | Partial<User> | Array<Status>
-\`\`\`
-
-\`\`\`typescript
-string | "hello" | 3 | number | Partial<User> | Array<Status>
-\`\`\`
-
-
-## Comparison with regular TypeScript:
-
-\`\`\`typescript
-interface User {
-  name: string;
-  age: number;
-}
-
-type Status = "active" | "inactive" | "pending";
-\`\`\`
-
-Your custom \`type\` grammar is now working in this preview!`;
-  }
-
+  // TODO: What does this do? Do we need it?
   private async extractMonacoTokenStyles(): Promise<string> {
     // For now, we'll use a hardcoded version of common Monaco styles
     // In a real implementation, you could try to extract this from VS Code's DOM
