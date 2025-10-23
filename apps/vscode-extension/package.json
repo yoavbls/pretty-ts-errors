@@ -51,8 +51,9 @@
     "commands": [
       {
         "command": "prettyTsErrors.openMarkdownPreview",
-        "title": "Open Markdown Preview with Custom Types",
-        "category": "Pretty TS Errors"
+        "title": "Open Markdown Preview",
+        "category": "Pretty TS Errors",
+        "enablement": "!isCommandPanel"
       }
     ],
     "languages": [

@@ -18,15 +18,26 @@ export function registerTextDocumentProvider(context: ExtensionContext) {
 }
 
 export const textDocumentContentProvider: TextDocumentContentProvider = {
+  /**
+   * Provides the text document content for uri's with the scheme `pretty-ts-errors`
+   * @see https://code.visualstudio.com/api/extension-guides/virtual-documents#textdocumentcontentprovider
+   * @example
+   * ```
+   * const matchingUri = Uri.parse(`pretty-ts-errors:/path/to/file.ts.md`)
+   * ```
+   */
   provideTextDocumentContent(uri): string {
     const searchParams = new URLSearchParams(uri.query);
-    const fsPath = uri.fsPath.replace(/\.md$/, "");
-    if (!searchParams.has("range")) {
-      return `range query parameter is missing for uri: ${uri}`;
+    if (!uri.fsPath.endsWith(".md")) {
+      return `only supports .md file extensions for ${uri.fsPath}`;
     }
+    const fsPath = uri.fsPath.slice(0, -3);
     const items = uriStore[fsPath];
     if (!items) {
       return `no diagnostics found for ${fsPath}`;
+    }
+    if (!searchParams.has("range")) {
+      return `range query parameter is missing for uri: ${uri}`;
     }
     const range = createRangeFromString(searchParams.get("range")!);
     const item = items.find((item) => {
@@ -37,23 +48,19 @@ export const textDocumentContentProvider: TextDocumentContentProvider = {
         range
       )}`;
     }
-    /**
-     * At this point the user has seen the tooltip and needs to see the markdown preview
-     * The preview needed ```type to be formatted correctly to the user but this is no longer needed.
-     * The markdown preview needs ```typescript to be formatted correctly.
-     * TODO: maybe use a markdown-it plugin instead, its a bit more work, but gives a lot more control than find and replaces of strings
-     * TODO: inject the codeicon icon font, else the icons dont show up
-     */
-    const content = item.contents
-      .map((content) =>
-        content.value.replaceAll("```type\n", "```typescript\n")
-      )
-      .join("\n");
-
-    return content;
+    return item.contents.map((content) => content.value).join("\n");
   },
 };
 
+/**
+ * @example
+ * ```ts
+ * const uri = Uri.parse('ts-pretty-errors:/some/file.ts.md?range=1:0-1:15');
+ * const searchParams = new URLSearchParams(uri.query);
+ * const range = createRangeFromString(searchParams.get('range'));
+ * //     ^ -> Range { start: Position { line: 1, character: 0 }, end: Position: { line: 1, character: 15 } }
+ * ```
+ */
 function createRangeFromString(range: string) {
   const [start, end] = range.split("-");
   const [startLine, startCharacter] = start!.split(":").map(Number);

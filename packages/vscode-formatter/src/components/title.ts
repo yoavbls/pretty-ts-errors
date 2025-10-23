@@ -52,7 +52,9 @@ export const errorMessageInANewFile = (uri: URI, range: Range) => {
   );
   const args = [virtualFileUri];
   const href = URI.parse(
-    `command:markdown.showPreview?${encodeURIComponent(JSON.stringify(args))}`
+    `command:prettyTsErrors.openMarkdownPreview?${encodeURIComponent(
+      JSON.stringify(args)
+    )}`
   );
   return d/*html*/ `
     <a title="Open in new tab" href="${href}">

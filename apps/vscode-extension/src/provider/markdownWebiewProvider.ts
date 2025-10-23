@@ -1,6 +1,6 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
-import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
+// import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
 import {
   createHighlighter,
   Highlighter,
@@ -13,7 +13,9 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "prettyTsErrors.openMarkdownPreview",
-      async () => await provider.showPreview()
+      async (uri: vscode.Uri) => {
+        await provider.openMarkdownPreview(uri);
+      }
     )
   );
 }
@@ -21,7 +23,6 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
 export class MarkdownWebviewProvider {
   private static readonly viewType = "prettyTsErrors.markdownPreview";
   private highlighter: Highlighter | null = null;
-  private shikiThemeName: string | null = null;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -50,95 +51,29 @@ export class MarkdownWebviewProvider {
       return;
     }
 
-    try {
-      // eslint-disable-next-line prefer-const
-      let [theme, themes] = await getUserTheme();
-
-      this.shikiThemeName = theme;
-
-      // TODO: some themes have an `include`, that does not seem to be loaded by vscode-shiki-bridge
-      //       vscode-shiki-bridge needs to figure out how to embed those, or add them as seperate definitions
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      themes = themes.filter((theme) => !(theme as any)["include"]);
-
-      if (themes.length === 0) {
-        this.shikiThemeName = this.getFallbackThemeName();
-      }
-
-      // TODO: vscode-shiki-bridge#inferBuiltinLanguageIds pushes buildin languages as a string into this result, without finding its grammar (`jsx-tags` below)
-      const langs: (LanguageRegistration | string)[] = await getUserLangs([
-        "typescript",
-        "javascript",
-        "type",
-      ]);
-
-      // TODO: shiki chokes on embeddedLanguage `jsx-tags` for `javascript
-      //       vscode-shiki-bridge still needs to find the grammar and add it, or creating the highlighter will throw
-      const jsLang = langs.find((lang) =>
-        typeof lang === "string" ? false : lang.name === "javascript"
-      ) as LanguageRegistration | undefined;
-      if (jsLang) {
-        jsLang.embeddedLangs?.splice(
-          jsLang.embeddedLangs.indexOf("jsx-tags"),
-          1
-        );
-      }
-
-      const jsxTagsIndex = langs.findIndex(
-        (lang) => typeof lang === "string" && lang === "jsx-tags"
-      );
-      if (jsxTagsIndex !== -1) {
-        langs.splice(jsxTagsIndex, 1);
-      }
-
-      // TODO: shiki chokes on a language having an alias to itself `typescript` -> `typescript`
-      //       vscode-shiki-bridge should remove these circular references
-      langs.forEach((lang) => {
-        if (typeof lang === "string") {
-          return;
-        }
-        const circularReferenceIndex = lang?.aliases?.indexOf(lang.name);
-        if (circularReferenceIndex && circularReferenceIndex !== -1) {
-          lang?.aliases?.splice(circularReferenceIndex, 1);
-        }
-      });
-
-      const typeGrammar = await this.loadTypeGrammar();
-      if (typeGrammar) {
-        const customLang: LanguageRegistration = {
-          ...typeGrammar,
-          // Allow using "type" as a language id when calling codeToHtml
-          aliases: ["type"],
-        } as LanguageRegistration;
-
-        langs.push(customLang);
-      }
-
-      console.log({ theme, themes, langs });
-
-      this.highlighter = await createHighlighter({
-        // TODO: add `dark-plus` and `light-plus` as default themes, because they are the fallback theme if something fails
-        themes: [...themes, "dark-plus", "light-plus"],
-        langs,
-      });
-
-      console.log(
-        "Highlighter initialized with languages:",
-        this.highlighter.getLoadedLanguages()
-      );
-      console.log(
-        "Highlighter initialized with themes: " +
-          this.highlighter.getLoadedThemes()
-      );
-    } catch (error) {
-      console.error("Failed to initialize highlighter:", error);
-      // Fallback to basic highlighter
-      this.shikiThemeName = this.getFallbackThemeName();
-      this.highlighter = await createHighlighter({
-        themes: ["dark-plus", "light-plus"],
-        langs: ["typescript", "javascript"],
-      });
+    const customLangs: LanguageRegistration[] = [];
+    const typeGrammar = await this.loadTypeGrammar();
+    if (typeGrammar) {
+      customLangs.push({
+        ...typeGrammar,
+        // Allow using "type" as a language id when calling codeToHtml
+        aliases: ["type"],
+      } as LanguageRegistration);
     }
+
+    this.highlighter = await createHighlighter({
+      themes: ["dark-plus", "light-plus"],
+      langs: ["typescript"],
+    });
+
+    console.log(
+      "Highlighter initialized with languages:",
+      this.highlighter.getLoadedLanguages()
+    );
+    console.log(
+      "Highlighter initialized with themes: " +
+        this.highlighter.getLoadedThemes()
+    );
   }
 
   private getFallbackThemeName() {
@@ -147,7 +82,7 @@ export class MarkdownWebviewProvider {
     return isDark ? "dark-plus" : "light-plus";
   }
 
-  async showPreview() {
+  async openMarkdownPreview(uri: vscode.Uri) {
     await this.initializeHighlighter();
 
     const panel = vscode.window.createWebviewPanel(
@@ -157,102 +92,23 @@ export class MarkdownWebviewProvider {
       {}
     );
 
-    panel.webview.html = await this.getWebviewContent();
+    const document = await vscode.workspace.openTextDocument(uri);
+    const markdown = document.getText();
+    const content = this.renderMarkdown(markdown);
+    panel.webview.html = await this.getWebviewContent(content);
 
-    // Listen for active editor changes to update preview
-    const changeActiveEditor = vscode.window.onDidChangeActiveTextEditor(
-      async (editor) => {
-        if (editor && editor.document.languageId === "markdown") {
-          panel.webview.html = await this.getWebviewContent(
-            editor.document.getText()
-          );
-        }
-      }
-    );
-
-    panel.onDidDispose(() => {
-      changeActiveEditor.dispose();
+    vscode.window.onDidChangeActiveColorTheme(async () => {
+      panel.webview.html = await this.getWebviewContent(content);
     });
-
-    // Update with current editor if it's markdown
-    const activeEditor = vscode.window.activeTextEditor;
-    if (activeEditor && activeEditor.document.languageId === "markdown") {
-      panel.webview.html = await this.getWebviewContent(
-        activeEditor.document.getText()
-      );
-    }
   }
 
-  private async getWebviewContent(markdownContent?: string): Promise<string> {
-    if (!this.highlighter) {
-      await this.initializeHighlighter();
-    }
-
-    const content = markdownContent || this.getDefaultMarkdown();
-    // NOTE: if we use the `markdown-it` instance of vscode itself, it will include all active extension plugins that modify/augment the markdown-it instance
-    // const htmlContent = await this.renderMarkdown(content);
-
-    const themeName = this.shikiThemeName
-      ? this.shikiThemeName
-      : this.getFallbackThemeName();
-    const useLang = this.highlighter?.getLoadedLanguages().includes("type")
-      ? "type"
-      : "typescript";
-
-    let htmlContent = `
-    Highlighted with lang: ${useLang}
-    ${this.highlighter?.codeToHtml(
-      `string | "hello" | 3 | number | Partial<User> | Array<Status> | typeof JSON.parse`,
-      {
-        lang: useLang,
-        theme: themeName,
-      }
-    )}
-    `.trim();
-
-    if (htmlContent && useLang !== "typescript") {
-      htmlContent = `
-      ${htmlContent}
-
-      Highlighted with lang: typescript
-      ${this.highlighter?.codeToHtml(
-        `string | "hello" | 3 | number | Partial<User> | Array<Status> | typeof JSON.parse`,
-        {
-          lang: "typescript",
-          theme: themeName,
-        }
-      )}
-      `.trim();
-    }
-
-    // Get actual theme colors from VS Code
-
-    // Try to extract Monaco token styles from VS Code
-    let monacoTokenStyles = await this.extractMonacoTokenStyles();
-    try {
-      // Get the webview HTML that VS Code uses
-      const activeEditor = vscode.window.activeTextEditor;
-      if (activeEditor) {
-        // We'll extract token styles differently - let's use a more direct approach
-        monacoTokenStyles = await this.extractMonacoTokenStyles();
-      }
-    } catch (error) {
-      console.log("Could not extract Monaco styles, using fallback");
-    }
-
-    console.log("Monaco styles extracted:", monacoTokenStyles.length > 0);
-
+  private async getWebviewContent(content: string): Promise<string> {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pretty TS Errors - Markdown Preview</title>
-    ${
-      monacoTokenStyles
-        ? `<style type="text/css" media="screen" class="vscode-tokens-styles">${monacoTokenStyles}</style>`
-        : ""
-    }
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -316,8 +172,7 @@ export class MarkdownWebviewProvider {
     </style>
 </head>
 <body>
-    ${htmlContent}
-
+    ${content}
     <script>
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
@@ -329,11 +184,7 @@ export class MarkdownWebviewProvider {
 </html>`;
   }
 
-  private async renderMarkdown(markdown: string): Promise<string> {
-    if (!this.highlighter) {
-      return markdown;
-    }
-
+  private renderMarkdown(markdown: string): string {
     // Get VS Code's current theme
     const currentTheme = vscode.window.activeColorTheme;
     const isDark = currentTheme.kind === vscode.ColorThemeKind.Dark;
@@ -387,8 +238,6 @@ export class MarkdownWebviewProvider {
             },
           ],
         });
-
-        console.log("Raw Shiki output:", highlightedCode.substring(0, 400));
 
         // Extract just the inner HTML from the pre tag
         const preMatch = highlightedCode.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
