@@ -49,6 +49,17 @@
     "LICENSE"
   ],
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "prettyTsErrors.markdownPreview",
+          "icon": "$(open-preview)",
+          "name": "Pretty TypeScript Error",
+          "type": "webview",
+          "visibility": "collapsed"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "prettyTsErrors.openMarkdownPreview",

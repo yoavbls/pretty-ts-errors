@@ -104,12 +104,27 @@ export class MarkdownWebviewProvider {
     );
   }
 
-  async openMarkdownPreview(uri: vscode.Uri) {
-    await this.initializeHighlighter();
+  getWebviewOptions(): vscode.WebviewOptions {
+    return {
+      enableCommandUris: ["prettyTsErrors.revealSelection"],
+      enableScripts: true,
+      enableForms: false,
+      localResourceRoots: [this.webviewRootUri],
+    };
+  }
 
+  private getWebviewPanelOptions(): vscode.WebviewPanelOptions {
+    return {
+      enableFindWidget: true,
+      // NOTE: this should be kept at false if possible, as enabling it is a performance concern
+      retainContextWhenHidden: false,
+    };
+  }
+
+  async openMarkdownPreview(uri: vscode.Uri) {
     const document = await vscode.workspace.openTextDocument(uri);
     const markdown = document.getText();
-    const content = this.renderMarkdown(markdown);
+    const content = await this.renderMarkdown(markdown);
     const fileName = document.fileName.slice(0, -3);
 
     const panel = vscode.window.createWebviewPanel(
@@ -117,35 +132,36 @@ export class MarkdownWebviewProvider {
       `Pretty TS Errors - ${fileName}`,
       vscode.ViewColumn.Beside,
       {
-        // TODO: make symbol reference links work
-        enableCommandUris: ["prettyTsErrors.revealSelection", "vscode.open"],
-        enableScripts: true,
-        enableFindWidget: true,
-        enableForms: false,
-        localResourceRoots: [this.webviewRootUri],
+        ...this.getWebviewOptions(),
+        ...this.getWebviewPanelOptions(),
       }
     );
 
     panel.webview.html = await this.getWebviewContent(panel.webview, content);
-    panel.webview.onDidReceiveMessage(
-      (message: { command: string; [key: string]: unknown }) => {
-        if (message && message.command) {
-          switch (message.command) {
-            case "notify": {
-              if (typeof message["text"] === "string") {
-                vscode.window.showInformationMessage(message["text"]);
-              }
-              break;
+    const disposable = panel.webview.onDidReceiveMessage(
+      this.createOnDidReceiveMessage()
+    );
+    panel.onDidDispose(() => disposable.dispose());
+  }
+
+  createOnDidReceiveMessage() {
+    return (message: { command: string; [key: string]: unknown }) => {
+      if (message && message.command) {
+        switch (message.command) {
+          case "notify": {
+            if (typeof message["text"] === "string") {
+              vscode.window.showInformationMessage(message["text"]);
             }
+            break;
           }
         }
       }
-    );
+    };
   }
 
-  private async getWebviewContent(
+  async getWebviewContent(
     webview: vscode.Webview,
-    markdown: string
+    content: string
   ): Promise<string> {
     let html = await this.webviewHtmlTemplate;
 
@@ -199,25 +215,18 @@ export class MarkdownWebviewProvider {
       }
     );
 
-    // insert the content
+    const renderedMarkdown = await this.renderMarkdown(content);
     html = html.replace(
       '<div id="content"></div>',
-      `<div id="content">${this.renderMarkdown(markdown)}</div>`
+      `<div id="content">${renderedMarkdown}</div>`
     );
 
     return html;
   }
 
-  private renderMarkdown2(markdown: string): string {
-    // TODO: Use the appropriate Shiki theme based on VS Code's theme
-    const theme =
-      vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
-        ? "dark-plus"
-        : "light-plus";
-    return "";
-  }
+  private async renderMarkdown(markdown: string): Promise<string> {
+    await this.initializeHighlighter();
 
-  private renderMarkdown(markdown: string): string {
     // TODO: Use the appropriate Shiki theme based on VS Code's theme
     const theme =
       vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
@@ -288,11 +297,14 @@ export class MarkdownWebviewProvider {
     });
 
     // Simple markdown to HTML conversions
+    // TODO: use a proper markdown renderer, this seems to generate a lot of empty tags, and pretty sure its invalid html that ends up being corrected by the browser
+    //       markdown-it has a shiki plugin !
     html = html.replace(/^# (.*$)/gm, "<h1>$1</h1>");
     html = html.replace(/^## (.*$)/gm, "<h2>$1</h2>");
     html = html.replace(/^### (.*$)/gm, "<h3>$1</h3>");
     html = html.replace(/^\* (.*$)/gm, "<li>$1</li>");
     html = html.replace(/\n\n/g, "</p><p>");
+    html = `<p>${html}</p>`;
     html = html.replace(/<p><\/p>/g, "");
     html = html.replace(/<p>(<h[1-6]>)/g, "$1");
     html = html.replace(/(<\/h[1-6]>)<\/p>/g, "$1");

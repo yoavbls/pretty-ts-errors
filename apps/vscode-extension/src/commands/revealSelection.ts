@@ -11,7 +11,7 @@ import {
   window,
   workspace,
 } from "vscode";
-import { MarkdownWebviewProvider } from "../provider/markdownWebiewProvider";
+import { MarkdownWebviewProvider } from "../provider/markdownWebviewProvider";
 
 export function registerRevealSelection(context: ExtensionContext) {
   context.subscriptions.push(
