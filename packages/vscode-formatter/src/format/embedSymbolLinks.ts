@@ -1,4 +1,5 @@
 import { Diagnostic } from "vscode-languageserver-types";
+import { URI } from "vscode-uri";
 
 export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
   if (
@@ -14,15 +15,18 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
     return diagnostic;
   }
 
+  const args = [URI.parse(ref.location.uri), ref.location.range];
+  const href = URI.parse(
+    `command:prettyTsErrors.revealSelection?${encodeURIComponent(
+      JSON.stringify(args)
+    )}`
+  );
+
   return {
     ...diagnostic,
     message: diagnostic.message.replaceAll(
       symbol,
-      `${symbol} <a href="${ref.location.uri}#${
-        ref.location.range.start.line + 1
-      },${
-        ref.location.range.start.character + 1
-      }"><span class="codicon codicon-go-to-file" ></span></a>&nbsp;`
+      `${symbol} <a href="${href}" title="Go to symbol"><span class="codicon codicon-go-to-file" ></span></a>&nbsp;`
     ),
   };
 }

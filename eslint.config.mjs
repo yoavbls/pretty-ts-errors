@@ -27,6 +27,11 @@ export default tseslint.config(
       },
       globals: {
         ...globals.node,
+        /**
+         * @see https://www.npmjs.com/package/@types/vscode-webview
+         */
+        acquireVsCodeApi: false,
+        window: false,
       },
     },
     plugins: {
