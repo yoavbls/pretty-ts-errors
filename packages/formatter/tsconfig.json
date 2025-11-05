@@ -9,5 +9,5 @@
     "declarationMap": true
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../utils" }]
+  "references": [{ "path": "../utils" }, { "path": "../diagnostics-l10n" }]
 }

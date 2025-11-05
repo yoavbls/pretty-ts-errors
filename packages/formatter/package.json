@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "dependencies": {
-    "@pretty-ts-errors/utils": "*"
+    "@pretty-ts-errors/utils": "*",
+    "@pretty-ts-errors/diagnostics-l10n": "*"
   },
   "devDependencies": {
     "@types/prettier": "^2.7.3",
