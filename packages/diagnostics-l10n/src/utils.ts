@@ -1,3 +1,6 @@
+/**
+ * Based on how TypeScript normalizes locales
+ */
 export function normalizeLocale(locale: string) {
   locale = locale.toLowerCase();
   switch (locale) {
