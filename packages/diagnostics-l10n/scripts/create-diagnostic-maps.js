@@ -1,41 +1,49 @@
 // @ts-check
 
 import { fileURLToPath } from "url";
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile, mkdir } from "fs/promises";
+import { existsSync } from "fs";
 import * as path from "path";
+
+import { locales } from "./constants.js";
 
 const tsVersion = "5.9.3";
 const diagnosticMessagesReferenceFileUrl = `https://raw.githubusercontent.com/microsoft/TypeScript/refs/tags/v${tsVersion}/src/compiler/diagnosticMessages.json`;
 
 /**
- * @returns {Promise<import('../src/').DiagnosticMessagesReference>}
+ * should resolve to `node_modules/typescript/lib/`, similar to an import statement
  */
-async function getDiagnosticMessagesRefererence() {
-  // TODO: cache this result with version tag?
-  const result = await fetch(diagnosticMessagesReferenceFileUrl);
-  return result.json();
-}
+const typescriptLibPath = path.dirname(
+  fileURLToPath(import.meta.resolve("typescript"))
+);
+
+const nodeModulesPathPart = `${path.sep}node_modules${path.sep}`;
+/**
+ * should resolve to the path of `node_modules/` similar to an import statements
+ */
+const nodeModulesPath = typescriptLibPath.slice(
+  0,
+  typescriptLibPath.indexOf(nodeModulesPathPart) + nodeModulesPathPart.length
+);
 
 /**
- * Should match the typescript source code at https://github.com/microsoft/TypeScript/blob/v5.9.3/src/compiler/utilitiesPublic.ts#L685
- *
- * NOTE: the link should use the version used in {@link tsVersion}
+ * @returns {Promise<import('../src/index.js').DiagnosticMessagesReference>}
  */
-const locales = [
-  "cs",
-  "de",
-  "es",
-  "fr",
-  "it",
-  "ja",
-  "ko",
-  "pl",
-  "pt-br",
-  "ru",
-  "tr",
-  "zh-cn",
-  "zh-tw",
-];
+async function getDiagnosticMessagesRefererence() {
+  let contents;
+  const cacheFileName = `diagnosticMessages.${tsVersion}.json`;
+  const cacheDirPath = path.join(nodeModulesPath, ".cache", "pretty-ts-errors");
+  const cacheFilePath = path.join(cacheDirPath, cacheFileName);
+  if (!existsSync(cacheFilePath)) {
+    await mkdir(cacheDirPath, { recursive: true });
+    const response = await fetch(diagnosticMessagesReferenceFileUrl);
+    contents = await response.text();
+    await writeFile(cacheFilePath, contents);
+  } else {
+    contents = await readFile(cacheFilePath, { encoding: "utf-8" });
+  }
+  return JSON.parse(contents);
+}
 
 /**
  * @param {string} locale
@@ -44,15 +52,7 @@ function pathForLocale(locale) {
   return `${locale}/diagnosticMessages.generated.json`;
 }
 
-/**
- * should resolve to `node_modules/typescript/lib/`, where `node_modules` is the import path the nodejs runtime uses for this project.
- * needs to be this complicated because of ESM/CJS is still a mess, and having a monorepo complicates it further
- */
-const typescriptLibPath = path.dirname(
-  fileURLToPath(import.meta.resolve("typescript"))
-);
-
-async function getAllLocaleDiagnosticMessagesMaps() {
+async function getLocaleDiagnosticMessagesMaps() {
   return Promise.all(
     locales
       .map((locale) => {
@@ -63,7 +63,7 @@ async function getAllLocaleDiagnosticMessagesMaps() {
       })
       .map(async ({ locale, path }) => {
         const text = await readFile(path, { encoding: "utf-8" });
-        /** @type {import('../src/').LocalizedDiagnosticeMessageMap} */
+        /** @type {import('../src/index.js').LocalizedDiagnosticeMessageMap} */
         const json = JSON.parse(text);
         return {
           locale,
@@ -75,22 +75,22 @@ async function getAllLocaleDiagnosticMessagesMaps() {
 
 /**
  * The locale the diagnostic messages reference file is written into
- * @type {import('../src/').Locale}
+ * @type {import('../src/index.js').Locale}
  */
 const defaultLocale = "en";
 
 /**
  *
- * @param {import('../src/').DiagnosticMessagesReference} diagnosticMessageReference
- * @param {{ locale: string, json: import('../src/').LocalizedDiagnosticeMessageMap }[]} localizedDiagnosticMessagesMaps
- * @returns {import('../src/').DiagnosticMessageLocalesMap}
+ * @param {import('../src/index.js').DiagnosticMessagesReference} diagnosticMessageReference
+ * @param {{ locale: string, json: import('../src/index.js').LocalizedDiagnosticeMessageMap }[]} localizedDiagnosticMessagesMaps
+ * @returns {import('../src/index.js').DiagnosticMessageLocalesMap}
  */
 function mergeToDiagnosticMessageLocalesMap(
   diagnosticMessageReference,
   localizedDiagnosticMessagesMaps
 ) {
   /**
-   * @type {import('../src/').DiagnosticMessageLocalesMap}
+   * @type {import('../src/index.js').DiagnosticMessageLocalesMap}
    */
   // @ts-ignore
   const result = {};
@@ -107,21 +107,21 @@ function mergeToDiagnosticMessageLocalesMap(
 }
 
 /**
- * @param {import('../src/').DiagnosticMessagesReference} diagnosticMessageReference
- * @returns {import('../src/').DiagnosticMessageErrorCodeMap}
+ * @param {import('../src/index.js').DiagnosticMessagesReference} diagnosticMessageReference
+ * @returns {import('../src/index.js').DiagnosticMessageMap}
  */
 function transformDiagnosticMessagesReferenceToDiagnosticMessageErrorCodeMap(
   diagnosticMessageReference
 ) {
   /**
-   * @type {import('../src/').DiagnosticMessageErrorCodeMap}
+   * @type {import('../src/index.js').DiagnosticMessageMap}
    */
   const map = {};
   return Object.entries(diagnosticMessageReference).reduce(
     (map, [template, { code }]) => {
-      if (template.includes("{0}")) {
-        map[code] = template;
-      }
+      // if (template.includes("{0}")) {
+      map[code] = template;
+      // }
       return map;
     },
     map
@@ -129,14 +129,14 @@ function transformDiagnosticMessagesReferenceToDiagnosticMessageErrorCodeMap(
 }
 
 /**
- * @param {import('../src/').LocalizedDiagnosticeMessageMap} localizedDiagnosticMessages
- * @returns {import('../src/').DiagnosticMessageErrorCodeMap}
+ * @param {import('../src/index.js').LocalizedDiagnosticeMessageMap} localizedDiagnosticMessages
+ * @returns {import('../src/index.js').DiagnosticMessageMap}
  */
 function transformLocalizedDiagnosticMessagesToDiagnosticMessageErrorCodeMap(
   localizedDiagnosticMessages
 ) {
   /**
-   * @type {import('../src/').DiagnosticMessageErrorCodeMap}
+   * @type {import('../src/index.js').DiagnosticMessageMap}
    */
   const map = {};
   return Object.entries(localizedDiagnosticMessages).reduce(
@@ -153,9 +153,9 @@ function transformLocalizedDiagnosticMessagesToDiagnosticMessageErrorCodeMap(
           `identifier did not result into a valid code '${code}': ${identifier}`
         );
       }
-      if (template.includes("{0}")) {
-        map[code] = template;
-      }
+      // if (template.includes("{0}")) {
+      map[code] = template;
+      // }
       return map;
     },
     map
@@ -166,19 +166,23 @@ function transformLocalizedDiagnosticMessagesToDiagnosticMessageErrorCodeMap(
  * ESM version of `__dirname`
  */
 const dirname = fileURLToPath(new URL(".", import.meta.url));
+const destinationDirectoryPath = path.join(dirname, "..", "src", "locales");
 
-async function main() {
+/**
+ * @param  {string[]} args
+ * @returns {Promise<number>}
+ */
+async function main(...args) {
   const [diagnosticMessageReference, localizedDiagnosticMessagesMaps] =
     await Promise.all([
       getDiagnosticMessagesRefererence(),
-      getAllLocaleDiagnosticMessagesMaps(),
+      getLocaleDiagnosticMessagesMaps(),
     ]);
   const result = mergeToDiagnosticMessageLocalesMap(
     diagnosticMessageReference,
     localizedDiagnosticMessagesMaps
   );
-  const destinationDirectoryPath = path.join(dirname, "..", "src", "locales");
-  return Promise.all([
+  await Promise.all([
     writeFile(
       path.join(destinationDirectoryPath, "diagnosticMessagesMap.json"),
       JSON.stringify(result, null, 2),
@@ -195,6 +199,7 @@ async function main() {
       );
     }),
   ]);
+  return 0;
 }
 
-main();
+main(...process.argv.slice(2)).then((code) => (process.exitCode = code));

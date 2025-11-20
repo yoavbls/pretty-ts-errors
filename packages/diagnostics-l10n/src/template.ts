@@ -36,6 +36,7 @@ export interface TemplateParamPart {
    * ```
    */
   identifier: number;
+  quote: "'" | '"' | "`" | "";
 }
 
 /**
@@ -54,11 +55,11 @@ function toCharacters(string: string) {
  * const parts = parseTemplate(template);
  * console.log(parts);
  * // [
- * //  { type: 'text', text: "Type '" },
- * //  { type: 'param', index: 6, identifier: 0 },
- * //  { type: 'text', text: "}' is not assignable to type '" },
+ * //  { type: 'text', text: "Type " },
+ * //  { type: 'param', index: 6, identifier: 0, quote: '\'' },
+ * //  { type: 'text', text: " is not assignable to type ", quote: '\'' },
  * //  { type: 'param', index: 30, identifier: 1 },
- * //  { type: 'text', text: "}'." }
+ * //  { type: 'text', text: "." }
  * // ]
  * ```
  */
@@ -82,18 +83,43 @@ export function parseTemplate(
       if (!identifier || !["0", "1", "2", "3", "4"].includes(identifier)) {
         break match;
       }
-      // get the string part up until the match
-      const text = characters.slice(0, index).join("");
-      parts.push({
-        type: "text",
-        text,
-      });
+      let startQuote = (characters[index - 1] ??
+        "") as TemplateParamPart["quote"];
+      if (!['"', "'", "`"].includes(startQuote)) {
+        startQuote = "";
+      }
+      let endQuote = (characters[index + 3] ??
+        "") as TemplateParamPart["quote"];
+      if (startQuote && !['"', "'", "`"].includes(endQuote)) {
+        startQuote = "";
+        endQuote = "";
+      }
+      // get the string part up until the match, minus the quote character
+      const text = characters.slice(0, index - 1 - startQuote.length).join("");
+      // if it exists, push it as a text part
+      if (text.length) {
+        parts.push({
+          type: "text",
+          text,
+        });
+      }
+      // push the param part
       parts.push({
         type: "param",
         identifier: Number(identifier),
+        quote: startQuote,
       });
-      // slice the match of the template string
-      characters = characters.slice(index + 3);
+      // slice the match of the template string + its quote characters
+      // '{0}'
+      // ^     <- index
+      // 01234 <- index + n
+      // or without quotes
+      // {0}
+      // ^     <- index
+      // 012
+      characters = characters.slice(
+        index + 2 + startQuote.length + endQuote.length
+      );
       index = -1;
     }
     index++;
@@ -124,7 +150,7 @@ export function rebuildTemplate(
     if (part.type === "text") {
       string += part.text;
     } else {
-      string += `{${part.identifier}}`;
+      string += `${part.quote}{${part.identifier}}${part.quote}`;
     }
     return string;
   }, "");
@@ -138,10 +164,15 @@ export function formatDiagnosticFromTemplateParts(
   params: string[]
 ): string {
   return parts.reduce((result, part) => {
-    if (part.type === "text") {
-      result += part.text;
-    } else {
-      result += params[part.identifier];
+    switch (part.type) {
+      case "text": {
+        result += part.text;
+        break;
+      }
+      case "param": {
+        const param = params[part.identifier];
+        result += `${part.quote}${param}${part.quote}`;
+      }
     }
     return result;
   }, "");

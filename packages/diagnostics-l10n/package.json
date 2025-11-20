@@ -12,12 +12,13 @@
     "import": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsdown src/index.ts --format cjs,esm --dts",
-    "dev": "tsdown src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsdown src/index.ts --format cjs,esm --unbundle --dts",
+    "dev": "tsdown src/index.ts --format cjs,esm --unbundle --dts --watch",
     "lint": "tsc -p . --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate": "node scripts/create-diagnostics-maps.js"
+    "generate": "node scripts/create-diagnostic-maps.js",
+    "annotate": "node scripts/annotate-diagnostic-maps.js"
   },
   "tsdown": {
     "hash": false

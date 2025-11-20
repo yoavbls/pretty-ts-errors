@@ -73,10 +73,17 @@ export type LocalizedDiagnosticeMessageMap = Record<
  */
 type ErrorCode = number;
 
-export type DiagnosticMessageErrorCodeMap = Record<
-  ErrorCode,
-  DiagnosticMessageTemplate
->;
+/**
+ * A lookup table that maps error codes to their respective diagnostic message template.
+ * @example
+ * ```ts
+ * // using the `en` (default) locale as an example
+ * declare const diagnosticMessageMap: DiagnosticMessageMap;
+ * const errorCode = 2322;
+ * const template = diagnosticMessageMap[errorCode];
+ * // -> Type '{0}' is not assignable to type '{1}'
+ */
+export type DiagnosticMessageMap = Record<ErrorCode, DiagnosticMessageTemplate>;
 
 /**
  * A lookup table that containes all locales, where error codes map to their respective diagnostic message template
@@ -85,16 +92,13 @@ export type DiagnosticMessageErrorCodeMap = Record<
  * declare const diagnosticMessageLocalesMap: DiagnosticMessageLocalesMap;
  * const spanishLocale = 'es';
  * const errorCode = 2322;
- * // -> El tipo '{0}' no se puede asignar al tipo '{1}'.
  * const diagnosticMessageTemplateInSpanish = diagnosticMessageLocalesMap[spanishLocale][errorCode];
+ * // -> El tipo '{0}' no se puede asignar al tipo '{1}'.
  *
  * // with the english locale
  * const englishLocale = 'en';
- * // -> Type '{0}' is not assignable to type '{1}'
  * const diagnosticMessageTemplateInEnglish = diagnosticMessageLocalesMap[englishLocale][errorCode];
+ * // -> Type '{0}' is not assignable to type '{1}'
  * ```
  */
-export type DiagnosticMessageLocalesMap = Record<
-  Locale,
-  DiagnosticMessageErrorCodeMap
->;
+export type DiagnosticMessageLocalesMap = Record<Locale, DiagnosticMessageMap>;

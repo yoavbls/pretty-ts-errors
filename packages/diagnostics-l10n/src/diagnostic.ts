@@ -103,7 +103,8 @@ export function parseDiagnostic(
       case "param": {
         const hit = lookup[templatePart.identifier];
         if (hit) {
-          diagnostic = diagnostic.substring(hit.argument.length);
+          // + 2 because we need to add the starting and end quotes wrapping this param
+          diagnostic = diagnostic.substring(hit.argument.length + 2);
           parts.push(hit);
           continue;
         }
@@ -122,7 +123,8 @@ export function parseDiagnostic(
             );
           }
           const indexOfNextPart = diagnostic.indexOf(nextPart.text);
-          part.argument = diagnostic.slice(0, indexOfNextPart);
+          // start from 1, to skip the opening quote of the param
+          part.argument = diagnostic.slice(1, indexOfNextPart);
           diagnostic = diagnostic.substring(indexOfNextPart);
           // cache the param to simplify arguments that are repeated
           lookup[templatePart.identifier] = part;
