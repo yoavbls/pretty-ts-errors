@@ -44,6 +44,7 @@ const copyErrorLink = (message: Diagnostic["message"]) => {
   const args = encodeURIComponent(JSON.stringify(message));
   return d/*html*/ `
     <a title="Copy error to clipboard" href="command:prettyTsErrors.copyError?${args}">
-      Copy
+      <span class="codicon codicon-copy">
+      </span>
     </a>`;
 };
