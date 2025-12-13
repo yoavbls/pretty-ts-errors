@@ -1,6 +1,8 @@
 import { has } from "@pretty-ts-errors/utils";
 import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import {
+  commands,
+  env,
   ExtensionContext,
   languages,
   MarkdownString,
@@ -17,6 +19,16 @@ const cache = new Map();
 export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
+
+  // register the copy command
+  context.subscriptions.push(
+    commands.registerCommand(
+      "prettyTsErrors.copyError",
+      async (errorMessage: string) => {
+        await env.clipboard.writeText(errorMessage);
+      }
+    )
+  );
 
   registerSelectedTextHoverProvider(context);
 

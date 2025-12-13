@@ -11,7 +11,8 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
             <span style="color:#5f5f5f;">
             (TS${diagnostic.code}) 
             ${errorCodeExplanationLink(diagnostic.code)}  | 
-            ${errorMessageTranslationLink(diagnostic.message)}
+            ${errorMessageTranslationLink(diagnostic.message)}  | 
+            ${copyErrorLink(diagnostic.message)}
             </span>
           `
         : ""
@@ -35,6 +36,15 @@ const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
   return d/*html*/ `
     <a title="See translation" href="https://ts-error-translator.vercel.app/?error=${encodedMessage}">
       <span class="codicon codicon-globe">
+      </span>
+    </a>`;
+};
+
+const copyErrorLink = (message: Diagnostic["message"]) => {
+  const args = encodeURIComponent(JSON.stringify(message));
+  return d/*html*/ `
+    <a title="Copy error to clipboard" href="command:prettyTsErrors.copyError?${args}">
+      <span class="codicon codicon-copy">
       </span>
     </a>`;
 };
