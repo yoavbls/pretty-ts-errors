@@ -21,7 +21,7 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
 
 const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
   d/*html*/ `
-    <a title="See detailed explanation" href="https://typescript.tv/errors/#ts${errorCode}">
+    <a title="See detailed explanation" href="https://typescript.tv/errors/ts${errorCode}">
       <span class="codicon codicon-link-external">
       </span>
     </a>`;
