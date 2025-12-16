@@ -1,7 +1,6 @@
 import { compressToEncodedURIComponent } from "lz-string";
 import { Diagnostic } from "vscode-languageserver-types";
 import { d } from "@pretty-ts-errors/utils";
-import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
 import { miniLine } from "./miniLine";
 
 export const title = (diagnostic: Diagnostic) => d/*html*/ `
@@ -22,13 +21,11 @@ export const title = (diagnostic: Diagnostic) => d/*html*/ `
 `;
 
 const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
-  KNOWN_ERROR_NUMBERS.has(errorCode)
-    ? d/*html*/ `
-        <a title="See detailed explanation" href="https://typescript.tv/errors/#ts${errorCode}">
-          <span class="codicon codicon-link-external">
-          </span>
-        </a>`
-    : "";
+  d/*html*/ `
+    <a title="See detailed explanation" href="https://typescript.tv/errors/ts${errorCode}">
+      <span class="codicon codicon-link-external">
+      </span>
+    </a>`;
 
 const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
   const encodedMessage = compressToEncodedURIComponent(message);
