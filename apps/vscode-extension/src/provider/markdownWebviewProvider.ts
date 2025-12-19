@@ -1,12 +1,8 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
-// import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
-import {
-  createHighlighter,
-  Highlighter,
-  type LanguageRegistration,
-  type RawGrammar,
-} from "shiki";
+import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
+import { HighlighterCore, createHighlighterCore } from "shiki/core";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { createMarkdownExit, type MarkdownExit } from "markdown-exit";
 
 export function registerMarkdownWebviewProvider(context: ExtensionContext) {
@@ -56,7 +52,8 @@ function createMarkdownExitPatched(
  */
 export class MarkdownWebviewProvider {
   static readonly viewType = "prettyTsErrors.markdownPreview";
-  private highlighter: Highlighter | null = null;
+  private highlighter: HighlighterCore | null = null;
+  private theme = "";
   private md: MarkdownExit = createMarkdownExitPatched(
     this.highlight.bind(this)
   );
@@ -83,52 +80,22 @@ export class MarkdownWebviewProvider {
     return htmlTemplate;
   }
 
-  private async loadTypeGrammar(): Promise<RawGrammar | null> {
-    try {
-      const uri = vscode.Uri.joinPath(
-        this.context.extensionUri,
-
-        "syntaxes",
-
-        "type.tmGrammar.json"
-      );
-      const raw = await vscode.workspace.fs.readFile(uri);
-      const json = JSON.parse(new TextDecoder("utf-8").decode(raw));
-      return json as RawGrammar;
-    } catch {
-      console.error("failed to load type grammar");
-      return null;
-    }
-  }
-
   private async initializeHighlighter() {
     if (this.highlighter) {
       return;
     }
 
-    const customLangs: LanguageRegistration[] = [];
-    const typeGrammar = await this.loadTypeGrammar();
-    if (typeGrammar) {
-      customLangs.push({
-        ...typeGrammar,
-        // Allow using "type" as a language id when calling codeToHtml
-        aliases: ["type"],
-      } as LanguageRegistration);
+    const [theme, themes] = await getUserTheme();
+    this.theme = theme;
+    if (themes[0] === "none") {
+      throw new Error("could not load user theme");
     }
-
-    this.highlighter = await createHighlighter({
-      themes: ["dark-plus", "light-plus"],
-      langs: ["typescript", ...customLangs],
+    const langs = await getUserLangs(["type", "ts"]);
+    this.highlighter = await createHighlighterCore({
+      themes,
+      langs,
+      engine: createOnigurumaEngine(import("shiki/wasm")),
     });
-
-    console.log(
-      "Highlighter initialized with languages:",
-      this.highlighter.getLoadedLanguages()
-    );
-    console.log(
-      "Highlighter initialized with themes: ",
-      this.highlighter.getLoadedThemes()
-    );
   }
 
   getWebviewOptions(): vscode.WebviewOptions {
@@ -260,11 +227,6 @@ export class MarkdownWebviewProvider {
 
   private async highlight(code: string, lang = "type"): Promise<string> {
     await this.initializeHighlighter();
-    // TODO: Use the appropriate Shiki theme based on VS Code's theme
-    const theme =
-      vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
-        ? "dark-plus"
-        : "light-plus";
     const transformers = [
       {
         name: "remove-background-only",
@@ -288,7 +250,7 @@ export class MarkdownWebviewProvider {
     ];
     let html = this.highlighter!.codeToHtml(code.trim(), {
       lang,
-      theme,
+      theme: this.theme,
       transformers,
     });
     // wrap the highlighted code in a container with a copy button
