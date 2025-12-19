@@ -31,21 +31,16 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext
   ): Promise<void> {
+    webviewView.webview.html = NO_DIAGNOSTICS_MESSAGE;
     this.refresh(webviewView.webview);
-    let disposables = this.disposables.get(webviewView);
-    if (!disposables) {
-      disposables = [];
-      this.disposables.set(webviewView, disposables);
-    }
+
+    const disposables = this.ensureDisposables(webviewView);
 
     webviewView.webview.options = this.provider.getWebviewOptions();
     disposables.push(
       webviewView.webview.onDidReceiveMessage(
         this.provider.createOnDidReceiveMessage()
-      )
-    );
-
-    disposables.push(
+      ),
       vscode.languages.onDidChangeDiagnostics(() =>
         this.refresh(webviewView.webview)
       ),
@@ -56,6 +51,8 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       }),
       vscode.window.onDidChangeTextEditorSelection((event) => {
         const document = event.textEditor.document;
+        // this event fires often, including selecting text in output windows and terminal windows
+        // avoid doing unnessesary work, because it will cause noticable delays in the UI
         if (!has(SUPPORTED_LANGUAGE_IDS, document.languageId)) {
           return;
         }
@@ -70,8 +67,16 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     });
   }
 
+  private ensureDisposables(webviewView: vscode.WebviewView) {
+    let disposables = this.disposables.get(webviewView);
+    if (!disposables) {
+      disposables = [];
+      this.disposables.set(webviewView, disposables);
+    }
+    return disposables;
+  }
+
   async refresh(webview: vscode.Webview) {
-    let markdown = NO_DIAGNOSTICS_MESSAGE;
     const activeEditor = vscode.window.activeTextEditor;
     const selection = activeEditor?.selection;
     if (activeEditor && selection) {
@@ -80,10 +85,13 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       const diagnostic = diagnostics.find((diagnostic) =>
         diagnostic.range.contains(selection)
       );
+      // prefer to only update the view when a new selection with an error is selected, to avoid annoying the user with the error message dissapearing whenever the cursor position changes
       if (diagnostic) {
-        markdown = diagnostic.contents.map((item) => item.value).join("\n");
+        const markdown = diagnostic.contents
+          .map((item) => item.value)
+          .join("\n");
+        webview.html = await this.provider.getWebviewContent(webview, markdown);
       }
     }
-    webview.html = await this.provider.getWebviewContent(webview, markdown);
   }
 }

@@ -7,6 +7,7 @@ import {
   type LanguageRegistration,
   type RawGrammar,
 } from "shiki";
+import { createMarkdownExit, type MarkdownExit } from "markdown-exit";
 
 export function registerMarkdownWebviewProvider(context: ExtensionContext) {
   const provider = new MarkdownWebviewProvider(context);
@@ -27,12 +28,38 @@ export function registerMarkdownWebviewProvider(context: ExtensionContext) {
   );
 }
 
+function createMarkdownExitPatched(
+  highlight: (code: string) => Promise<string>
+) {
+  const md = createMarkdownExit({
+    html: true,
+    highlight,
+  });
+  const fence = md.renderer.rules.fence;
+  md.renderer.rules.fence = async (...args) => {
+    let result = await fence!(...args);
+    // annoyingly, markdown-[ex]it render code blocks with a wrapping `<pre><code>` block, and do not provide any means to prevent this
+    // a custom fence rule is recommended, but requires having to copy (and maintain) internal utility functions, which is insanity if you ask me
+    // see https://shiki.style/packages/markdown-it#transformer-caveats
+    // and https://github.com/markdown-it/markdown-it/issues/269
+    // and https://github.com/olets/markdown-it-wrapperless-fence-rule/issues/1
+    // instead we use this replace to remove the annoying wrapper elements
+    result = result.replace(/^<pre><code class="language-[a-zA-Z]+">/, "");
+    result = result.replace(/<\/code><\/pre>\n?$/, "");
+    return result.trim();
+  };
+  return md;
+}
+
 /**
  * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
  */
 export class MarkdownWebviewProvider {
   static readonly viewType = "prettyTsErrors.markdownPreview";
   private highlighter: Highlighter | null = null;
+  private md: MarkdownExit = createMarkdownExitPatched(
+    this.highlight.bind(this)
+  );
   private webviewRootUri: vscode.Uri;
   private webviewHtmlTemplate: Promise<string>;
 
@@ -106,7 +133,10 @@ export class MarkdownWebviewProvider {
 
   getWebviewOptions(): vscode.WebviewOptions {
     return {
-      enableCommandUris: ["prettyTsErrors.revealSelection"],
+      enableCommandUris: [
+        "prettyTsErrors.revealSelection",
+        "prettyTsErrors.copyError",
+      ],
       enableScripts: true,
       enableForms: false,
       localResourceRoots: [this.webviewRootUri],
@@ -163,12 +193,16 @@ export class MarkdownWebviewProvider {
     webview: vscode.Webview,
     content: string
   ): Promise<string> {
-    let html = await this.webviewHtmlTemplate;
+    const template = await this.webviewHtmlTemplate;
+    const html = this.patchCspSafeAttrs(template, webview);
+    const renderedMarkdown = await this.renderMarkdown(content);
+    return html.replace(
+      '<div id="content"></div>',
+      `<div id="content">${renderedMarkdown}</div>`
+    );
+  }
 
-    // NOTE: I need to open a vscode issues about the injected styles and aquireVsCodeApi script not working when setting CSP headers properly
-    //       If they fix that this code works just fine
-    // vscode classes, styles and acquireVsCodeApi are injected with inline scripts/styles, thus what is even the point of CSP headers?
-
+  private patchCspSafeAttrs(html: string, webview: vscode.Webview) {
     // replace stylesheet href's to webview uri's
     html = html.replaceAll(
       /<link\s+rel="stylesheet"\s+href="(\.\/.+)"\s+data-href-as-webview-uri\s*\/?>/gm,
@@ -214,103 +248,61 @@ export class MarkdownWebviewProvider {
         );
       }
     );
-
-    const renderedMarkdown = await this.renderMarkdown(content);
-    html = html.replace(
-      '<div id="content"></div>',
-      `<div id="content">${renderedMarkdown}</div>`
-    );
-
     return html;
   }
 
   private async renderMarkdown(markdown: string): Promise<string> {
-    await this.initializeHighlighter();
+    let html = await this.md.renderAsync(markdown);
+    // remove `codicon codicon-none` classes as it is only needed for the hover tooltip as a hack
+    html = html.replaceAll("codicon codicon-none", "");
+    return html;
+  }
 
+  private async highlight(code: string, lang = "type"): Promise<string> {
+    await this.initializeHighlighter();
     // TODO: Use the appropriate Shiki theme based on VS Code's theme
     const theme =
       vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark
         ? "dark-plus"
         : "light-plus";
-
-    // Simple markdown parsing for fenced code blocks
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-
-    let html = markdown;
-
-    // Replace code blocks with highlighted versions
-    html = html.replace(codeBlockRegex, (_match, lang, code) => {
-      const language = lang || "text";
-      let highlightedCode: string;
-
-      try {
-        const highlightLang = this.highlighter!.getLoadedLanguages().includes(
-          language
-        )
-          ? language
-          : "typescript";
-
-        console.log(
-          `Highlighting with language: ${highlightLang} (requested: ${language})`
-        );
-
-        highlightedCode = this.highlighter!.codeToHtml(code.trim(), {
-          lang: highlightLang,
-          theme,
-          transformers: [
-            {
-              name: "remove-background-only",
-              pre(node) {
-                // Only remove background-color from pre tag, keep other styles
-                if (node.properties["style"]) {
-                  node.properties["style"] = (
-                    node.properties["style"] as string
-                  ).replace(/background-color:[^;]+;?/g, "");
-                }
-              },
-              code(node) {
-                // Only remove background-color from code tag
-                if (node.properties["style"]) {
-                  node.properties["style"] = (
-                    node.properties["style"] as string
-                  ).replace(/background-color:[^;]+;?/g, "");
-                }
-              },
-            },
-          ],
-        });
-
-        // Extract just the inner HTML from the pre tag
-        const preMatch = highlightedCode.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
-        const innerHtml = preMatch ? preMatch[1] : code;
-
-        return `<div class="code-container">
-          <button class="copy-button" data-copy-content="${code
-            .trim()
-            .replace(/`/g, "\\`")}">Copy</button>
-          <pre><code>${innerHtml}</code></pre>
-        </div>`;
-      } catch (error) {
-        console.error("Error highlighting code:", error);
-        return `<pre><code>${code}</code></pre>`;
-      }
+    const transformers = [
+      {
+        name: "remove-background-only",
+        pre(node: { properties: { style?: unknown } }) {
+          // Only remove background-color from pre tag, keep other styles
+          if (node.properties["style"]) {
+            node.properties["style"] = (
+              node.properties["style"] as string
+            ).replace(/background-color:[^;]+;?/g, "");
+          }
+        },
+        code(node: { properties: { style?: unknown } }) {
+          // Only remove background-color from code tag
+          if (node.properties["style"]) {
+            node.properties["style"] = (
+              node.properties["style"] as string
+            ).replace(/background-color:[^;]+;?/g, "");
+          }
+        },
+      },
+    ];
+    let html = this.highlighter!.codeToHtml(code.trim(), {
+      lang,
+      theme,
+      transformers,
     });
-
-    // Simple markdown to HTML conversions
-    // TODO: use a proper markdown renderer, this seems to generate a lot of empty tags, and pretty sure its invalid html that ends up being corrected by the browser
-    //       markdown-it has a shiki plugin !
-    html = html.replace(/^# (.*$)/gm, "<h1>$1</h1>");
-    html = html.replace(/^## (.*$)/gm, "<h2>$1</h2>");
-    html = html.replace(/^### (.*$)/gm, "<h3>$1</h3>");
-    html = html.replace(/^\* (.*$)/gm, "<li>$1</li>");
-    html = html.replace(/\n\n/g, "</p><p>");
-    html = `<p>${html}</p>`;
-    html = html.replace(/<p><\/p>/g, "");
-    html = html.replace(/<p>(<h[1-6]>)/g, "$1");
-    html = html.replace(/(<\/h[1-6]>)<\/p>/g, "$1");
-    html = html.replace(/<p>(<li>)/g, "<ul>$1");
-    html = html.replace(/(<\/li>)<\/p>/g, "$1</ul>");
-
+    // wrap the highlighted code in a container with a copy button
+    html = `
+    <div class="code-container">
+      <button class="copy-button" data-copy-content="${code
+        .trim()
+        .replace(
+          /`/g,
+          "\\`"
+        )}"><span class="codicon codicon-copy" title="Copy type to clipboard"><span></button>
+      ${html}
+    </div>
+    `;
     return html;
   }
 }

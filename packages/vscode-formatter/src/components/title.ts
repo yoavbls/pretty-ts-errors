@@ -4,23 +4,25 @@ import { URI } from "vscode-uri";
 import { d } from "@pretty-ts-errors/utils";
 import { miniLine } from "./miniLine";
 
+const divider = `<span class="divider">|</span>`;
+
 export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
     <span style="color:#f96363;">⚠ Error </span>${
       typeof diagnostic.code === "number"
         ? d/*html*/ `
             <span style="color:#5f5f5f;">
             (TS${diagnostic.code})
-            ${errorCodeExplanationLink(diagnostic.code)}  |
-            ${errorMessageTranslationLink(diagnostic.message)}
+            ${errorCodeExplanationLink(diagnostic.code)} ${divider}
+            ${errorMessageTranslationLink(diagnostic.message)} ${divider}
             ${
               uri
-                ? `  | ${errorMessageOpenMarkdownPreview(
+                ? `${errorMessageOpenMarkdownPreview(
                     uri,
                     diagnostic.range
-                  )}`
+                  )} ${divider}`
                 : ""
             }
-            | ${copyErrorLink(diagnostic.message)}
+            ${copyErrorLink(diagnostic.message)}
             </span>
           `
         : ""

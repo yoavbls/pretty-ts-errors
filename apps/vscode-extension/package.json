@@ -123,6 +123,7 @@
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",
     "@pretty-ts-errors/vscode-formatter": "*",
+    "markdown-exit": "^1.0.0-beta.6",
     "shiki": "^3.13.0",
     "vscode-languageclient": "^9.0.1",
     "vscode-shiki-bridge": "^0.2.0"

@@ -53,5 +53,5 @@ function handleCopyContentEvent(element) {
  */
 async function copyToClipboard(text) {
   await navigator.clipboard.writeText(text);
-  api.notify("Copied text to clipboard!");
+  api.notify("Copied type to clipboard!");
 }

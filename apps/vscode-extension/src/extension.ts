@@ -1,8 +1,6 @@
 import { has } from "@pretty-ts-errors/utils";
 import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import {
-  commands,
-  env,
   ExtensionContext,
   languages,
   MarkdownString,
@@ -17,6 +15,7 @@ import { registerTextDocumentProvider } from "./provider/textDocumentContentProv
 import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
 import { registerRevealSelection } from "./commands/revealSelection";
 import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
+import { registerCopyError } from "./commands/copyError";
 
 const cache = new Map();
 
@@ -24,21 +23,12 @@ export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
 
-  // register the copy command
-  context.subscriptions.push(
-    commands.registerCommand(
-      "prettyTsErrors.copyError",
-      async (errorMessage: string) => {
-        await env.clipboard.writeText(errorMessage);
-      }
-    )
-  );
-
   registerSelectedTextHoverProvider(context);
   registerTextDocumentProvider(context);
   registerMarkdownWebviewProvider(context);
   registerWebviewViewProvider(context);
   registerRevealSelection(context);
+  registerCopyError(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
