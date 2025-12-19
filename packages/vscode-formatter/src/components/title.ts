@@ -2,7 +2,6 @@ import { compressToEncodedURIComponent } from "lz-string";
 import { Diagnostic, type Range } from "vscode-languageserver-types";
 import { URI } from "vscode-uri";
 import { d } from "@pretty-ts-errors/utils";
-import { KNOWN_ERROR_NUMBERS } from "./consts/knownErrorNumbers";
 import { miniLine } from "./miniLine";
 
 export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
@@ -21,6 +20,7 @@ export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
                   )}`
                 : ""
             }
+            ${copyErrorLink(diagnostic.message)}
             </span>
           `
         : ""
@@ -30,13 +30,11 @@ export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
 `;
 
 const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
-  KNOWN_ERROR_NUMBERS.has(errorCode)
-    ? d/*html*/ `
-        <a title="See detailed explanation" href="https://typescript.tv/errors/#ts${errorCode}">
-          <span class="codicon codicon-link-external">
-          </span>
-        </a>`
-    : "";
+  d/*html*/ `
+    <a title="See detailed explanation" href="https://typescript.tv/errors/ts${errorCode}">
+      <span class="codicon codicon-link-external">
+      </span>
+    </a>`;
 
 const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
   const encodedMessage = compressToEncodedURIComponent(message);
@@ -50,7 +48,7 @@ const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
 
 const PRETTY_TS_ERRORS_SCHEME = "pretty-ts-errors";
 
-export const errorMessageOpenMarkdownPreview = (uri: URI, range: Range) => {
+const errorMessageOpenMarkdownPreview = (uri: URI, range: Range) => {
   const rangeParameter = `${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
   const virtualFileUri = URI.parse(
     `${PRETTY_TS_ERRORS_SCHEME}:${encodeURIComponent(
@@ -66,6 +64,15 @@ export const errorMessageOpenMarkdownPreview = (uri: URI, range: Range) => {
   return d/*html*/ `
     <a title="Open in new tab" href="${href}">
       <span class="codicon codicon-open-preview">
+      </span>
+    </a>`;
+};
+
+const copyErrorLink = (message: Diagnostic["message"]) => {
+  const args = encodeURIComponent(JSON.stringify(message));
+  return d/*html*/ `
+    <a title="Copy error to clipboard" href="command:prettyTsErrors.copyError?${args}">
+      <span class="codicon codicon-copy">
       </span>
     </a>`;
 };
