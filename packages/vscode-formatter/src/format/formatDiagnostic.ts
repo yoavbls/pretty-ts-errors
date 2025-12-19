@@ -7,11 +7,18 @@ import { d } from "@pretty-ts-errors/utils";
 import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
 
-export function formatDiagnostic(diagnostic: Diagnostic, uri?: URI) {
+interface FormatDiagnosticOptions {
+  uri?: URI;
+}
+
+export function formatDiagnostic(
+  diagnostic: Diagnostic,
+  options?: FormatDiagnosticOptions
+) {
   const newDiagnostic = embedSymbolLinks(diagnostic);
 
   return d/*html*/ `
-    ${title(diagnostic, uri)}
+    ${title(diagnostic, options?.uri)}
     <span>
     ${formatDiagnosticMessage(
       identSentences(newDiagnostic.message),

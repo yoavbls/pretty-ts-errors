@@ -2,8 +2,17 @@ import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
 import { uriStore } from "./uriStore";
+import { has } from "packages/utils";
 
-const NO_DIAGNOSTICS_MESSAGE = "No diagnostics for the current file.";
+const SUPPORTED_LANGUAGE_IDS = [
+  "typescript",
+  "typescriptreact",
+  "javascript",
+  "javascriptreact",
+];
+
+const NO_DIAGNOSTICS_MESSAGE =
+  "Select code with an error to show the prettified diagnostic in this view.";
 
 export function registerWebviewViewProvider(context: ExtensionContext) {
   context.subscriptions.push(
@@ -44,6 +53,13 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         if (editor) {
           this.refresh(webviewView.webview);
         }
+      }),
+      vscode.window.onDidChangeTextEditorSelection((event) => {
+        const document = event.textEditor.document;
+        if (!has(SUPPORTED_LANGUAGE_IDS, document.languageId)) {
+          return;
+        }
+        this.refresh(webviewView.webview);
       })
     );
 
@@ -57,16 +73,17 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   async refresh(webview: vscode.Webview) {
     let markdown = NO_DIAGNOSTICS_MESSAGE;
     const activeEditor = vscode.window.activeTextEditor;
-    if (activeEditor) {
+    const selection = activeEditor?.selection;
+    if (activeEditor && selection) {
       const uri = activeEditor.document.uri;
-      const diagnostics = uriStore[uri.fsPath];
-      // TODO: change this to the last hovered/clicked error;
-      if (diagnostics && diagnostics?.length > 0) {
-        const first = diagnostics[0]!;
-        markdown = first.contents.map((item) => item.value).join("\n");
+      const diagnostics = uriStore[uri.fsPath] ?? [];
+      const diagnostic = diagnostics.find((diagnostic) =>
+        diagnostic.range.contains(selection)
+      );
+      if (diagnostic) {
+        markdown = diagnostic.contents.map((item) => item.value).join("\n");
       }
     }
-    const html = await this.provider.getWebviewContent(webview, markdown);
-    webview.html = html;
+    webview.html = await this.provider.getWebviewContent(webview, markdown);
   }
 }

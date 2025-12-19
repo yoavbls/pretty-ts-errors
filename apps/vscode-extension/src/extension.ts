@@ -16,7 +16,7 @@ import { uriStore } from "./provider/uriStore";
 import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
 import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
 import { registerRevealSelection } from "./commands/revealSelection";
-import { registerWebviewViewProvider } from "./provider/webviewWebviewProvider";
+import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
 
 const cache = new Map();
 
@@ -68,7 +68,7 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic), uri)
+                formatDiagnostic(converter.asDiagnostic(diagnostic), { uri })
               );
 
               markdownString.isTrusted = true;

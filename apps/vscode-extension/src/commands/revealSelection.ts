@@ -2,14 +2,11 @@ import {
   type ExtensionContext,
   commands,
   Range,
-  Selection,
   TabInputText,
   TabInputWebview,
-  TextEditorRevealType,
   Uri,
   ViewColumn,
   window,
-  workspace,
 } from "vscode";
 import { MarkdownWebviewProvider } from "../provider/markdownWebviewProvider";
 

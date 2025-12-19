@@ -20,7 +20,7 @@ export const title = (diagnostic: Diagnostic, uri?: URI) => d/*html*/ `
                   )}`
                 : ""
             }
-            ${copyErrorLink(diagnostic.message)}
+            | ${copyErrorLink(diagnostic.message)}
             </span>
           `
         : ""
