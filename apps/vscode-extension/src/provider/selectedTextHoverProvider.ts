@@ -47,7 +47,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                   source: "ts",
                   code: 1337,
                 }),
-                document.uri
+                { uri: document.uri }
               )
           );
 
