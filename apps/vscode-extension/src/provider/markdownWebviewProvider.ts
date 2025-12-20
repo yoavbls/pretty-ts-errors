@@ -256,12 +256,7 @@ export class MarkdownWebviewProvider {
     // wrap the highlighted code in a container with a copy button
     html = `
     <div class="code-container">
-      <button class="copy-button" data-copy-content="${code
-        .trim()
-        .replace(
-          /`/g,
-          "\\`"
-        )}"><span class="codicon codicon-copy" title="Copy type to clipboard"><span></button>
+      <button class="copy-button" data-copy-content><span class="codicon codicon-copy" title="Copy type to clipboard"><span></button>
       ${html}
     </div>
     `;

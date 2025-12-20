@@ -41,9 +41,14 @@ window.document.addEventListener("click", (event) => {
  * @param {HTMLElement} element
  */
 function handleCopyContentEvent(element) {
-  const content = element.getAttribute("data-copy-content");
-  if (content) {
-    copyToClipboard(content);
+  const parent = element.parentElement;
+  if (parent?.classList.contains('code-container')) {
+    const pre = parent.querySelector('pre');
+    const code = pre?.querySelector('code');
+    const content = code?.innerText;
+    if (content) {
+      copyToClipboard(content);
+    }
   }
 }
 
