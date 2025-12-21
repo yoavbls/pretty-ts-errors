@@ -65,6 +65,6 @@ pre code {
     text-decoration: none;
 }
 
-a[title="Open in new tab"], a[title="Open in new tab"] + span.divider {
+.hide-new-tab-button a[title="Open in new tab"], .hide-new-tab-button a[title="Open in new tab"] + span.divider {
     display: none;
 }

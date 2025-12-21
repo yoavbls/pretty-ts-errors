@@ -103,6 +103,7 @@ export class MarkdownWebviewProvider {
       enableCommandUris: [
         "prettyTsErrors.revealSelection",
         "prettyTsErrors.copyError",
+        "prettyTsErrors.openMarkdownPreview",
       ],
       enableScripts: true,
       enableForms: false,
@@ -134,7 +135,9 @@ export class MarkdownWebviewProvider {
       }
     );
 
-    panel.webview.html = await this.getWebviewContent(panel.webview, content);
+    panel.webview.html = await this.getWebviewContent(panel.webview, content, [
+      "hide-new-tab-button",
+    ]);
     const disposable = panel.webview.onDidReceiveMessage(
       this.createOnDidReceiveMessage()
     );
@@ -158,14 +161,17 @@ export class MarkdownWebviewProvider {
 
   async getWebviewContent(
     webview: vscode.Webview,
-    content: string
+    content: string,
+    classList: string[] = []
   ): Promise<string> {
     const template = await this.webviewHtmlTemplate;
     const html = this.patchCspSafeAttrs(template, webview);
     const renderedMarkdown = await this.renderMarkdown(content);
     return html.replace(
       '<div id="content"></div>',
-      `<div id="content">${renderedMarkdown}</div>`
+      `<div id="content" class="${classList.join(
+        " "
+      )}">${renderedMarkdown}</div>`
     );
   }
 
