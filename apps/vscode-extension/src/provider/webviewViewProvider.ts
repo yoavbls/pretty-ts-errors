@@ -69,6 +69,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       const disposables = this.disposables.get(webviewView);
       disposables?.forEach((disposable) => disposable.dispose());
       this.disposables.delete(webviewView);
+      this.shownDiagnostics.delete(webviewView.webview);
     });
 
     this.refresh(webviewView.webview);
