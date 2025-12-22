@@ -175,6 +175,14 @@ export class MarkdownWebviewProvider {
     );
   }
 
+  async updateWebviewContent(webview: vscode.Webview, content: string) {
+    const html = await this.renderMarkdown(content);
+    webview.postMessage({
+      command: "update-content",
+      html,
+    });
+  }
+
   private patchCspSafeAttrs(html: string, webview: vscode.Webview) {
     // replace stylesheet href's to webview uri's
     html = html.replaceAll(

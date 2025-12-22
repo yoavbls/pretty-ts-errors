@@ -31,8 +31,10 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext
   ): Promise<void> {
-    webviewView.webview.html = NO_DIAGNOSTICS_MESSAGE;
-    this.refresh(webviewView.webview);
+    webviewView.webview.html = await this.provider.getWebviewContent(
+      webviewView.webview,
+      NO_DIAGNOSTICS_MESSAGE
+    );
 
     const disposables = this.ensureDisposables(webviewView);
 
@@ -65,6 +67,8 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       disposables?.forEach((disposable) => disposable.dispose());
       this.disposables.delete(webviewView);
     });
+
+    this.refresh(webviewView.webview);
   }
 
   private ensureDisposables(webviewView: vscode.WebviewView) {
@@ -90,7 +94,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         const markdown = diagnostic.contents
           .map((item) => item.value)
           .join("\n");
-        webview.html = await this.provider.getWebviewContent(webview, markdown);
+        await this.provider.updateWebviewContent(webview, markdown);
       }
     }
   }
