@@ -23,8 +23,11 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   );
 }
 
+type CachedDiagnostic = (typeof uriStore)[string][number];
+
 class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private disposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
+  private shownDiagnostics = new WeakMap<vscode.Webview, CachedDiagnostic>();
   constructor(private readonly provider: MarkdownWebviewProvider) {}
 
   async resolveWebviewView(
@@ -89,12 +92,18 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       const diagnostic = diagnostics.find((diagnostic) =>
         diagnostic.range.contains(selection)
       );
-      // prefer to only update the view when a new selection with an error is selected, to avoid annoying the user with the error message dissapearing whenever the cursor position changes
+      const shownDiagnostic = this.shownDiagnostics.get(webview);
       if (diagnostic) {
         const markdown = diagnostic.contents
           .map((item) => item.value)
           .join("\n");
         await this.provider.updateWebviewContent(webview, markdown);
+        this.shownDiagnostics.set(webview, diagnostic);
+      } else if (shownDiagnostic && !diagnostics.includes(shownDiagnostic)) {
+        await this.provider.updateWebviewContent(
+          webview,
+          NO_DIAGNOSTICS_MESSAGE
+        );
       }
     }
   }
