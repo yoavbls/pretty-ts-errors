@@ -4,7 +4,7 @@ body {
     line-height: 1.6;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 4px 20px 12px;
     background-color: var(--vscode-editor-background);
     color: var(--vscode-editor-foreground);
 }
