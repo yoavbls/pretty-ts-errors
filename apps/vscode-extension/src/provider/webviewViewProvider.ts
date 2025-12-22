@@ -104,6 +104,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
           webview,
           NO_DIAGNOSTICS_MESSAGE
         );
+        this.shownDiagnostics.delete(webview);
       }
     }
   }
