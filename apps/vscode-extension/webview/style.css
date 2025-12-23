@@ -5,8 +5,11 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 4px 20px 12px;
-    background-color: var(--vscode-editor-background);
     color: var(--vscode-editor-foreground);
+}
+
+body:has(.webview-editor) {
+    background-color: var(--vscode-editor-background);
 }
 
 h1, h2, h3, h4, h5, h6 {

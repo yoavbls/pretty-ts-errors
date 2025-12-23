@@ -136,6 +136,7 @@ export class MarkdownWebviewProvider {
     );
 
     panel.webview.html = await this.getWebviewContent(panel.webview, content, [
+      "webview-editor",
       "hide-new-tab-button",
     ]);
     const disposable = panel.webview.onDidReceiveMessage(

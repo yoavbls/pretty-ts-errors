@@ -36,7 +36,8 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   ): Promise<void> {
     webviewView.webview.html = await this.provider.getWebviewContent(
       webviewView.webview,
-      NO_DIAGNOSTICS_MESSAGE
+      NO_DIAGNOSTICS_MESSAGE,
+      ["webview-panel"]
     );
 
     const disposables = this.ensureDisposables(webviewView);
