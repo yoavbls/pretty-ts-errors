@@ -8,6 +8,7 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
+import { uriStore } from "./uriStore";
 
 /**
  * Register an hover provider in debug only.
@@ -45,12 +46,15 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                   severity: 0,
                   source: "ts",
                   code: 1337,
-                })
+                }),
+                { uri: document.uri }
               )
           );
 
           markdown.isTrusted = true;
           markdown.supportHtml = true;
+
+          uriStore[document.uri.fsPath] = [{ range, contents: [markdown] }];
 
           return {
             contents: [markdown],
@@ -61,7 +65,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `                        
+const debugHoverHeader = d/*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

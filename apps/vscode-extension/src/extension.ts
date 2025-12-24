@@ -1,8 +1,6 @@
 import { has } from "@pretty-ts-errors/utils";
 import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
 import {
-  commands,
-  env,
   ExtensionContext,
   languages,
   MarkdownString,
@@ -13,6 +11,11 @@ import { createConverter } from "vscode-languageclient/lib/common/codeConverter"
 import { hoverProvider } from "./provider/hoverProvider";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { uriStore } from "./provider/uriStore";
+import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
+import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
+import { registerRevealSelection } from "./commands/revealSelection";
+import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
+import { registerCopyError } from "./commands/copyError";
 
 const cache = new Map();
 
@@ -20,17 +23,12 @@ export function activate(context: ExtensionContext) {
   const registeredLanguages = new Set<string>();
   const converter = createConverter();
 
-  // register the copy command
-  context.subscriptions.push(
-    commands.registerCommand(
-      "prettyTsErrors.copyError",
-      async (errorMessage: string) => {
-        await env.clipboard.writeText(errorMessage);
-      }
-    )
-  );
-
   registerSelectedTextHoverProvider(context);
+  registerTextDocumentProvider(context);
+  registerMarkdownWebviewProvider(context);
+  registerWebviewViewProvider(context);
+  registerRevealSelection(context);
+  registerCopyError(context);
 
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
@@ -60,7 +58,7 @@ export function activate(context: ExtensionContext) {
 
             if (!formattedMessage) {
               const markdownString = new MarkdownString(
-                formatDiagnostic(converter.asDiagnostic(diagnostic))
+                formatDiagnostic(converter.asDiagnostic(diagnostic), { uri })
               );
 
               markdownString.isTrusted = true;
