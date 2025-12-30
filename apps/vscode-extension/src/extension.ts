@@ -3,7 +3,7 @@ import { registerOnDidChangeDiagnostics } from "./diagnostics";
 import { logger } from "./logger";
 import { registerCopyError } from "./commands/copyError";
 import { registerRevealSelection } from "./commands/revealSelection";
-import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
+import { registerOpenMarkdownPreview } from "./commands/openMarkdownPreview";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
 import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
@@ -19,12 +19,12 @@ export function activate(context: ExtensionContext) {
 
   // UI elements that show the prettified diagnostics
   registerTextDocumentProvider(context);
-  registerMarkdownWebviewProvider(context);
   registerWebviewViewProvider(context);
 
   // register commands
-  registerRevealSelection(context);
   registerCopyError(context);
+  registerOpenMarkdownPreview(context);
+  registerRevealSelection(context);
 }
 
 export function deactivate() {
