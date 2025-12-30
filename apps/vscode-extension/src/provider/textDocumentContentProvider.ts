@@ -4,7 +4,7 @@ import {
   workspace,
   type TextDocumentContentProvider,
 } from "vscode";
-import { uriStore } from "./uriStore";
+import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 
 export const PRETTY_TS_ERRORS_SCHEME = "pretty-ts-errors";
 
@@ -32,7 +32,7 @@ export const textDocumentContentProvider: TextDocumentContentProvider = {
       return `only supports .md file extensions for ${uri.fsPath}`;
     }
     const fsPath = uri.fsPath.slice(0, -3);
-    const items = uriStore.get(fsPath);
+    const items = formattedDiagnosticsStore.get(fsPath);
     if (!items) {
       return `no diagnostics found for ${fsPath}`;
     }

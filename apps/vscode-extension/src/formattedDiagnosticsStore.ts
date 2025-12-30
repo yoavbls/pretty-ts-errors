@@ -1,0 +1,18 @@
+import { MarkdownString, Range, Uri } from "vscode";
+
+type CacheKey = Uri["fsPath"];
+
+export interface FormattedDiagnostic {
+  range: Range;
+  contents: MarkdownString[];
+}
+
+/**
+ * A store for formatted diagnostics, where the key is the file path to a file, and the value a collection of formatted diagnostics for that file.
+ *
+ * The `onDidChangeDiagnostics` event handler will fill the store with formatted diagnostics, while other components will query the store to display these diagnostics.
+ */
+export const formattedDiagnosticsStore = new Map<
+  CacheKey,
+  FormattedDiagnostic[]
+>();

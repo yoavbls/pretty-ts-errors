@@ -1,9 +1,9 @@
 import { HoverProvider } from "vscode";
-import { uriStore } from "./uriStore";
+import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 
 export const hoverProvider: HoverProvider = {
   provideHover(document, position, _token) {
-    const itemsInUriStore = uriStore.get(document.uri.fsPath);
+    const itemsInUriStore = formattedDiagnosticsStore.get(document.uri.fsPath);
 
     if (!itemsInUriStore) {
       return null;

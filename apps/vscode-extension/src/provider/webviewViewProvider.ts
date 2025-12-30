@@ -1,7 +1,10 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
-import { uriStore } from "./uriStore";
+import {
+  formattedDiagnosticsStore,
+  type FormattedDiagnostic,
+} from "../formattedDiagnosticsStore";
 import { has } from "packages/utils";
 
 const SUPPORTED_LANGUAGE_IDS = [
@@ -23,13 +26,9 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   );
 }
 
-type CachedDiagnostic = NonNullable<
-  ReturnType<(typeof uriStore)["get"]>
->[number];
-
 class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private disposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
-  private shownDiagnostics = new WeakMap<vscode.Webview, CachedDiagnostic>();
+  private shownDiagnostics = new WeakMap<vscode.Webview, FormattedDiagnostic>();
   constructor(private readonly provider: MarkdownWebviewProvider) {}
 
   async resolveWebviewView(
@@ -92,7 +91,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     const selection = activeEditor?.selection;
     if (activeEditor && selection) {
       const uri = activeEditor.document.uri;
-      const diagnostics = uriStore.get(uri.fsPath) ?? [];
+      const diagnostics = formattedDiagnosticsStore.get(uri.fsPath) ?? [];
       const diagnostic = diagnostics.find((diagnostic) =>
         diagnostic.range.contains(selection)
       );

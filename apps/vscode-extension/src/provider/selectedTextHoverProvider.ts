@@ -8,7 +8,7 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { uriStore } from "./uriStore";
+import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 
 /**
  * Register an hover provider in debug only.
@@ -58,7 +58,9 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           markdown.isTrusted = true;
           markdown.supportHtml = true;
 
-          uriStore.set(document.uri.fsPath, [{ range, contents: [markdown] }]);
+          formattedDiagnosticsStore.set(document.uri.fsPath, [
+            { range, contents: [markdown] },
+          ]);
 
           return {
             contents: [markdown],
