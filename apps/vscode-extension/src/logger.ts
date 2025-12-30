@@ -32,8 +32,10 @@ function error(...args: Parameters<LogOutputChannel["error"]>) {
 }
 
 type LogLevel = "info" | "trace" | "debug" | "warn" | "error";
+type LogLevelThresholds = Record<LogLevel, number>;
+type SortedLogLevelThresholds = [LogLevel, number][];
 
-const defaultThresholds: Record<LogLevel, number> = {
+const defaultThresholds: LogLevelThresholds = {
   error: 5000,
   warn: 1000,
   info: 100,
@@ -56,21 +58,42 @@ declare const performance: import("perf_hooks").Performance;
 function measure<T = unknown>(
   name: string,
   task: () => T,
-  logLevelThresholds: Partial<Record<LogLevel, number>> = {}
+  logLevelThresholds: Partial<LogLevelThresholds> = {}
 ): T {
   const start = performance.now();
   const result = task();
+  if (isPromiseLike(result)) {
+    logger.warn("cannot log.measure async tasks", task, result);
+    return result;
+  }
   const end = performance.now();
   const duration = end - start;
+  const thresholds = normalizeThresholds(logLevelThresholds);
+  const level = findLogLevel(thresholds, duration);
+  getLogger()[level](`task ${name} took ${duration.toFixed(3)}ms`);
+  return result;
+}
+
+function normalizeThresholds(
+  logLevelThresholds: Partial<LogLevelThresholds>
+): SortedLogLevelThresholds {
   logLevelThresholds = Object.assign({}, defaultThresholds, logLevelThresholds);
-  const thresholds = Object.entries(logLevelThresholds) as [LogLevel, number][];
   // sort thresholds from high to low
   // { info: 100, warn: 1000, trace: 0 } => [[warn, 1000], [info, 100], [trace, 0]]
-  thresholds.sort(([_a, a], [_b, b]) => b - a);
-  const level: LogLevel =
-    thresholds.find(([_, threshold]) => duration > threshold)?.[0] || "trace";
-  getLogger()[level](`${name} took ${duration.toFixed(3)}ms`);
-  return result;
+  return Object.entries(logLevelThresholds).sort(
+    ([_a, a], [_b, b]) => b - a
+  ) as SortedLogLevelThresholds;
+}
+
+function findLogLevel(
+  thresholds: SortedLogLevelThresholds,
+  duration: number,
+  defaultLogLevel: LogLevel = "debug"
+): LogLevel {
+  return (
+    thresholds.find(([_, threshold]) => duration > threshold)?.[0] ??
+    defaultLogLevel
+  );
 }
 
 function dispose() {
@@ -78,6 +101,15 @@ function dispose() {
     instance.dispose();
     instance = null;
   }
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (
+    value != null &&
+    typeof value === "object" &&
+    "then" in value &&
+    typeof value["then"] === "function"
+  );
 }
 
 export const logger = {
