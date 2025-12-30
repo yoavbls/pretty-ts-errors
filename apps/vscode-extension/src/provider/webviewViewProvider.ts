@@ -26,6 +26,7 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   );
 }
 
+// TODO: adding a `MarkdownWebviewView` class would make this provider a lot simpler
 class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private disposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
   private shownDiagnostics = new WeakMap<vscode.Webview, FormattedDiagnostic>();
@@ -49,6 +50,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         this.provider.createOnDidReceiveMessage()
       ),
       vscode.languages.onDidChangeDiagnostics(() =>
+        // TODO: since `onDidChangeDiagnostics` fires often, we should try and avoid calling refresh based on the event uris
         this.refresh(webviewView.webview)
       ),
       vscode.window.onDidChangeActiveTextEditor((editor) => {
