@@ -1,12 +1,12 @@
 import { ExtensionContext } from "vscode";
-import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
 import { registerOnDidChangeDiagnostics } from "./diagnostics";
 import { logger } from "./logger";
-import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
-import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
-import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
-import { registerRevealSelection } from "./commands/revealSelection";
 import { registerCopyError } from "./commands/copyError";
+import { registerRevealSelection } from "./commands/revealSelection";
+import { registerMarkdownWebviewProvider } from "./provider/markdownWebviewProvider";
+import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
+import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
+import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
 
 export function activate(context: ExtensionContext) {
   // logging and debug features
