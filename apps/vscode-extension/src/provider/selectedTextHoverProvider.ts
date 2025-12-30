@@ -8,6 +8,7 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
+import { uriStore } from "./uriStore";
 
 /**
  * Register an hover provider in debug only.
@@ -49,12 +50,15 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
                   severity: 0,
                   source: "ts",
                   code: 1337,
-                })
+                }),
+                { uri: document.uri }
               )
           );
 
           markdown.isTrusted = true;
           markdown.supportHtml = true;
+
+          uriStore.set(document.uri.fsPath, [{ range, contents: [markdown] }]);
 
           return {
             contents: [markdown],

@@ -3,7 +3,7 @@
   "displayName": "Pretty TypeScript Errors",
   "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -45,9 +45,35 @@
     "dist/**/*",
     "assets/**/*",
     "syntaxes/**/*",
+    "webview/**/*",
     "LICENSE"
   ],
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "prettyTsErrors.markdownPreview",
+          "icon": "$(open-preview)",
+          "name": "Pretty TypeScript Error",
+          "type": "webview",
+          "visibility": "collapsed"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "prettyTsErrors.openMarkdownPreview",
+        "title": "Open the diagnostic in a new tab",
+        "category": "Pretty TS Errors",
+        "enablement": "!isCommandPanel"
+      },
+      {
+        "command": "prettyTsErrors.revealSelection",
+        "title": "Reveal the given selection",
+        "category": "Pretty TS Errors",
+        "enablement": "!isCommandPanel"
+      }
+    ],
     "languages": [
       {
         "id": "type",
@@ -78,12 +104,16 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "tsc -p . --noEmit",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "webview": "npx http-server ./webview -o -a localhost -p 8080"
   },
   "devDependencies": {
+    "@shikijs/types": "^3.13.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.11.68",
     "@types/vscode": "^1.77.0",
+    "@types/vscode-webview": "^1.57.5",
+    "@vscode/codicons": "^0.0.41",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.25.11",
     "glob": "^11.0.3",
@@ -93,6 +123,9 @@
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",
     "@pretty-ts-errors/vscode-formatter": "*",
-    "vscode-languageclient": "^9.0.1"
+    "markdown-exit": "^1.0.0-beta.6",
+    "shiki": "^3.13.0",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-shiki-bridge": "^0.3.0"
   }
 }
