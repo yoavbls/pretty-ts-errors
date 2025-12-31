@@ -8,7 +8,7 @@ export function tryEnsureUri(
   }
   if (typeof maybeUriLike === "string") {
     try {
-      return { isValidUri: true, uri: Uri.parse(maybeUriLike) };
+      return { isValidUri: true, uri: Uri.parse(maybeUriLike, true) };
     } catch (error) {
       return { isValidUri: false };
     }
