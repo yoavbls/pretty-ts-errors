@@ -1,4 +1,10 @@
-import { LogOutputChannel, window } from "vscode";
+import {
+  ExtensionMode,
+  LogOutputChannel,
+  window,
+  type ExtensionContext,
+  LogLevel as VSLogLevel,
+} from "vscode";
 
 let instance: null | LogOutputChannel = null;
 
@@ -112,6 +118,18 @@ function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
   );
 }
 
+function register(context: ExtensionContext) {
+  if (context.extensionMode === ExtensionMode.Development) {
+    const instance = getLogger();
+    instance.show();
+    if (instance.logLevel !== VSLogLevel.Trace) {
+      instance.appendLine(
+        `To see more verbose logging, set this output's log level to "Trace" (gear icon next to the dropdown).`
+      );
+    }
+  }
+}
+
 export const logger = {
   trace,
   debug,
@@ -119,5 +137,6 @@ export const logger = {
   warn,
   error,
   measure,
+  register,
   dispose,
 };

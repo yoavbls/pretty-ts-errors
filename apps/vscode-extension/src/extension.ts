@@ -11,6 +11,7 @@ import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
 export function activate(context: ExtensionContext) {
   // logging and debug features
   logger.info("activating");
+  logger.register(context);
   context.subscriptions.push(logger);
   registerSelectedTextHoverProvider(context);
 

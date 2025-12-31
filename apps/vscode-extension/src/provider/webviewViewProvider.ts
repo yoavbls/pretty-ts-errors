@@ -5,7 +5,7 @@ import {
   formattedDiagnosticsStore,
   type FormattedDiagnostic,
 } from "../formattedDiagnosticsStore";
-import { has } from "packages/utils";
+import { has } from "@pretty-ts-errors/utils";
 
 const SUPPORTED_LANGUAGE_IDS = [
   "typescript",

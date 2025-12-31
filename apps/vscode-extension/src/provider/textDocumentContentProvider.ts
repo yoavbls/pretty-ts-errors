@@ -5,6 +5,7 @@ import {
   type TextDocumentContentProvider,
 } from "vscode";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
+import { logger } from "../logger";
 
 export const PRETTY_TS_ERRORS_SCHEME = "pretty-ts-errors";
 
@@ -29,14 +30,19 @@ export const textDocumentContentProvider: TextDocumentContentProvider = {
   provideTextDocumentContent(uri): string {
     const searchParams = new URLSearchParams(uri.query);
     if (!uri.fsPath.endsWith(".md")) {
-      return `only supports .md file extensions for ${uri.fsPath}`;
+      logger.error(
+        `Tried to provide a text document for fsPath: '${uri.fsPath}'`
+      );
+      return `only supports .md file extensions (given ${uri.fsPath})`;
     }
     const fsPath = uri.fsPath.slice(0, -3);
     const items = formattedDiagnosticsStore.get(fsPath);
     if (!items) {
+      logger.error(`No diagnostics found for '${fsPath}'`);
       return `no diagnostics found for ${fsPath}`;
     }
     if (!searchParams.has("range")) {
+      logger.error(`Missing range query parameter for '${uri}'`);
       return `range query parameter is missing for uri: ${uri}`;
     }
     const range = createRangeFromString(searchParams.get("range")!);
@@ -44,9 +50,12 @@ export const textDocumentContentProvider: TextDocumentContentProvider = {
       return item.range.isEqual(range);
     });
     if (!item) {
-      return `no diagnostic found for ${fsPath} with range ${JSON.stringify(
-        range
-      )}`;
+      const rangeAsString = JSON.stringify(range);
+      logger.error(
+        `No diagnostic found for '${fsPath}' and range '${rangeAsString}', items:`,
+        items
+      );
+      return `no diagnostic found for ${fsPath} with range ${rangeAsString}`;
     }
     return item.contents.map((content) => content.value).join("\n");
   },

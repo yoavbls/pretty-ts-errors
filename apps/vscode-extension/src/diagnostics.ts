@@ -17,6 +17,7 @@ import {
   formattedDiagnosticsStore,
   type FormattedDiagnostic,
 } from "./formattedDiagnosticsStore";
+import { logger } from "./logger";
 
 /**
  * The list of diagnostic sources that pretty-ts-errors supports
@@ -33,26 +34,30 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
   const converter = createConverter();
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
-      e.uris.forEach((uri) => {
-        const diagnostics = languages.getDiagnostics(uri);
-        const supportedDiagnostics = diagnostics.filter(
-          (diagnostic) =>
-            diagnostic.source &&
-            has(supportedDiagnosticSources, diagnostic.source)
-        );
+      logger.measure("onDidChangeDiagnostics", () => {
+        e.uris.forEach((uri) => {
+          logger.measure(`diagnostics for: ${uri.toString(true)}`, () => {
+            const diagnostics = languages.getDiagnostics(uri);
+            const supportedDiagnostics = diagnostics.filter(
+              (diagnostic) =>
+                diagnostic.source &&
+                has(supportedDiagnosticSources, diagnostic.source)
+            );
 
-        const items: FormattedDiagnostic[] = supportedDiagnostics.map(
-          (diagnostic) => getFormattedDiagnostic(diagnostic, converter)
-        );
+            const items: FormattedDiagnostic[] = supportedDiagnostics.map(
+              (diagnostic) => getFormattedDiagnostic(diagnostic, uri, converter)
+            );
 
-        // TODO: we should check if never deleting the entries is a performance issue
-        //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
-        //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
-        formattedDiagnosticsStore.set(uri.fsPath, items);
+            // TODO: we should check if never deleting the entries is a performance issue
+            //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
+            //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
+            formattedDiagnosticsStore.set(uri.fsPath, items);
 
-        if (items.length > 0) {
-          ensureHoverProviderIsRegistered(uri, context);
-        }
+            if (items.length > 0) {
+              ensureHoverProviderIsRegistered(uri, context);
+            }
+          });
+        });
       });
     })
   );
@@ -66,17 +71,6 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
 const CACHE_SIZE_MAX = 100;
 
 /**
- * Creates a cache with `size` entries pre-filled with empty values.
- */
-function createCache(size: number): Map<string, MarkdownString> {
-  const emptyString = "";
-  const emptyMarkdownString = new MarkdownString();
-  return new Map(
-    Array.from({ length: size }).map(() => [emptyString, emptyMarkdownString])
-  );
-}
-
-/**
  * A local cache that maps TS diagnostics as `string` to their formatted `MarkdownString` counter part.
  * @see https://github.com/yoavbls/pretty-ts-errors/pull/62
  *
@@ -87,10 +81,11 @@ function createCache(size: number): Map<string, MarkdownString> {
  * TODO: create a proper LRU cache, to prevent exceeding the cache size being a bottleneck
  * @see https://github.com/yoavbls/pretty-ts-errors/issues/104
  */
-const cache = createCache(CACHE_SIZE_MAX);
+const cache = new Map<string, MarkdownString>();
 
 function getFormattedDiagnostic(
   diagnostic: Diagnostic,
+  uri: Uri,
   converter: Converter
 ): FormattedDiagnostic {
   let formattedMessage = cache.get(diagnostic.message);
@@ -99,7 +94,10 @@ function getFormattedDiagnostic(
     // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
     // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
     const lspDiagnostic = converter.asDiagnostic(diagnostic);
-    const formattedDiagnostic = formatDiagnostic(lspDiagnostic);
+    const formattedDiagnostic = logger.measure(
+      `formatDiagnostic(\`${lspDiagnostic.message}\`)`,
+      () => formatDiagnostic(lspDiagnostic, { uri })
+    );
     const markdownString = new MarkdownString(formattedDiagnostic);
 
     // TODO: consider using the `{ enabledCommands: string[] }` variant, to only allow whitelisted commands
@@ -107,12 +105,11 @@ function getFormattedDiagnostic(
     markdownString.supportHtml = true;
 
     formattedMessage = markdownString;
-    cache.set(diagnostic.message, formattedMessage);
-
     if (cache.size > CACHE_SIZE_MAX) {
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
     }
+    cache.set(diagnostic.message, formattedMessage);
   }
 
   return {
@@ -133,12 +130,14 @@ function ensureHoverProviderIsRegistered(uri: Uri, context: ExtensionContext) {
   const editor = window.visibleTextEditors.find(
     (editor) => editor.document.uri.toString() === uri.toString()
   );
-  if (editor && !registeredLanguages.has(editor.document.languageId)) {
-    registeredLanguages.add(editor.document.languageId);
+  const languageId = editor?.document.languageId;
+  if (languageId && !registeredLanguages.has(languageId)) {
+    logger.debug(`registering hover provider for language id: ${languageId}`);
+    registeredLanguages.add(languageId);
     context.subscriptions.push(
       languages.registerHoverProvider(
         {
-          language: editor.document.languageId,
+          language: languageId,
         },
         hoverProvider
       )
