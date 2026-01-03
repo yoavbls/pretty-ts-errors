@@ -27,6 +27,15 @@ Type 'number' is not assignable to type 'string'.ts(2322)
 
 Add the logs to help debugging what went wrong. See [these instructions](../../docs/hide-original-errors.md) on how to find and export the logs.
 
+Either add it as an external file or put them in between these `<pre><code>` tags below:
+
+<details>
+<summary>Logs</summary>
+</pre></code>
+<!-- replace this comment with your log output -->
+</code></pre>
+</details>
+
 ### **Screenshots**
 
 If applicable, add screenshots to help explain your problem.
