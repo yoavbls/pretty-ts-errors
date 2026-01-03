@@ -128,6 +128,7 @@ function register(context: ExtensionContext) {
       );
     }
   }
+  context.subscriptions.push({ dispose });
 }
 
 export const logger = {

@@ -9,10 +9,10 @@ import { registerTextDocumentProvider } from "./provider/textDocumentContentProv
 import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
 
 export function activate(context: ExtensionContext) {
-  // logging and debug features
   logger.info("activating");
+
+  // logging and debug features
   logger.register(context);
-  context.subscriptions.push(logger);
   registerSelectedTextHoverProvider(context);
 
   // prettify diagnostics feature
