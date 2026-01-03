@@ -1,6 +1,6 @@
 import { MarkdownString, Range, Uri } from "vscode";
 
-type CacheKey = Uri["fsPath"];
+type StoreKey = Uri["fsPath"];
 
 export interface FormattedDiagnostic {
   range: Range;
@@ -13,6 +13,6 @@ export interface FormattedDiagnostic {
  * The `onDidChangeDiagnostics` event handler will fill the store with formatted diagnostics, while other components will query the store to display these diagnostics.
  */
 export const formattedDiagnosticsStore = new Map<
-  CacheKey,
+  StoreKey,
   FormattedDiagnostic[]
 >();
