@@ -69,7 +69,7 @@
           "name": "Pretty TypeScript Error",
           "type": "webview",
           "visibility": "collapsed",
-          "when": "config.prettyTsErrors.enableMarkdownPreviewInExplorer"
+          "when": "config.prettyTsErrors.enableMarkdownPreviewInExplorerView"
         }
       ]
     },
