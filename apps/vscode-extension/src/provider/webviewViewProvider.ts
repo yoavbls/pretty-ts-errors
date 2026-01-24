@@ -2,7 +2,7 @@ import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
 import { uriStore } from "./uriStore";
-import { has } from "packages/utils";
+import { has } from "@pretty-ts-errors/utils";
 
 const SUPPORTED_LANGUAGE_IDS = [
   "typescript",

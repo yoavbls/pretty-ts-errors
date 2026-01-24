@@ -7,5 +7,9 @@
     "outDir": "out",
     "moduleResolution": "nodenext"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/vscode-formatter" }
+  ]
 }
