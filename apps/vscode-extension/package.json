@@ -49,14 +49,23 @@
     "LICENSE"
   ],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "prettyTsErrors",
+          "title": "Pretty TypeScript Errors",
+          "icon": "$(bracket-error)"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "prettyTsErrors": [
         {
           "id": "prettyTsErrors.markdownPreview",
           "icon": "$(open-preview)",
-          "name": "Pretty TypeScript Error",
+          "name": "Prettified Error",
           "type": "webview",
-          "visibility": "collapsed"
+          "visibility": "visible"
         }
       ]
     },
