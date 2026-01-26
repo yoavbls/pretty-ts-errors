@@ -41,7 +41,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       curly: "warn",
-      eqeqeq: "warn",
+      eqeqeq: ["warn", { smart: true }],
       "no-throw-literal": "warn",
       semi: "off",
     },

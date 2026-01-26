@@ -1,7 +1,10 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
-import { uriStore } from "./uriStore";
+import {
+  formattedDiagnosticsStore,
+  type FormattedDiagnostic,
+} from "../formattedDiagnosticsStore";
 import { has } from "@pretty-ts-errors/utils";
 
 const SUPPORTED_LANGUAGE_IDS = [
@@ -23,11 +26,10 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   );
 }
 
-type CachedDiagnostic = (typeof uriStore)[string][number];
-
+// TODO: adding a `MarkdownWebviewView` class would make this provider a lot simpler
 class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private disposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
-  private shownDiagnostics = new WeakMap<vscode.Webview, CachedDiagnostic>();
+  private shownDiagnostics = new WeakMap<vscode.Webview, FormattedDiagnostic>();
   constructor(private readonly provider: MarkdownWebviewProvider) {}
 
   async resolveWebviewView(
@@ -48,6 +50,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         this.provider.createOnDidReceiveMessage()
       ),
       vscode.languages.onDidChangeDiagnostics(() =>
+        // TODO: since `onDidChangeDiagnostics` fires often, we should try and avoid calling refresh based on the event uris
         this.refresh(webviewView.webview)
       ),
       vscode.window.onDidChangeActiveTextEditor((editor) => {
@@ -90,7 +93,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     const selection = activeEditor?.selection;
     if (activeEditor && selection) {
       const uri = activeEditor.document.uri;
-      const diagnostics = uriStore[uri.fsPath] ?? [];
+      const diagnostics = formattedDiagnosticsStore.get(uri.fsPath) ?? [];
       const diagnostic = diagnostics.find((diagnostic) =>
         diagnostic.range.contains(selection)
       );

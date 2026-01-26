@@ -8,19 +8,18 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
-import { uriStore } from "./uriStore";
+import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 
 /**
  * Register an hover provider in debug only.
  * It format selected text and help test things visually easier.
  */
 export function registerSelectedTextHoverProvider(context: ExtensionContext) {
-  const converter = createConverter();
-
   if (context.extensionMode !== ExtensionMode.Development) {
     return;
   }
 
+  const converter = createConverter();
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
@@ -30,6 +29,11 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
       {
         provideHover(document, position) {
           const editor = window.activeTextEditor;
+
+          if (!editor) {
+            return;
+          }
+
           const range = document.getWordRangeAtPosition(position);
           const message = editor ? document.getText(editor.selection) : "";
 
@@ -54,7 +58,9 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           markdown.isTrusted = true;
           markdown.supportHtml = true;
 
-          uriStore[document.uri.fsPath] = [{ range, contents: [markdown] }];
+          formattedDiagnosticsStore.set(document.uri.fsPath, [
+            { range, contents: [markdown] },
+          ]);
 
           return {
             contents: [markdown],
