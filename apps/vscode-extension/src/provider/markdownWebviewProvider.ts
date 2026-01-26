@@ -1,33 +1,16 @@
-import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
 import { HighlighterCore, createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { createMarkdownExit, type MarkdownExit } from "markdown-exit";
-
-export function registerMarkdownWebviewProvider(context: ExtensionContext) {
-  const provider = new MarkdownWebviewProvider(context);
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "prettyTsErrors.openMarkdownPreview",
-      async (uri: vscode.Uri) => {
-        if (!uri || !(uri instanceof vscode.Uri)) {
-          console.error(
-            "expected uri to be an instance of vscode.Uri, instead got: ",
-            uri
-          );
-          return;
-        }
-        await provider.openMarkdownPreview(uri);
-      }
-    )
-  );
-}
+import { PRETTY_TS_ERRORS_SCHEME } from "./textDocumentContentProvider";
 
 function createMarkdownExitPatched(
   highlight: (code: string) => Promise<string>
 ) {
   const md = createMarkdownExit({
+    // TODO: try and refactor this to not use a markdown renderer, this would remove this possible XSS attack vector
+    //       @see https://github.com/yoavbls/pretty-ts-errors/pull/152#issuecomment-3690510196
     html: true,
     highlight,
   });
@@ -120,6 +103,12 @@ export class MarkdownWebviewProvider {
   }
 
   async openMarkdownPreview(uri: vscode.Uri) {
+    // until the markdown renderer has been removed, try and avoid rendering unknown uri's to limit the chance of someone finding an XSS vulnerability.
+    if (uri.scheme !== PRETTY_TS_ERRORS_SCHEME) {
+      throw new Error(
+        `cannot provide a markdown preview for a non '${PRETTY_TS_ERRORS_SCHEME}' scheme uri`
+      );
+    }
     const document = await vscode.workspace.openTextDocument(uri);
     const markdown = document.getText();
     const content = await this.renderMarkdown(markdown);
