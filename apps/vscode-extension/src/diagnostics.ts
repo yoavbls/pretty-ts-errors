@@ -64,7 +64,7 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
 }
 
 /**
- * To prevent infinite memory consumtion use a max size for the cache
+ * To prevent infinite memory consumption use a max size for the cache
  *
  * TODO: consider making this configurable to the end user with a sensible `min` and `max`
  */
