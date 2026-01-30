@@ -25,7 +25,7 @@ Type 'number' is not assignable to type 'string'.ts(2322)
 
 ### **Logs**
 
-Add the logs to help debugging what went wrong. See [these instructions](../../docs/vscode-logs.md) on how to find and export the logs.
+Add the logs to help debugging what went wrong. See [these instructions](https://github.com/yoavbls/pretty-ts-errors/blob/main/docs/vscode-logs.md) on how to find and export the logs.
 
 Either add it as an external file or put them in between these `<pre><code>` tags below:
 
