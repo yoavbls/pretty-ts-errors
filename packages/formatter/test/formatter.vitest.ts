@@ -41,6 +41,15 @@ describe("formatter", () => {
     );
   });
 
+  it("prettifies truncated type", () => {
+    expect(() =>
+      prettifyType(
+        d` { b: { name: string; icon: undefined; }; c: { name: string; icon: undefined; }; d: { name: string; icon: undefined; }; e: { name: string; icon: undefined; }; f: { ...; }; g: { ...; }; h:...`,
+        { throwOnError: true }
+      )
+    ).not.toThrow();
+  });
+
   it("formats method's word in the error", () => {
     expect(
       formatDiagnosticMessage(errorWithDashInObjectKeys, htmlCodeBlock)
