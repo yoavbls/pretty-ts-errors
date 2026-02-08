@@ -1,6 +1,8 @@
 import { d } from "@pretty-ts-errors/utils";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
+import { CodeBlockFn } from "@pretty-ts-errors/formatter";
+import { plainCodeBlock } from "./plainCodeBlock";
 
 /**
  * @returns markdown string that will be rendered as a code block (`supportHtml` required)
@@ -19,10 +21,10 @@ const codeBlock = (code: string, language: string) =>
   </span>
 `);
 
-export const inlineCodeBlock = (code: string, language: string) =>
+const inlineHoverCodeBlock = (code: string, language: string) =>
   codeBlock(` ${code} `, language);
 
-export const multiLineCodeBlock = (code: string, language: string) => {
+const multiLineHoverCodeBlock = (code: string, language: string) => {
   const codeLines = code.split("\n");
   //this line is finding the longest line
   const maxLineChars = codeLines.reduce(
@@ -39,4 +41,14 @@ export const multiLineCodeBlock = (code: string, language: string) => {
     ${codeBlock(paddedCode, language)}
     ${miniLine}
     `;
+};
+
+export const hoverCodeBlock: CodeBlockFn = (code, language, multiLine) => {
+  if (!language) {
+    return plainCodeBlock(code);
+  }
+  if (multiLine) {
+    return multiLineHoverCodeBlock(code, language);
+  }
+  return inlineHoverCodeBlock(code, language);
 };

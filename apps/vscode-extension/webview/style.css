@@ -4,12 +4,27 @@ body {
     line-height: 1.6;
     max-width: 800px;
     margin: 0 auto;
-    padding: 4px 20px 12px;
+    padding: 4px 0 12px;
     color: var(--vscode-editor-foreground);
 }
 
-body:has(.webview-editor) {
-    background-color: var(--vscode-editor-background);
+#content {
+    padding: 0 12px;
+}
+
+/* Tables from identSentences */
+#content table {
+    width: 100%;
+}
+
+#content table td:first-child {
+    white-space: nowrap;
+}
+
+#content table td:last-child {
+    width: 100%;
+    max-width: 0;
+    word-break: break-word;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -22,9 +37,10 @@ pre {
     background-color: var(--vscode-textCodeBlock-background) !important;
     border: 1px solid var(--vscode-widget-border);
     border-radius: 4px;
-    padding: 16px;
+    padding: 12px 16px;
     overflow-x: auto;
-    margin: 1em 0;
+    margin: 0.75em 0;
+    line-height: 1.5;
 }
 
 /* Override Shiki's background to match VS Code */
@@ -54,6 +70,12 @@ pre code {
 
 .code-container {
     position: relative;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.code-container pre {
+    margin: 0;
 }
 
 .code-container:hover .copy-button {
@@ -68,6 +90,46 @@ pre code {
     text-decoration: none;
 }
 
-.hide-new-tab-button a[title="Open in new tab"], .hide-new-tab-button a[title="Open in new tab"] + span.divider {
-    display: none;
+#content hr {
+    border: none;
+    border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.2));
+    margin: 12px 0;
+}
+
+.webview-panel .title-actions {
+    float: right;
+}
+
+.pinned-section {
+    margin: 0 -12px;
+    background-color: rgba(255, 235, 59, 0.04);
+    padding: 4px 12px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.pinned-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.pinned-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--vscode-descriptionForeground);
+}
+
+.unpin-button {
+    color: var(--vscode-icon-foreground);
+    cursor: pointer;
+    padding: 2px;
+    line-height: 1;
+}
+
+.pinned-message {
+    color: var(--vscode-descriptionForeground);
 }
