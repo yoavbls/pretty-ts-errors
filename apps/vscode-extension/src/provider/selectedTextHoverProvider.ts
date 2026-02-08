@@ -1,5 +1,5 @@
 import { d } from "@pretty-ts-errors/utils";
-import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
+import { formatDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   ExtensionMode,
@@ -41,25 +41,27 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             return null;
           }
 
+          const lspDiagnostic = converter.asDiagnostic({
+            message,
+            range,
+            severity: 0,
+            source: "ts",
+            code: 1337,
+          });
+
           const markdown = new MarkdownString(
-            debugHoverHeader +
-              formatDiagnostic(
-                converter.asDiagnostic({
-                  message,
-                  range,
-                  severity: 0,
-                  source: "ts",
-                  code: 1337,
-                }),
-                { uri: document.uri }
-              )
+            debugHoverHeader + formatDiagnosticForHover(lspDiagnostic)
           );
 
           markdown.isTrusted = true;
           markdown.supportHtml = true;
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
-            { range, contents: [markdown] },
+            {
+              range,
+              contents: [markdown],
+              lspDiagnostic,
+            },
           ]);
 
           return {

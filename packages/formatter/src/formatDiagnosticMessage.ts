@@ -1,8 +1,14 @@
 import { formatTypeBlock } from "./formatTypeBlock";
 
+export type CodeBlockFn = (
+  code: string,
+  language?: string,
+  multiLine?: boolean
+) => string;
+
 export const formatDiagnosticMessage = (
   message: string,
-  codeBlock: (code: string, language?: string, multiLine?: boolean) => string
+  codeBlock: CodeBlockFn
 ) => {
   const formatTypeScriptBlock = (_: string, code: string) =>
     codeBlock(code, "typescript");

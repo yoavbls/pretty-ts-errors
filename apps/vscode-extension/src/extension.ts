@@ -3,9 +3,10 @@ import { registerOnDidChangeDiagnostics } from "./diagnostics";
 import { logger } from "./logger";
 import { registerCopyError } from "./commands/copyError";
 import { registerRevealSelection } from "./commands/revealSelection";
-import { registerOpenMarkdownPreview } from "./commands/openMarkdownPreview";
+import { registerShowErrorInSidebar } from "./commands/showErrorInSidebar";
+import { registerPinError } from "./commands/pinError";
+import { registerUnpinError } from "./commands/unpinError";
 import { registerSelectedTextHoverProvider } from "./provider/selectedTextHoverProvider";
-import { registerTextDocumentProvider } from "./provider/textDocumentContentProvider";
 import { registerWebviewViewProvider } from "./provider/webviewViewProvider";
 
 export function activate(context: ExtensionContext) {
@@ -19,12 +20,13 @@ export function activate(context: ExtensionContext) {
   registerOnDidChangeDiagnostics(context);
 
   // UI elements that show the prettified diagnostics
-  registerTextDocumentProvider(context);
   registerWebviewViewProvider(context);
 
   // register commands
   registerCopyError(context);
-  registerOpenMarkdownPreview(context);
+  registerShowErrorInSidebar(context);
+  registerPinError(context);
+  registerUnpinError(context);
   registerRevealSelection(context);
 }
 
