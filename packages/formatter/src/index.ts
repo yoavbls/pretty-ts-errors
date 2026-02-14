@@ -1,4 +1,4 @@
 export {
   formatDiagnosticMessage,
-  CodeBlockFn,
+  type CodeBlockFn,
 } from "./formatDiagnosticMessage";

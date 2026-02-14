@@ -1,16 +1,21 @@
 import { describe, it, expect } from "vitest";
-import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
+import {
+  formatDiagnosticMessage,
+  type CodeBlockFn,
+} from "@pretty-ts-errors/formatter";
 import { addMissingParentheses } from "@pretty-ts-errors/formatter/src/addMissingParentheses";
 import { prettifyType } from "@pretty-ts-errors/formatter/src/formatTypeBlock";
-import {
-  inlineCodeBlock,
-  multiLineCodeBlock,
-} from "@pretty-ts-errors/vscode-formatter/src/components";
 import { d } from "@pretty-ts-errors/utils";
 import {
   errorWithDashInObjectKeys,
   errorWithSpecialCharsInObjectKeys,
 } from "./errorMessageMocks";
+
+// Simple stub that marks code blocks without any rendering logic
+const stubCodeBlock: CodeBlockFn = (code, language, multiLine) => {
+  if (multiLine) return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+  return `\`${code}\``;
+};
 
 describe("formatter", () => {
   it("adds missing parentheses", () => {
@@ -19,36 +24,26 @@ describe("formatter", () => {
     );
   });
 
-  // Provide a codeBlock fn similar to the extension's renderer
-  const htmlCodeBlock = (
-    code: string,
-    language?: string,
-    multiLine?: boolean
-  ) =>
-    multiLine
-      ? multiLineCodeBlock(code, language || "")
-      : inlineCodeBlock(code, language || "");
-
   it("formats Special characters in object keys", () => {
     expect(
-      formatDiagnosticMessage(errorWithSpecialCharsInObjectKeys, htmlCodeBlock)
+      formatDiagnosticMessage(errorWithSpecialCharsInObjectKeys, stubCodeBlock)
     ).toBe(
       "Type " +
-        inlineCodeBlock("string", "type") +
+        "`string`" +
         " is not assignable to type " +
-        inlineCodeBlock(`{ "abc*bc": string }`, "type") +
+        '`{ "abc*bc": string }`' +
         "."
     );
   });
 
   it("formats method's word in the error", () => {
     expect(
-      formatDiagnosticMessage(errorWithDashInObjectKeys, htmlCodeBlock)
+      formatDiagnosticMessage(errorWithDashInObjectKeys, stubCodeBlock)
     ).toBe(
       "Type " +
-        inlineCodeBlock(`{ person: { "first-name": string } }`, "type") +
+        '`{ person: { "first-name": string } }`' +
         " is not assignable to type " +
-        inlineCodeBlock("string", "type") +
+        "`string`" +
         "."
     );
   });
