@@ -1,1 +1,4 @@
-export { formatDiagnosticMessage } from "./formatDiagnosticMessage";
+export {
+  formatDiagnosticMessage,
+  type CodeBlockFn,
+} from "./formatDiagnosticMessage";

@@ -1,5 +1,5 @@
 import { has } from "@pretty-ts-errors/utils";
-import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
+import { formatDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -45,7 +45,7 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
             );
 
             const items: FormattedDiagnostic[] = supportedDiagnostics.map(
-              (diagnostic) => getFormattedDiagnostic(diagnostic, uri, converter)
+              (diagnostic) => getFormattedDiagnostic(diagnostic, converter)
             );
 
             // TODO: we should check if never deleting the entries is a performance issue
@@ -85,18 +85,17 @@ const cache = new Map<string, MarkdownString>();
 
 function getFormattedDiagnostic(
   diagnostic: Diagnostic,
-  uri: Uri,
   converter: Converter
 ): FormattedDiagnostic {
-  let formattedMessage = cache.get(diagnostic.message);
+  // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
+  // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
+  const lspDiagnostic = converter.asDiagnostic(diagnostic);
 
+  let formattedMessage = cache.get(diagnostic.message);
   if (!formattedMessage) {
-    // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-    // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-    const lspDiagnostic = converter.asDiagnostic(diagnostic);
     const formattedDiagnostic = logger.measure(
-      `formatDiagnostic(\`${lspDiagnostic.message}\`)`,
-      () => formatDiagnostic(lspDiagnostic, { uri })
+      `formatDiagnosticForHover(\`${lspDiagnostic.message}\`)`,
+      () => formatDiagnosticForHover(lspDiagnostic)
     );
     const markdownString = new MarkdownString(formattedDiagnostic);
 
@@ -115,6 +114,7 @@ function getFormattedDiagnostic(
   return {
     range: diagnostic.range,
     contents: [formattedMessage],
+    lspDiagnostic,
   };
 }
 
