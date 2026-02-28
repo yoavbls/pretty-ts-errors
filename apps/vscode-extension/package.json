@@ -3,7 +3,7 @@
   "displayName": "Pretty TypeScript Errors",
   "publisher": "YoavBls",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -54,7 +54,7 @@
         {
           "id": "prettyTsErrors",
           "title": "Pretty TypeScript Errors",
-          "icon": "$(bracket-error)"
+          "icon": "./assets/ribbon.svg"
         }
       ]
     },
@@ -62,27 +62,49 @@
       "prettyTsErrors": [
         {
           "id": "prettyTsErrors.markdownPreview",
-          "icon": "$(open-preview)",
-          "name": "Prettified Error",
+          "icon": "./assets/ribbon.svg",
+          "name": "Side Panel",
           "type": "webview",
-          "visibility": "visible"
+          "visibility": "hidden"
         }
       ]
     },
     "commands": [
       {
-        "command": "prettyTsErrors.openMarkdownPreview",
-        "title": "Open the diagnostic in a new tab",
-        "category": "Pretty TS Errors",
-        "enablement": "!isCommandPanel"
-      },
-      {
         "command": "prettyTsErrors.revealSelection",
         "title": "Reveal the given selection",
         "category": "Pretty TS Errors",
         "enablement": "!isCommandPanel"
+      },
+      {
+        "command": "prettyTsErrors.showErrorInSidebar",
+        "title": "Show Error in Sidebar",
+        "category": "Pretty TS Errors",
+        "icon": "./assets/ribbon.svg",
+        "enablement": "!isCommandPanel"
+      },
+      {
+        "command": "prettyTsErrors.pinError",
+        "title": "Pin Error",
+        "category": "Pretty TS Errors",
+        "enablement": "!isCommandPanel"
+      },
+      {
+        "command": "prettyTsErrors.unpinError",
+        "title": "Unpin Error",
+        "category": "Pretty TS Errors",
+        "enablement": "!isCommandPanel"
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "prettyTsErrors.showErrorInSidebar",
+          "when": "prettyTsErrors.hasErrors && resourceLangId in prettyTsErrors.supportedLanguageIds",
+          "group": "navigation"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "type",
@@ -133,9 +155,8 @@
     "@pretty-ts-errors/formatter": "*",
     "@pretty-ts-errors/utils": "*",
     "@pretty-ts-errors/vscode-formatter": "*",
-    "markdown-exit": "^1.0.0-beta.6",
     "shiki": "^3.13.0",
     "vscode-languageclient": "^9.0.1",
-    "vscode-shiki-bridge": "^0.3.0"
+    "vscode-shiki-bridge": "^0.5.1"
   }
 }
