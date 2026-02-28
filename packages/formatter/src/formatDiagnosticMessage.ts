@@ -6,17 +6,41 @@ export type CodeBlockFn = (
   multiLine?: boolean
 ) => string;
 
-export const formatDiagnosticMessage = (
-  message: string,
+export function createErrorMessagePrettifier(
   codeBlock: CodeBlockFn
-) => {
-  const formatTypeScriptBlock = (_: string, code: string) =>
-    codeBlock(code, "typescript");
+): (message: string) => Promise<string> {
+  return async (message: string) => {
+    const rules = await getRules(codeBlock);
+    let output = message;
 
-  const formatSimpleTypeBlock = (_: string, code: string) =>
-    codeBlock(code, "type");
+    for (const { pattern, replacer } of rules) {
+      let result = "";
+      let lastIndex = 0;
+      for (const match of output.matchAll(pattern)) {
+        const [fullMatch, ...captures] = match;
+        const matchIndex = match.index ?? 0;
+        result += output.slice(lastIndex, matchIndex);
+        result += await replacer(...captures);
+        lastIndex = matchIndex + fullMatch.length;
+      }
+      result += output.slice(lastIndex);
+      output = result;
+    }
+    return output;
+  };
+}
 
-  const formatTypeOrModuleBlock = (_: string, prefix: string, code: string) =>
+type Rule = {
+  pattern: RegExp;
+  replacer: (...args: any[]) => string | Promise<string>;
+};
+
+async function getRules(codeBlock: CodeBlockFn): Promise<Rule[]> {
+  const formatTypeScriptBlock = (code: string) => codeBlock(code, "typescript");
+
+  const formatSimpleTypeBlock = (code: string) => codeBlock(code, "type");
+
+  const formatTypeOrModuleBlock = (prefix: string, code: string) =>
     formatTypeBlock(
       prefix,
       ["module", "file", "file name"].includes(prefix.toLowerCase())
@@ -25,107 +49,104 @@ export const formatDiagnosticMessage = (
       codeBlock
     );
 
-  return (
-    message
-      // format strings wrapped like '"..."' (double quotes inside single quotes)
-      .replaceAll(
-        /(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g,
-        (_: string, p1: string) => formatTypeBlock("", `"${p1}"`, codeBlock)
-      )
-      // format declare module snippet
-      .replaceAll(
-        /['“](declare module )['”](.*)['“];['”]/g,
-        (_: string, p1: string, p2: string) =>
-          formatTypeScriptBlock(_, `${p1} "${p2}"`)
-      )
-      // format missing props error
-      .replaceAll(
+  return [
+    {
+      pattern: /(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g,
+      replacer: async (p1: string) => formatTypeBlock("", `"${p1}"`, codeBlock),
+    },
+    {
+      pattern: /['“](declare module )['”](.*)['“];['”]/g,
+      replacer: (p1: string, p2: string) =>
+        formatTypeScriptBlock(`${p1} "${p2}"`),
+    },
+    {
+      pattern:
         /(is missing the following properties from type\s?)'(.*)': ((?:#?\w+, )*(?:(?!and)\w+)?)/g,
-        (_, pre, type, post) =>
-          `${pre}${formatTypeBlock("", type, codeBlock)}: <ul>${post
-            .split(", ")
-            .filter(Boolean)
-            .map((prop: string) => `<li>${prop}</li>`)
-            .join("")}</ul>`
-      )
-      // Format type pairs
-      .replaceAll(
-        /(types) ['“](.*?)['”] and ['“](.*?)['”][.]?/gi,
-        (_: string, p1: string, p2: string, p3: string) =>
-          `${formatTypeBlock(p1, p2, codeBlock)} and ${formatTypeBlock(
-            "",
-            p3,
-            codeBlock
-          )}`
-      )
-      // Format type annotation options
-      .replaceAll(
-        /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
-        (_: string, p1: string, p2: string, p3: string | number) => {
-          if (typeof p3 === "string") {
-            return `${formatTypeBlock(p1, p2, codeBlock)} or ${formatTypeBlock(
-              "",
-              p3,
-              codeBlock
-            )}`;
-          } else {
-            // If p3 is a number, it is matching a ts(1196) error, see #121
-            return `${formatTypeBlock("", p1, codeBlock)} or ${formatTypeBlock(
-              "",
-              p2,
-              codeBlock
-            )}`;
-          }
+      replacer: async (pre: string, type: string, post: string) => {
+        const formattedType = await formatTypeBlock("", type, codeBlock);
+        const list = post
+          .split(", ")
+          .filter(Boolean)
+          .map((prop: string) => `<li>${prop}</li>`)
+          .join("");
+        return `${pre}${formattedType}: <ul>${list}</ul>`;
+      },
+    },
+    {
+      pattern: /(types) ['“](.*?)['”] and ['“](.*?)['”][.]?/gi,
+      replacer: async (p1: string, p2: string, p3: string) => {
+        const [left, right] = await Promise.all([
+          formatTypeBlock(p1, p2, codeBlock),
+          formatTypeBlock("", p3, codeBlock),
+        ]);
+        return `${left} and ${right}`;
+      },
+    },
+    {
+      pattern: /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
+      replacer: async (p1: string, p2: string, p3: string | number) => {
+        if (typeof p3 === "string") {
+          const [left, right] = await Promise.all([
+            formatTypeBlock(p1, p2, codeBlock),
+            formatTypeBlock("", p3, codeBlock),
+          ]);
+          return `${left} or ${right}`;
         }
-      )
-      .replaceAll(
-        /(Overload \d of \d), ['“](.*?)['”], /gi,
-        (_, p1: string, p2: string) =>
-          `${p1}${formatTypeBlock("", p2, codeBlock)}`
-      )
-      // format simple strings
-      .replaceAll(/^['“]"[^"]*"['”]$/g, formatTypeScriptBlock)
-      // Replace module 'x' by module "x" for ts error #2307
-      .replaceAll(
-        /(module )'([^"]*?)'/gi,
-        (_, p1: string, p2: string) => `${p1}"${p2}"`
-      )
-      // Format string types
-      .replaceAll(
+        const [left, right] = await Promise.all([
+          formatTypeBlock("", p1, codeBlock),
+          formatTypeBlock("", p2, codeBlock),
+        ]);
+        return `${left} or ${right}`;
+      },
+    },
+    {
+      pattern: /(Overload \d of \d), ['“](.*?)['”], /gi,
+      replacer: async (p1: string, p2: string) =>
+        `${p1}${await formatTypeBlock("", p2, codeBlock)}`,
+    },
+    {
+      pattern: /^['“]"[^"]*"['”]$/g,
+      replacer: formatTypeScriptBlock,
+    },
+    {
+      pattern: /(module )'([^"]*?)'/gi,
+      replacer: (p1: string, p2: string) => `${p1}"${p2}"`,
+    },
+    {
+      pattern:
         /(module|file|file name|imported via) ['"“](.*?)['"“](?=[\s(.|,]|$)/gi,
-        (_, p1: string, p2: string) => formatTypeBlock(p1, `"${p2}"`, codeBlock)
-      )
-      // Format types
-      .replaceAll(
+      replacer: async (p1: string, p2: string) =>
+        formatTypeBlock(p1, `"${p2}"`, codeBlock),
+    },
+    {
+      pattern:
         /(type|type alias|interface|module|file|file name|class|method's|subtype of constraint) ['“](.*?)['“](?=[\s(.|,)]|$)/gi,
-        (_, p1: string, p2: string) => formatTypeOrModuleBlock(_, p1, p2)
-      )
-      // Format reversed types
-      .replaceAll(
+      replacer: (p1: string, p2: string) => formatTypeOrModuleBlock(p1, p2),
+    },
+    {
+      pattern:
         /(.*)['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
-        (_: string, p1: string, p2: string, p3: string) =>
-          `${p1}${formatTypeOrModuleBlock(_, "", p2)} ${p3}`
-      )
-      // Format simple types that didn't captured before
-      .replaceAll(
+      replacer: async (p1: string, p2: string, p3: string) =>
+        `${p1}${await formatTypeOrModuleBlock("", p2)} ${p3}`,
+    },
+    {
+      pattern:
         /['“]((void|null|undefined|any|boolean|string|number|bigint|symbol)(\[\])?)['”]/g,
-        formatSimpleTypeBlock
-      )
-      // Format some typescript key words
-      .replaceAll(
+      replacer: formatSimpleTypeBlock,
+    },
+    {
+      pattern:
         /['“](import|export|require|in|continue|break|let|false|true|const|new|throw|await|for await|[0-9]+)( ?.*?)['”]/g,
-        (_: string, p1: string, p2: string) =>
-          formatTypeScriptBlock(_, `${p1}${p2}`)
-      )
-      // Format return values
-      .replaceAll(
-        /(return|operator) ['“](.*?)['”]/gi,
-        (_, p1: string, p2: string) => `${p1} ${formatTypeScriptBlock("", p2)}`
-      )
-      // Format regular code blocks
-      .replaceAll(
-        /(?<!\w)'((?:(?!["]).)*?)'(?!\w)/g,
-        (_: string, p1: string) => ` ${codeBlock(p1)} `
-      )
-  );
-};
+      replacer: (p1: string, p2: string) => formatTypeScriptBlock(`${p1}${p2}`),
+    },
+    {
+      pattern: /(return|operator) ['“](.*?)['”]/gi,
+      replacer: (p1: string, p2: string) =>
+        `${p1} ${formatTypeScriptBlock(p2)}`,
+    },
+    {
+      pattern: /(?<!\w)'((?:(?!["]).)*?)'(?!\w)/g,
+      replacer: (p1: string) => ` ${codeBlock(p1)} `,
+    },
+  ];
+}

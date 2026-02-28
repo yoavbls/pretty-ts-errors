@@ -1,4 +1,4 @@
-import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
+import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter";
 import { Diagnostic } from "vscode-languageserver-types";
 import { htmlCodeBlock } from "../components/htmlCodeBlock";
 import {
@@ -13,26 +13,32 @@ import { d } from "@pretty-ts-errors/utils";
 import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
 
+const prettifyErrorMessageForSidebar =
+  createErrorMessagePrettifier(htmlCodeBlock);
+
 /**
- * Format a diagnostic for display in the sidebar webview.
+ * Prettify a diagnostic for display in the sidebar webview.
  * Uses shiki HTML code blocks (must call initHtmlCodeBlock before first use).
  */
-export function formatDiagnosticForSidebar(diagnostic: Diagnostic): string {
+export async function prettifyDiagnosticForSidebar(
+  diagnostic: Diagnostic
+): Promise<string> {
   const newDiagnostic = embedSymbolLinks(diagnostic);
+  const identedSentences = identSentences(newDiagnostic.message);
+  const prettifiedMessage = await prettifyErrorMessageForSidebar(
+    identedSentences
+  );
 
   return d/*html*/ `
     ${errorTitle(
-      diagnostic.code,
-      d`${pinErrorLink(diagnostic.range)} ${divider}
-        ${copyErrorLink(diagnostic.message)} ${divider}
-        ${errorMessageTranslationLink(diagnostic.message)} ${divider}
-        ${errorCodeExplanationLink(diagnostic.code)}`
+      newDiagnostic.code,
+      d`${pinErrorLink(newDiagnostic.range)} ${divider}
+        ${copyErrorLink(newDiagnostic.message)} ${divider}
+        ${errorMessageTranslationLink(newDiagnostic.message)} ${divider}
+        ${errorCodeExplanationLink(newDiagnostic.code)}`
     )}
     <div style="line-height:2; padding-top: 8px;">
-    ${formatDiagnosticMessage(
-      identSentences(newDiagnostic.message),
-      htmlCodeBlock
-    )}
+    ${prettifiedMessage}
     </div>
   `;
 }
