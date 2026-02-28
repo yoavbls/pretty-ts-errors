@@ -1,15 +1,13 @@
 import { CodeBlockFn } from "@pretty-ts-errors/formatter";
 
 interface Highlighter {
-  codeToHtml(code: string, options: { lang: string; theme: string }): string;
+  codeToHtml(code: string, options: { lang: string }): string;
 }
 
 let highlighter: Highlighter | null = null;
-let currentTheme = "";
 
-export function initHighlighter(h: Highlighter, theme: string) {
+export function initHighlighter(h: Highlighter) {
   highlighter = h;
-  currentTheme = theme;
 }
 
 export const htmlCodeBlock: CodeBlockFn = (code, language, multiLine) => {
@@ -25,7 +23,6 @@ export const htmlCodeBlock: CodeBlockFn = (code, language, multiLine) => {
 
   const highlighted = highlighter.codeToHtml(code.trim(), {
     lang: language,
-    theme: currentTheme,
   });
 
   if (multiLine) {

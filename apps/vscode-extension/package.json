@@ -100,7 +100,7 @@
       "editor/title": [
         {
           "command": "prettyTsErrors.showErrorInSidebar",
-          "when": "prettyTsErrors.hasErrors && resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|astro|svelte|vue|mdx|glimmer-js|glimmer-ts)$/",
+          "when": "prettyTsErrors.hasErrors && resourceLangId in prettyTsErrors.supportedLanguageIds",
           "group": "navigation"
         }
       ]
@@ -157,6 +157,6 @@
     "@pretty-ts-errors/vscode-formatter": "*",
     "shiki": "^3.13.0",
     "vscode-languageclient": "^9.0.1",
-    "vscode-shiki-bridge": "^0.3.0"
+    "vscode-shiki-bridge": "^0.5.1"
   }
 }

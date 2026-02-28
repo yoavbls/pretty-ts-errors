@@ -13,19 +13,7 @@ import {
   formatDiagnosticForSidebar,
   initHighlighter,
 } from "@pretty-ts-errors/vscode-formatter";
-
-const SUPPORTED_LANGUAGE_IDS = [
-  "typescript",
-  "typescriptreact",
-  "javascript",
-  "javascriptreact",
-  "astro",
-  "svelte",
-  "vue",
-  "mdx",
-  "glimmer-js",
-  "glimmer-ts",
-];
+import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 
 const NO_DIAGNOSTICS_MESSAGE =
   "Select code with an error to show the prettified diagnostic in this view.";
@@ -107,16 +95,17 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private async ensureInitialized() {
     if (!this.initialized) {
       const [theme, themes] = await getUserTheme();
-      if (themes[0] === "none") {
-        throw new Error("could not load user theme");
-      }
+
       const langs = await getUserLangs(["type", "ts"]);
       const highlighter = await createHighlighterCore({
         themes,
         langs,
         engine: createOnigurumaEngine(import("shiki/wasm")),
       });
-      initHighlighter(highlighter, theme);
+      initHighlighter({
+        codeToHtml: (code: string, options: { lang: string }) =>
+          highlighter.codeToHtml(code, { ...options, theme }),
+      });
       this.initialized = true;
     }
   }
