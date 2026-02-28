@@ -1,5 +1,5 @@
 import { d } from "@pretty-ts-errors/utils";
-import { formatDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
+import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   ExtensionMode,
@@ -27,7 +27,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
         pattern: "**/test/**/*.ts",
       },
       {
-        provideHover(document, position) {
+        async provideHover(document, position) {
           const editor = window.activeTextEditor;
 
           if (!editor) {
@@ -50,7 +50,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           });
 
           const markdown = new MarkdownString(
-            debugHoverHeader + formatDiagnosticForHover(lspDiagnostic)
+            debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
           );
 
           markdown.isTrusted = true;

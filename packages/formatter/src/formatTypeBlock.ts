@@ -1,7 +1,7 @@
 import { addMissingParentheses } from "./addMissingParentheses";
-import { prettify } from "./prettify";
+import { formatWithOxfmt } from "./prettify";
 
-export function formatTypeBlock(
+export async function formatTypeBlock(
   prefix: string,
   type: string,
   codeBlock: (code: string, language?: string, multiLine?: boolean) => string
@@ -20,24 +20,26 @@ export function formatTypeBlock(
     return `${prefix} ${codeBlock(type, "type")}`;
   }
 
-  const prettyType = prettifyType(type);
+  const formattedType = await formatType(type);
 
-  if (prettyType.includes("\n")) {
-    return `${prefix}: ${codeBlock(prettyType, "type", true)}`;
+  if (formattedType.includes("\n")) {
+    return `${prefix}: ${codeBlock(formattedType, "type", true)}`;
   } else {
-    return `${prefix} ${codeBlock(prettyType, "type")}`;
+    return `${prefix} ${codeBlock(formattedType, "type")}`;
   }
 }
 /**
- * Try to make type prettier with prettier
+ * Try to format type with oxfmt
  */
-export function prettifyType(
+export async function formatType(
   type: string,
   options?: { throwOnError?: boolean }
 ) {
   try {
     // Wrap type with valid statement, format it and extract the type back
-    return convertToOriginalType(prettify(convertToValidType(type)));
+    return convertToOriginalType(
+      await formatWithOxfmt(convertToValidType(type))
+    );
   } catch (e) {
     if (options?.throwOnError) {
       throw e;

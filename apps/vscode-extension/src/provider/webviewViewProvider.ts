@@ -10,7 +10,7 @@ import {
 } from "../formattedDiagnosticsStore";
 import { has } from "@pretty-ts-errors/utils";
 import {
-  formatDiagnosticForSidebar,
+  prettifyDiagnosticForSidebar,
   initHighlighter,
 } from "@pretty-ts-errors/vscode-formatter";
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
@@ -69,11 +69,11 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   updateHasErrorsContext();
 }
 
-function diagnosticToItem(
+async function diagnosticToItem(
   formattedDiagnostic: FormattedDiagnostic
-): DiagnosticItem {
+): Promise<DiagnosticItem> {
   return {
-    html: formatDiagnosticForSidebar(formattedDiagnostic.lspDiagnostic),
+    html: await prettifyDiagnosticForSidebar(formattedDiagnostic.lspDiagnostic),
     range: formattedDiagnostic.range,
   };
 }
@@ -119,7 +119,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       if (diagnostic) {
         await this.ensureInitialized();
         this.mode = "locked";
-        this.lockedContent = diagnosticToItem(diagnostic);
+        this.lockedContent = await diagnosticToItem(diagnostic);
         this.skipNextSelectionChange = true;
         this.skipNextEditorChange = true;
         this.lastContent = null;
@@ -140,7 +140,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     if (!diagnostic) return;
 
     await this.ensureInitialized();
-    const item = diagnosticToItem(diagnostic);
+    const item = await diagnosticToItem(diagnostic);
 
     // Toggle: if already pinned, unpin instead
     if (this.pinnedError && this.pinnedError.html === item.html) {
@@ -256,16 +256,17 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private getCursorDiagnosticItems(): DiagnosticItem[] {
+  private async getCursorDiagnosticItems(): Promise<DiagnosticItem[]> {
     const activeEditor = vscode.window.activeTextEditor;
     const selection = activeEditor?.selection;
     if (!activeEditor || !selection) return [];
 
     const diagnostics =
       formattedDiagnosticsStore.get(activeEditor.document.uri.fsPath) ?? [];
-    return diagnostics
-      .filter((d) => d.range.intersection(selection) !== undefined)
-      .map((d) => diagnosticToItem(d));
+    const selectedDiagnostics = diagnostics.filter(
+      (diagnostic) => diagnostic.range.intersection(selection) !== undefined
+    );
+    return Promise.all(selectedDiagnostics.map((d) => diagnosticToItem(d)));
   }
 
   async refresh(webview: vscode.Webview) {

@@ -1,11 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
+import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter/src/errorMessagePrettifier";
 import { hoverCodeBlock } from "../src/components/hoverCodeBlock";
 import { plainCodeBlock } from "../src/components/plainCodeBlock";
 import {
   errorWithSpecialCharsInObjectKeys,
   errorWithDashInObjectKeys,
 } from "../../formatter/test/errorMessageMocks";
+
+const prettifyErrorMessage = createErrorMessagePrettifier(hoverCodeBlock);
 
 describe("hoverCodeBlock", () => {
   it("renders inline code with language", () => {
@@ -37,21 +39,17 @@ describe("plainCodeBlock", () => {
 });
 
 describe("formatDiagnosticMessage with hoverCodeBlock", () => {
-  it("formats special characters in object keys", () => {
-    const result = formatDiagnosticMessage(
-      errorWithSpecialCharsInObjectKeys,
-      hoverCodeBlock
+  it("formats special characters in object keys", async () => {
+    const result = await prettifyErrorMessage(
+      errorWithSpecialCharsInObjectKeys
     );
     expect(result).toContain("```type");
     expect(result).toContain("string");
     expect(result).toContain(`"abc*bc"`);
   });
 
-  it("formats dash in object keys", () => {
-    const result = formatDiagnosticMessage(
-      errorWithDashInObjectKeys,
-      hoverCodeBlock
-    );
+  it("formats dash in object keys", async () => {
+    const result = await prettifyErrorMessage(errorWithDashInObjectKeys);
     expect(result).toContain("```type");
     expect(result).toContain(`"first-name"`);
     expect(result).toContain("string");

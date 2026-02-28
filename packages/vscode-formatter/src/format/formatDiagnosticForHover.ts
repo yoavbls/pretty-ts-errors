@@ -1,4 +1,4 @@
-import { formatDiagnosticMessage } from "@pretty-ts-errors/formatter";
+import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter";
 import { Diagnostic } from "vscode-languageserver-types";
 import {
   divider,
@@ -14,27 +14,33 @@ import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
 import { hoverCodeBlock } from "../components/hoverCodeBlock";
 
+const prettifyErrorMessageForHover =
+  createErrorMessagePrettifier(hoverCodeBlock);
+
 /**
- * Format a diagnostic for display in hover tooltips.
+ * Prettify a diagnostic for display in hover tooltips.
  * Uses markdown fenced code blocks (required by VS Code's MarkdownString).
  */
-export function formatDiagnosticForHover(diagnostic: Diagnostic) {
+export async function prettifyDiagnosticForHover(
+  diagnostic: Diagnostic
+): Promise<string> {
   const newDiagnostic = embedSymbolLinks(diagnostic);
+  const identedSentences = identSentences(newDiagnostic.message);
+  const prettifiedMessage = await prettifyErrorMessageForHover(
+    identedSentences
+  );
 
   return d/*html*/ `
     ${errorTitle(
-      diagnostic.code,
-      d`${showErrorInSidebarLink(diagnostic.range)} ${divider}
-        ${pinErrorLink(diagnostic.range)} ${divider}
-        ${copyErrorLink(diagnostic.message)} ${divider}
-        ${errorCodeExplanationLink(diagnostic.code)}`,
+      newDiagnostic.code,
+      d`${showErrorInSidebarLink(newDiagnostic.range)} ${divider}
+        ${pinErrorLink(newDiagnostic.range)} ${divider}
+        ${copyErrorLink(newDiagnostic.message)} ${divider}
+        ${errorCodeExplanationLink(newDiagnostic.code)}`,
       miniLine
     )}
     <span>
-    ${formatDiagnosticMessage(
-      identSentences(newDiagnostic.message),
-      hoverCodeBlock
-    )}
+    ${prettifiedMessage}
     </span>
   `;
 }

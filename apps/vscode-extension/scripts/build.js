@@ -13,7 +13,7 @@ async function main() {
     },
     bundle: true,
     outdir: "./dist",
-    external: ["vscode"],
+    external: ["vscode", "oxfmt"],
     format: "cjs",
     inject: ["./scripts/process-shim.js"],
     tsconfig: "./tsconfig.json",

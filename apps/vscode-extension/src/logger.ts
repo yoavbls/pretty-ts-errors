@@ -58,26 +58,56 @@ declare const performance: import("perf_hooks").Performance;
 /**
  * Measures the time it took to run `task` and reports it to the `logger` based on `logLevelThresholds`.
  *
- * NOTE: supports synchronous `task`s only
  * @see {@link defaultThresholds} for the default thresholds
  */
 function measure<T = unknown>(
   name: string,
+  task: () => Promise<T>,
+  logLevelThresholds?: Partial<LogLevelThresholds>
+): Promise<T>;
+function measure<T = unknown>(
+  name: string,
   task: () => T,
+  logLevelThresholds?: Partial<LogLevelThresholds>
+): T;
+function measure<T = unknown>(
+  name: string,
+  task: () => T | Promise<T>,
   logLevelThresholds: Partial<LogLevelThresholds> = {}
-): T {
+): T | Promise<T> {
   const start = performance.now();
-  const result = task();
-  if (isPromiseLike(result)) {
-    logger.warn("cannot log.measure async tasks", task, result);
-    return result;
-  }
-  const end = performance.now();
-  const duration = end - start;
   const thresholds = normalizeThresholds(logLevelThresholds);
+
+  try {
+    const result = task();
+    if (isPromiseLike(result)) {
+      return result.then(
+        (value) => {
+          logMeasuredDuration(name, start, thresholds);
+          return value;
+        },
+        (error) => {
+          logMeasuredDuration(name, start, thresholds);
+          throw error;
+        }
+      );
+    }
+    logMeasuredDuration(name, start, thresholds);
+    return result;
+  } catch (error) {
+    logMeasuredDuration(name, start, thresholds);
+    throw error;
+  }
+}
+
+function logMeasuredDuration(
+  name: string,
+  start: number,
+  thresholds: SortedLogLevelThresholds
+) {
+  const duration = performance.now() - start;
   const level = findLogLevel(thresholds, duration);
   getLogger()[level](`task ${name} took ${duration.toFixed(3)}ms`);
-  return result;
 }
 
 function normalizeThresholds(

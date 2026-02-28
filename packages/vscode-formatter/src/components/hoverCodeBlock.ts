@@ -1,7 +1,7 @@
 import { d } from "@pretty-ts-errors/utils";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
-import { CodeBlockFn } from "@pretty-ts-errors/formatter";
+import { CodeBlockFn } from "@pretty-ts-errors/formatter/dist/errorMessagePrettifier";
 import { plainCodeBlock } from "./plainCodeBlock";
 
 /**
