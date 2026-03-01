@@ -1,5 +1,6 @@
 const process = require("node:process");
 const console = require("node:console");
+const fs = require("node:fs");
 const path = require("node:path");
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
@@ -26,6 +27,7 @@ async function main() {
   if (watch) {
     await ctx.watch();
   } else {
+    fs.rmSync("./dist", { recursive: true, force: true });
     await ctx.rebuild();
     await ctx.dispose();
   }
