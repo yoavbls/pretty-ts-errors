@@ -25,11 +25,10 @@ export async function prettifyDiagnosticForSidebar(
 ): Promise<string> {
   const newDiagnostic = embedSymbolLinks(diagnostic);
   const identedSentences = identSentences(newDiagnostic.message);
-  const prettifiedMessage = await prettifyErrorMessageForSidebar(
-    identedSentences
-  );
+  const prettifiedMessage =
+    await prettifyErrorMessageForSidebar(identedSentences);
 
-  return d/*html*/ `
+  return d /*html*/ `
     ${errorTitle(
       newDiagnostic.code,
       d`${pinErrorLink(newDiagnostic.range)} ${divider}

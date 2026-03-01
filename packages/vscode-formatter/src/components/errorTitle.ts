@@ -5,10 +5,10 @@ export const errorTitle = (
   code: Diagnostic["code"],
   actions: string,
   suffix = ""
-) => d/*html*/ `
+) => d /*html*/ `
     <span style="color:#f96363;">⚠ Error </span>${
       typeof code === "number"
-        ? d/*html*/ `
+        ? d /*html*/ `
             <span style="color:#5f5f5f;">
             (TS${code})
             <span class="title-actions">

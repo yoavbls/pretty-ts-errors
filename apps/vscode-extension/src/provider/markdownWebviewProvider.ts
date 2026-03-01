@@ -20,9 +20,8 @@ export class MarkdownWebviewProvider {
       this.webviewRootUri,
       "index.html"
     );
-    const htmlTemplateBytes = await vscode.workspace.fs.readFile(
-      htmlTemplateUri
-    );
+    const htmlTemplateBytes =
+      await vscode.workspace.fs.readFile(htmlTemplateUri);
     const htmlTemplate = new TextDecoder("utf-8").decode(htmlTemplateBytes);
     return htmlTemplate;
   }

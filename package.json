@@ -1,13 +1,16 @@
 {
+  "name": "pretty-ts-errors-mono",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "oxfmt --write \"**/*.{ts,tsx,md}\""
-  },
-  "engines": {
-    "node": ">=20"
+    "format": "oxfmt --write \"**/*.{ts,tsx,md}\"",
+    "format:check": "oxfmt --check \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
@@ -19,10 +22,8 @@
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.15.0"
   },
-  "name": "pretty-ts-errors-mono",
-  "packageManager": "npm@10.0.0",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.0.0"
 }
