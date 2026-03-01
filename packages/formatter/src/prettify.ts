@@ -1,16 +1,14 @@
-import { format } from "oxfmt";
+import { format } from "prettier/standalone";
+import * as parserEstree from "prettier/plugins/estree";
+import * as parserTypescript from "prettier/plugins/typescript";
 
-export async function formatWithOxfmt(text: string) {
-  const result = await format("type.ts", text, {
+export async function formatWithPrettier(text: string) {
+  return format(text, {
+    plugins: [parserTypescript, parserEstree],
+    parser: "typescript",
     printWidth: 60,
     arrowParens: "avoid",
+    semi: false,
+    singleQuote: false,
   });
-
-  console.log("Prettified type:", result.code);
-
-  if (result.errors.length > 0) {
-    throw new Error(result.errors[0]?.message ?? "oxfmt formatting failed");
-  }
-
-  return result.code;
 }

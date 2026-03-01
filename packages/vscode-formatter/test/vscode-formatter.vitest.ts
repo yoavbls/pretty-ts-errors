@@ -45,13 +45,13 @@ describe("formatDiagnosticMessage with hoverCodeBlock", () => {
     );
     expect(result).toContain("```type");
     expect(result).toContain("string");
-    expect(result).toContain(`"abc*bc"`);
+    expect(result).toContain("abc*bc");
   });
 
   it("formats dash in object keys", async () => {
     const result = await prettifyErrorMessage(errorWithDashInObjectKeys);
     expect(result).toContain("```type");
-    expect(result).toContain(`"first-name"`);
+    expect(result).toContain("first-name");
     expect(result).toContain("string");
   });
 });

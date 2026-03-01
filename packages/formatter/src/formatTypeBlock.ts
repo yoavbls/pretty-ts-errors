@@ -1,5 +1,5 @@
 import { addMissingParentheses } from "./addMissingParentheses";
-import { formatWithOxfmt } from "./prettify";
+import { formatWithPrettier } from "./prettify";
 
 export async function formatTypeBlock(
   prefix: string,
@@ -29,7 +29,7 @@ export async function formatTypeBlock(
   }
 }
 /**
- * Try to format type with oxfmt
+ * Try to format type with prettier
  */
 export async function formatType(
   type: string,
@@ -38,7 +38,7 @@ export async function formatType(
   try {
     // Wrap type with valid statement, format it and extract the type back
     return convertToOriginalType(
-      await formatWithOxfmt(convertToValidType(type))
+      await formatWithPrettier(convertToValidType(type))
     );
   } catch (e) {
     if (options?.throwOnError) {
@@ -67,7 +67,8 @@ const convertToOriginalType = (type: string) =>
     .replaceAll("__THREE_DOTS__", "...")
     .replaceAll(/___MORE___: (\d{0,});/g, (_, p1) => `... ${p1} more ...;`)
     .replaceAll(/___(\d{0,})MORE___/g, (_, p1) => `... ${p1} more ...`)
+    .replaceAll(/'([^']+)'(?=\s*:)/g, '"$1"')
     .replaceAll(/... (\d{0,}) more .../g, (_, p1) => `/* ${p1} more */`) // ... x more ... not shown sell
     // .replaceAll(/\(param\: \/\* (\{ .* \}) \*\//g, (_, p1) => `(${p1}: `)
-    .replace(/type x =[ ]?((.|\n)*);.*/g, "$1")
+    .replace(/^type x =[ ]?([\s\S]*?);?$/g, "$1")
     .trim();
