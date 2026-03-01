@@ -17,7 +17,11 @@ export function registerShowErrorInSidebar(context: ExtensionContext) {
           }
         }
 
-        await commands.executeCommand("prettyTsErrors.markdownPreview.focus");
+        try {
+          await commands.executeCommand(
+            "workbench.view.extension.prettyTsErrors"
+          );
+        } catch {}
       })
     )
   );

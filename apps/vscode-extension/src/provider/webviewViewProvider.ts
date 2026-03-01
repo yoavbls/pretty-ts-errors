@@ -60,7 +60,7 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
-      "prettyTsErrors.markdownPreview",
+      "prettyTsErrors.sidePanel",
       viewProviderInstance
     ),
     vscode.languages.onDidChangeDiagnostics(() => updateHasErrorsContext()),

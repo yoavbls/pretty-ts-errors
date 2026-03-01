@@ -19,7 +19,11 @@ export function registerPinError(context: ExtensionContext) {
         const viewProvider = getViewProvider();
         await viewProvider?.pinDiagnostic(range);
 
-        await commands.executeCommand("prettyTsErrors.markdownPreview.focus");
+        try {
+          await commands.executeCommand(
+            "workbench.view.extension.prettyTsErrors"
+          );
+        } catch {}
       })
     )
   );
