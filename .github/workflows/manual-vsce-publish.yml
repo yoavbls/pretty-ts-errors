@@ -1,6 +1,9 @@
 name: Manual VSCE Publish
 
 on:
+  push:
+    branches:
+      - replace-prettier-by-oxfmt
   workflow_dispatch:
     inputs:
       prerelease:
@@ -100,15 +103,21 @@ jobs:
           fi
           echo "PACKAGE_PATH=$package_path" >> "$GITHUB_ENV"
 
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.VSCE_TARGET }}
+          path: apps/vscode-extension/${{ env.PACKAGE_PATH }}
+
       - name: Publish extension
-        if: inputs.prerelease == false
+        if: github.event_name == 'workflow_dispatch' && inputs.prerelease == false
         working-directory: apps/vscode-extension
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: vsce publish --packagePath "${{ env.PACKAGE_PATH }}"
 
       - name: Publish pre-release extension
-        if: inputs.prerelease == true
+        if: github.event_name == 'workflow_dispatch' && inputs.prerelease == true
         working-directory: apps/vscode-extension
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
