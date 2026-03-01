@@ -1,5 +1,8 @@
 const process = require("node:process");
 const console = require("node:console");
+const fs = require("node:fs");
+const path = require("node:path");
+const { copy } = require("esbuild-plugin-copy");
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
 
@@ -20,11 +23,28 @@ async function main() {
     define: production ? { "process.env.NODE_ENV": '"production"' } : undefined,
     minify: production,
     sourcemap: !production,
-    plugins: [workspacePackagesPlugin, esbuildProblemMatcherPlugin],
+    plugins: [
+      workspacePackagesPlugin,
+      esbuildProblemMatcherPlugin,
+      copy({
+        assets: [
+          {
+            from: ["./node_modules/oxfmt/**/*", "../../node_modules/oxfmt/**/*"],
+            to: ["./node_modules/oxfmt"],
+          },
+          {
+            from: ["./node_modules/@oxfmt/**/*", "../../node_modules/@oxfmt/**/*"],
+            to: ["./node_modules/@oxfmt"],
+          },
+        ],
+        once: true,
+      }),
+    ],
   });
   if (watch) {
     await ctx.watch();
   } else {
+    fs.rmSync("./dist", { recursive: true, force: true });
     await ctx.rebuild();
     await ctx.dispose();
   }
@@ -42,9 +62,7 @@ const esbuildProblemMatcherPlugin = {
     build.onEnd((result) => {
       result.errors.forEach(({ text, location }) => {
         console.error(`✘ [ERROR] ${text}`);
-        console.error(
-          `    ${location.file}:${location.line}:${location.column}:`
-        );
+        console.error(`    ${location.file}:${location.line}:${location.column}:`);
       });
       console.log("[watch] build finished");
     });
@@ -59,26 +77,19 @@ const esbuildProblemMatcherPlugin = {
 const workspacePackagesPlugin = {
   name: "workspace-packages",
   setup(build) {
-    const path = require("node:path");
     const pkgRoot = path.resolve(__dirname, "../../../packages");
     /** @type {Record<string, string>} */
     const alias = {
       "@pretty-ts-errors/utils": path.join(pkgRoot, "utils/src/index.ts"),
-      "@pretty-ts-errors/formatter": path.join(
-        pkgRoot,
-        "formatter/src/index.ts"
-      ),
-      "@pretty-ts-errors/vscode-formatter": path.join(
-        pkgRoot,
-        "vscode-formatter/src/index.ts"
-      ),
+      "@pretty-ts-errors/formatter": path.join(pkgRoot, "formatter/src/index.ts"),
+      "@pretty-ts-errors/vscode-formatter": path.join(pkgRoot, "vscode-formatter/src/index.ts"),
     };
     build.onResolve(
       { filter: /^@pretty-ts-errors\/(utils|formatter|vscode-formatter)$/ },
       (args) => {
         const target = alias[args.path];
         return target ? { path: target } : undefined;
-      }
+      },
     );
   },
 };

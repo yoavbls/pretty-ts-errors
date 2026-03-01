@@ -9,7 +9,7 @@ on:
       prerelease:
         description: Publish as pre-release
         required: true
-        default: false
+        default: true
         type: boolean
 
 permissions:
