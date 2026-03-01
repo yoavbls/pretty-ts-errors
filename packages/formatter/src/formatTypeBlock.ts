@@ -1,5 +1,5 @@
 import { addMissingParentheses } from "./addMissingParentheses";
-import { formatWithOxfmt } from "./prettify";
+import { formatWithOxfmt } from "./formatWithOxfmt";
 
 export async function formatTypeBlock(
   prefix: string,
