@@ -3,13 +3,14 @@ import {
   createErrorMessagePrettifier,
   type CodeBlockFn,
 } from "../src/formatDiagnosticMessage";
-import { addMissingParentheses } from "@pretty-ts-errors/formatter/src/addMissingParentheses";
-import { formatType } from "@pretty-ts-errors/formatter/src/formatTypeBlock";
+import { addMissingParentheses } from "../src/addMissingParentheses";
+import { formatType } from "../src/formatTypeBlock";
 import { d } from "@pretty-ts-errors/utils";
 import {
   errorWithDashInObjectKeys,
   errorWithSpecialCharsInObjectKeys,
 } from "./errorMessageMocks";
+import * as errorMessageMocks from "./errorMessageMocks";
 
 // Simple stub that marks code blocks without any rendering logic
 const stubCodeBlock: CodeBlockFn = (code, language, multiLine) => {
@@ -28,13 +29,13 @@ describe("formatter", () => {
 
   it("formats Special characters in object keys", async () => {
     expect(await prettifyErrorMessage(errorWithSpecialCharsInObjectKeys)).toBe(
-      'Type `string` is not assignable to type: \n```type\n{\n  "abc*bc": string;\n}\n```\n.'
+      'Type `string` is not assignable to type `{ "abc*bc": string }`.'
     );
   });
 
   it("formats method's word in the error", async () => {
     expect(await prettifyErrorMessage(errorWithDashInObjectKeys)).toBe(
-      'Type: \n```type\n{\n  person: {\n    "first-name": string;\n  };\n}\n```\n is not assignable to type `string`.'
+      'Type `{ person: { "first-name": string } }` is not assignable to type `string`.'
     );
   });
 
@@ -56,4 +57,11 @@ describe("formatter", () => {
       )
     ).resolves.toBeTypeOf("string");
   });
+
+  it.each(Object.entries(errorMessageMocks))(
+    "prettifies mock error message: %s",
+    async (_name, message) => {
+      await expect(prettifyErrorMessage(message)).resolves.toBeTypeOf("string");
+    }
+  );
 });

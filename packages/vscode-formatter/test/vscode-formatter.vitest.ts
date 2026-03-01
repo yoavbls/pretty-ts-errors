@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter/src/errorMessagePrettifier";
+import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter";
 import { hoverCodeBlock } from "../src/components/hoverCodeBlock";
 import { plainCodeBlock } from "../src/components/plainCodeBlock";
 import {
