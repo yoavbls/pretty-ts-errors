@@ -1,5 +1,5 @@
 import { addMissingParentheses } from "./addMissingParentheses";
-import { formatWithPrettier } from "./prettify";
+import { formatTypeWithPrettier } from "./formatTypeWithPrettier";
 
 export async function formatTypeBlock(
   prefix: string,
@@ -38,7 +38,7 @@ export async function formatType(
   try {
     // Wrap type with valid statement, format it and extract the type back
     return convertToOriginalType(
-      await formatWithPrettier(convertToValidType(type))
+      await formatTypeWithPrettier(convertToValidType(type))
     );
   } catch (e) {
     if (options?.throwOnError) {

@@ -26,11 +26,10 @@ export async function prettifyDiagnosticForHover(
 ): Promise<string> {
   const newDiagnostic = embedSymbolLinks(diagnostic);
   const identedSentences = identSentences(newDiagnostic.message);
-  const prettifiedMessage = await prettifyErrorMessageForHover(
-    identedSentences
-  );
+  const prettifiedMessage =
+    await prettifyErrorMessageForHover(identedSentences);
 
-  return d/*html*/ `
+  return d /*html*/ `
     ${errorTitle(
       newDiagnostic.code,
       d`${showErrorInSidebarLink(newDiagnostic.range)} ${divider}

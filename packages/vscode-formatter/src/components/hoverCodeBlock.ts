@@ -11,7 +11,7 @@ import { plainCodeBlock } from "./plainCodeBlock";
  * VSCode [code](https://github.com/microsoft/vscode/blob/735aff6d962db49423e02c2344e60d418273ae39/src/vs/base/browser/markdownRenderer.ts#L372)
  */
 const codeBlock = (code: string, language: string) =>
-  spanBreak(d/*html*/ `
+  spanBreak(d /*html*/ `
   <span class="codicon codicon-none" style="background-color:var(--vscode-textCodeBlock-background);">
 
     \`\`\`${language}
@@ -36,7 +36,7 @@ const multiLineHoverCodeBlock = (code: string, language: string) => {
     .map((line) => line.padEnd(maxLineChars + 2))
     .join("\n");
 
-  return d/*html*/ `    
+  return d /*html*/ `    
     ${miniLine}
     ${codeBlock(paddedCode, language)}
     ${miniLine}

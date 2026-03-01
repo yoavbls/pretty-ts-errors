@@ -34,7 +34,6 @@ const getPerson = () => ({
   },
 });
 
-
 /**
  * @typedef {Object} JSAnimal
  * @property {string} name
@@ -63,4 +62,4 @@ try {
   console.log(error.code);
 }
 
-export {}
+export {};

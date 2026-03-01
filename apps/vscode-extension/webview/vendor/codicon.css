@@ -4,22 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 
 @font-face {
-	font-family: "codicon";
-	font-display: block;
-	src: url("./codicon.ttf?eb10abb8b9291201e2c39eced5bd6993") format("truetype");
+  font-family: "codicon";
+  font-display: block;
+  src: url("./codicon.ttf?eb10abb8b9291201e2c39eced5bd6993") format("truetype");
 }
 
-.codicon[class*='codicon-'] {
-	font: normal normal normal 12px/1 codicon;
-	display: inline-block;
-	text-decoration: none;
-	text-rendering: auto;
-	text-align: center;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
+.codicon[class*="codicon-"] {
+  font: normal normal normal 12px/1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 /*---------------------
@@ -27,41 +27,59 @@
  *-------------------*/
 
 @keyframes codicon-spin {
-	100% {
-		transform:rotate(360deg);
-	}
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .codicon-sync.codicon-modifier-spin,
 .codicon-loading.codicon-modifier-spin,
 .codicon-gear.codicon-modifier-spin {
-	/* Use steps to throttle FPS to reduce CPU usage */
-	animation: codicon-spin 1.5s steps(30) infinite;
+  /* Use steps to throttle FPS to reduce CPU usage */
+  animation: codicon-spin 1.5s steps(30) infinite;
 }
 
 .codicon-modifier-disabled {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .codicon-modifier-hidden {
-	opacity: 0;
+  opacity: 0;
 }
 
 /* custom speed & easing for loading icon */
 .codicon-loading {
-	animation-duration: 1s !important;
-	animation-timing-function: cubic-bezier(0.53, 0.21, 0.29, 0.67) !important;
+  animation-duration: 1s !important;
+  animation-timing-function: cubic-bezier(0.53, 0.21, 0.29, 0.67) !important;
 }
 
 /*---------------------
  *  Icons
  *-------------------*/
-.codicon-link-external:before { content: "\eb14" }
-.codicon-globe:before { content: "\eb01" }
-.codicon-layout-sidebar-left-dock:before { content: "\ec4a" }
-.codicon-copy:before { content: "\ebcc" }
-.codicon-go-to-file:before { content: "\ea94" }
-.codicon-indent:before { content: "\ebf9" }
-.codicon-debug:before { content: "\ead8" }
-.codicon-close:before { content: "\ea76" }
-.codicon-pinned:before { content: "\eba0" }
+.codicon-link-external:before {
+  content: "\eb14";
+}
+.codicon-globe:before {
+  content: "\eb01";
+}
+.codicon-layout-sidebar-left-dock:before {
+  content: "\ec4a";
+}
+.codicon-copy:before {
+  content: "\ebcc";
+}
+.codicon-go-to-file:before {
+  content: "\ea94";
+}
+.codicon-indent:before {
+  content: "\ebf9";
+}
+.codicon-debug:before {
+  content: "\ead8";
+}
+.codicon-close:before {
+  content: "\ea76";
+}
+.codicon-pinned:before {
+  content: "\eba0";
+}

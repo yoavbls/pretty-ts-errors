@@ -73,7 +73,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `
+const debugHoverHeader = d /*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

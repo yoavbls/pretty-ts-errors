@@ -1,5 +1,5 @@
-import { defineConfig } from 'tsdown'
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
-    ignoreWatch: ['.turbo/']
-})
+  ignoreWatch: [".turbo/"],
+});

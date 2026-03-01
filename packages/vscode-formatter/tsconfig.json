@@ -10,7 +10,11 @@
   },
   "include": ["src/**/*"],
   "references": [
-    { "path": "../formatter" },
-    { "path": "../utils" }
+    {
+      "path": "../formatter"
+    },
+    {
+      "path": "../utils"
+    }
   ]
 }

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   createErrorMessagePrettifier,
   type CodeBlockFn,
-} from "../src/formatDiagnosticMessage";
+} from "../src/errorMessagePrettifier";
 import { addMissingParentheses } from "../src/addMissingParentheses";
 import { formatType } from "../src/formatTypeBlock";
 import { d } from "@pretty-ts-errors/utils";

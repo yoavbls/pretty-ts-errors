@@ -5,7 +5,7 @@ import { d } from "@pretty-ts-errors/utils";
 export const divider = `<span class="divider">|</span>`;
 
 export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
-  d/*html*/ `
+  d /*html*/ `
     <a title="See detailed explanation" href="https://typescript.tv/errors/ts${errorCode}">
       <span class="codicon codicon-link-external">
       </span>
@@ -13,7 +13,7 @@ export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
 
 export const showErrorInSidebarLink = (range: Range) => {
   const args = encodeURIComponent(JSON.stringify([range]));
-  return d/*html*/ `
+  return d /*html*/ `
     <a title="Show error in sidebar" href="command:prettyTsErrors.showErrorInSidebar?${args}">
       <span class="codicon codicon-layout-sidebar-left-dock">
       </span>
@@ -22,7 +22,7 @@ export const showErrorInSidebarLink = (range: Range) => {
 
 export const pinErrorLink = (range: Range) => {
   const args = encodeURIComponent(JSON.stringify([range]));
-  return d/*html*/ `
+  return d /*html*/ `
     <a title="Pin error" href="command:prettyTsErrors.pinError?${args}">
       <span class="codicon codicon-pinned">
       </span>
@@ -31,7 +31,7 @@ export const pinErrorLink = (range: Range) => {
 
 export const copyErrorLink = (message: Diagnostic["message"]) => {
   const args = encodeURIComponent(JSON.stringify(message));
-  return d/*html*/ `
+  return d /*html*/ `
     <a title="Copy error to clipboard" href="command:prettyTsErrors.copyError?${args}">
       <span class="codicon codicon-copy">
       </span>
@@ -40,7 +40,7 @@ export const copyErrorLink = (message: Diagnostic["message"]) => {
 
 export const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
   const encodedMessage = compressToEncodedURIComponent(message);
-  return d/*html*/ `
+  return d /*html*/ `
     <a title="See translation" href="https://ts-error-translator.vercel.app/?error=${encodedMessage}">
       <span class="codicon codicon-globe">
       </span>

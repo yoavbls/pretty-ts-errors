@@ -1,23 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- @see https://code.visualstudio.com/api/extension-guides/webview#content-security-policy -->
     <!-- NOTE: vscode classes, styles and acquireVsCodeApi are injected with inline scripts/styles, thus what is even the point of CSP headers? -->
     <meta
-        http-equiv="Content-Security-Policy"
-        data-csp-replace-content
-        content="default-src 'none'; script-src http://localhost:8080; style-src http://localhost:8080; font-src http://localhost:8080;"
+      http-equiv="Content-Security-Policy"
+      data-csp-replace-content
+      content="default-src 'none'; script-src http://localhost:8080; style-src http://localhost:8080; font-src http://localhost:8080;"
     />
     <title>Pretty TS Errors - Markdown Preview</title>
     <!-- TODO: add script to copy vendor/codicon files from node_modules/ to ./vendor-->
-    <link rel="stylesheet" href="./vendor/codicon.css" data-href-as-webview-uri />
+    <link
+      rel="stylesheet"
+      href="./vendor/codicon.css"
+      data-href-as-webview-uri
+    />
     <link rel="stylesheet" href="./style.css" data-href-as-webview-uri />
-</head>
-<body>
+  </head>
+  <body>
     <!-- #content will be filled with the markdown rendered content -->
     <div id="content"></div>
     <script src="./index.js" data-src-as-webview-uri></script>
-</body>
+  </body>
 </html>
