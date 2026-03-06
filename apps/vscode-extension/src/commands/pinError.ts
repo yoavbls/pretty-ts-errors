@@ -21,7 +21,7 @@ export function registerPinError(context: ExtensionContext) {
 
         try {
           await commands.executeCommand(
-            "workbench.view.extension.prettyTsErrors"
+            "prettyTsErrors.sidePanel.focus"
           );
         } catch {}
       })
