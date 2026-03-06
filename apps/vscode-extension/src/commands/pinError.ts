@@ -1,4 +1,4 @@
-import { commands, type ExtensionContext } from "vscode";
+import { type ExtensionContext } from "vscode";
 import { execute } from "./execute";
 import { tryEnsureRange } from "./validate";
 import { getViewProvider } from "../provider/webviewViewProvider";
@@ -18,12 +18,6 @@ export function registerPinError(context: ExtensionContext) {
 
         const viewProvider = getViewProvider();
         await viewProvider?.pinDiagnostic(range);
-
-        try {
-          await commands.executeCommand(
-            "workbench.view.extension.prettyTsErrors"
-          );
-        } catch {}
       })
     )
   );
