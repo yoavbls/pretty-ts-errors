@@ -20,9 +20,7 @@ export function registerPinError(context: ExtensionContext) {
         await viewProvider?.pinDiagnostic(range);
 
         try {
-          await commands.executeCommand(
-            "prettyTsErrors.sidePanel.focus"
-          );
+          await commands.executeCommand("prettyTsErrors.sidePanel.focus");
         } catch {}
       })
     )
