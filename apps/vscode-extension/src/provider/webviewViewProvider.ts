@@ -110,12 +110,16 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  async lockToDiagnostic(range: vscode.Range) {
+  async lockToDiagnostic(range: vscode.Range, message?: string) {
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor) {
       const diagnostics =
         formattedDiagnosticsStore.get(activeEditor.document.uri.fsPath) ?? [];
-      const diagnostic = diagnostics.find((d) => d.range.isEqual(range));
+      const diagnostic = diagnostics.find(
+        (diagnostic) =>
+          diagnostic.range.isEqual(range) &&
+          (!message || diagnostic.lspDiagnostic.message === message)
+      );
       if (diagnostic) {
         await this.ensureInitialized();
         this.mode = "locked";
@@ -130,13 +134,17 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  async pinDiagnostic(range: vscode.Range) {
+  async pinDiagnostic(range: vscode.Range, message?: string) {
     const activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) return;
 
     const diagnostics =
       formattedDiagnosticsStore.get(activeEditor.document.uri.fsPath) ?? [];
-    const diagnostic = diagnostics.find((d) => d.range.isEqual(range));
+    const diagnostic = diagnostics.find(
+      (diagnostic) =>
+        diagnostic.range.isEqual(range) &&
+        (!message || diagnostic.lspDiagnostic.message === message)
+    );
     if (!diagnostic) return;
 
     await this.ensureInitialized();
