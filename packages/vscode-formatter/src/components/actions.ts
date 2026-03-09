@@ -11,8 +11,10 @@ export const errorCodeExplanationLink = (errorCode: Diagnostic["code"]) =>
       </span>
     </a>`;
 
-export const showErrorInSidebarLink = (range: Range) => {
-  const args = encodeURIComponent(JSON.stringify([range]));
+export const showErrorInSidebarLink = (range: Range, message?: string) => {
+  const args = encodeURIComponent(
+    JSON.stringify(message != null ? [range, message] : [range])
+  );
   return d /*html*/ `
     <a title="Show error in sidebar" href="command:prettyTsErrors.showErrorInSidebar?${args}">
       <span class="codicon codicon-layout-sidebar-left-dock">
@@ -20,8 +22,10 @@ export const showErrorInSidebarLink = (range: Range) => {
     </a>`;
 };
 
-export const pinErrorLink = (range: Range) => {
-  const args = encodeURIComponent(JSON.stringify([range]));
+export const pinErrorLink = (range: Range, message?: string) => {
+  const args = encodeURIComponent(
+    JSON.stringify(message != null ? [range, message] : [range])
+  );
   return d /*html*/ `
     <a title="Pin error" href="command:prettyTsErrors.pinError?${args}">
       <span class="codicon codicon-pinned">
