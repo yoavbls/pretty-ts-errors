@@ -32,8 +32,8 @@ export async function prettifyDiagnosticForHover(
   return d /*html*/ `
     ${errorTitle(
       newDiagnostic.code,
-      d`${showErrorInSidebarLink(newDiagnostic.range)} ${divider}
-        ${pinErrorLink(newDiagnostic.range)} ${divider}
+      d`${showErrorInSidebarLink(newDiagnostic.range, diagnostic.message)} ${divider}
+        ${pinErrorLink(newDiagnostic.range, diagnostic.message)} ${divider}
         ${copyErrorLink(newDiagnostic.message)} ${divider}
         ${errorCodeExplanationLink(newDiagnostic.code)}`,
       miniLine
