@@ -51,7 +51,7 @@ export async function formatType(
 const convertToValidType = (type: string) =>
   `type x = ${type
     // Add missing parentheses when the type ends with "...""
-    .replace(/(.*)\.\.\.$/, (_, p1) => addMissingParentheses(p1))
+    .replace(/^(.*)\.\.\.$/, (_, p1) => addMissingParentheses(p1))
     // Replace single parameter function destructuring because it's not a valid type
     // .replaceAll(/\((\{.*\})\:/g, (_, p1) => `(param: /* ${p1} */`)
     // Change `(...): return` which is invalid to `(...) => return`
