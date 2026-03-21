@@ -22,9 +22,7 @@ export function registerShowErrorInSidebar(context: ExtensionContext) {
           }
 
           try {
-            await commands.executeCommand(
-              "workbench.view.extension.prettyTsErrors"
-            );
+            await commands.executeCommand("prettyTsErrors.sidePanel.focus");
           } catch {}
         })
     )
