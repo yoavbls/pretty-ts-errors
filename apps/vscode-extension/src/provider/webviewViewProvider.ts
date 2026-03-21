@@ -1,6 +1,6 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
-import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
+import { getTheme, getUserLangs, getUserTheme } from "vscode-shiki-bridge";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
@@ -17,6 +17,9 @@ import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 
 const NO_DIAGNOSTICS_MESSAGE =
   "Select code with an error to show the prettified diagnostic in this view.";
+
+const SIDEBAR_CACHE_SIZE_MAX = 100;
+const sidebarHtmlCache = new Map<string, string>();
 
 type ViewMode = "cursor" | "locked";
 
@@ -72,8 +75,20 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
 async function diagnosticToItem(
   formattedDiagnostic: FormattedDiagnostic
 ): Promise<DiagnosticItem> {
+  const cacheKey = formattedDiagnostic.lspDiagnostic.message;
+  let html = sidebarHtmlCache.get(cacheKey);
+  if (!html) {
+    html = await prettifyDiagnosticForSidebar(
+      formattedDiagnostic.lspDiagnostic
+    );
+    if (sidebarHtmlCache.size > SIDEBAR_CACHE_SIZE_MAX) {
+      const firstKey = sidebarHtmlCache.keys().next().value!;
+      sidebarHtmlCache.delete(firstKey);
+    }
+    sidebarHtmlCache.set(cacheKey, html);
+  }
   return {
-    html: await prettifyDiagnosticForSidebar(formattedDiagnostic.lspDiagnostic),
+    html,
     range: formattedDiagnostic.range,
   };
 }
@@ -94,7 +109,22 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
 
   private async ensureInitialized() {
     if (!this.initialized) {
-      const [theme, themes] = await getUserTheme();
+      let theme: string;
+      let themes: Parameters<typeof createHighlighterCore>[0]["themes"];
+      try {
+        [theme, themes] = await getUserTheme();
+      } catch {
+        // User's theme not found in extension registry (e.g. custom themes).
+        // Fall back to a built-in VS Code theme matching the user's color theme kind.
+        const isDark =
+          vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
+          vscode.window.activeColorTheme.kind ===
+            vscode.ColorThemeKind.HighContrast;
+
+        [theme, themes] = await getTheme(
+          isDark ? "Default Dark Modern" : "Default Light Modern"
+        );
+      }
 
       const langs = await getUserLangs(["type", "ts"]);
       const highlighter = await createHighlighterCore({
@@ -225,7 +255,6 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       }),
       webviewView.onDidChangeVisibility(() => {
         if (webviewView.visible) {
-          this.lastContent = null;
           this.refresh(webviewView.webview);
         }
       })
