@@ -64,7 +64,8 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "prettyTsErrors.sidePanel",
-      viewProviderInstance
+      viewProviderInstance,
+      { webviewOptions: { retainContextWhenHidden: true } }
     ),
     vscode.languages.onDidChangeDiagnostics(() => updateHasErrorsContext()),
     vscode.window.onDidChangeActiveTextEditor(() => updateHasErrorsContext())
@@ -97,6 +98,7 @@ async function diagnosticToItem(
 class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private disposables = new Map<vscode.WebviewView, vscode.Disposable[]>();
   private webview: vscode.Webview | null = null;
+  private view: vscode.WebviewView | null = null;
   private mode: ViewMode = "cursor";
   private lockedContent: DiagnosticItem | null = null;
   private pinnedError: PinnedError | null = null;
@@ -204,6 +206,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     _context: vscode.WebviewViewResolveContext
   ): Promise<void> {
     this.webview = webviewView.webview;
+    this.view = webviewView;
 
     const initialContent = await this.getActiveContentHtml();
     webviewView.webview.html = await this.provider.getWebviewContent(
@@ -265,6 +268,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       disposables?.forEach((disposable) => disposable.dispose());
       this.disposables.delete(webviewView);
       this.webview = null;
+      this.view = null;
     });
   }
 
@@ -307,6 +311,8 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   }
 
   async refresh(webview: vscode.Webview) {
+    if (this.view && !this.view.visible) return;
+
     const sections: string[] = [];
 
     // Render pinned error section
