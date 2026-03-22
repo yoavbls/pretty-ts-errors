@@ -116,6 +116,8 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       try {
         [theme, themes] = await getUserTheme();
       } catch {
+        // User's theme not found in extension registry (e.g. custom themes).
+        // Fall back to a built-in VS Code theme matching the user's color theme kind.
         const isDark =
           vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
           vscode.window.activeColorTheme.kind ===
