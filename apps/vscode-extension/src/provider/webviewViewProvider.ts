@@ -1,7 +1,7 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
-import { getTheme, getUserLangs, getUserTheme } from "vscode-shiki-bridge";
-import { createHighlighterCore } from "shiki/core";
+import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
+import { createHighlighterCore, ThemeRegistration } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
 import {
@@ -112,20 +112,21 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   private async ensureInitialized() {
     if (!this.initialized) {
       let theme: string;
-      let themes: Parameters<typeof createHighlighterCore>[0]["themes"];
+      let themes: [ThemeRegistration];
       try {
         [theme, themes] = await getUserTheme();
       } catch {
-        // User's theme not found in extension registry (e.g. custom themes).
-        // Fall back to a built-in VS Code theme matching the user's color theme kind.
         const isDark =
           vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
           vscode.window.activeColorTheme.kind ===
             vscode.ColorThemeKind.HighContrast;
 
-        [theme, themes] = await getTheme(
-          isDark ? "Default Dark Modern" : "Default Light Modern"
-        );
+        const bundled = isDark
+          ? await import("shiki/themes/dark-plus.mjs")
+          : await import("shiki/themes/light-plus.mjs");
+
+        theme = isDark ? "dark-plus" : "light-plus";
+        themes = [bundled.default];
       }
 
       const langs = await getUserLangs(["type", "ts"]);
