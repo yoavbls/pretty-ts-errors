@@ -11,6 +11,10 @@
     "directory": "apps/vscode-extension"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors",
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
   "engines": {
     "vscode": "^1.77.0"
   },
