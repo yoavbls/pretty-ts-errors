@@ -1,7 +1,11 @@
 import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
-import { getUserLangs, getUserTheme } from "vscode-shiki-bridge";
-import { createHighlighterCore, ThemeRegistration } from "shiki/core";
+import { getTheme, getUserLangs, getUserTheme } from "vscode-shiki-bridge";
+import {
+  createHighlighterCore,
+  LanguageRegistration,
+  ThemeRegistration,
+} from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
 import {
@@ -14,6 +18,7 @@ import {
   initHighlighter,
 } from "@pretty-ts-errors/vscode-formatter";
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
+import { logger } from "../logger";
 
 const NO_DIAGNOSTICS_MESSAGE =
   "Select code with an error to show the prettified diagnostic in this view.";
@@ -110,39 +115,76 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
   constructor(private readonly provider: MarkdownWebviewProvider) {}
 
   private async ensureInitialized() {
-    if (!this.initialized) {
-      let theme: string;
-      let themes: [ThemeRegistration];
+    if (this.initialized) {
+      return;
+    }
+
+    const isDark =
+      vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
+      vscode.window.activeColorTheme.kind ===
+        vscode.ColorThemeKind.HighContrast;
+    logger.info(
+      `initializing highlighter with ${isDark ? "dark" : "light"} theme`
+    );
+
+    // Default to the special 'none' theme, this will still provide formatted codeblocks with readable background and text colors
+    // see: https://shiki.style/themes#special-themes
+    let theme: string = "none";
+    let themes: ThemeRegistration[] = [];
+    let langs: LanguageRegistration[] = [];
+
+    // If the extension is running in the local extension host, expect to be able to resolve themes and languages
+    if (
+      this.provider.context.extension.extensionKind == vscode.ExtensionKind.UI
+    ) {
+      logger.info(
+        `running on the UI extension host, using vscode-shiki-bridge to load themes and language grammars`
+      );
       try {
         [theme, themes] = await getUserTheme();
       } catch {
         // User's theme not found in extension registry (e.g. custom themes).
         // Fall back to a built-in VS Code theme matching the user's color theme kind.
-        const isDark =
-          vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
-          vscode.window.activeColorTheme.kind ===
-            vscode.ColorThemeKind.HighContrast;
-
-        const bundled = isDark
-          ? await import("shiki/themes/dark-plus.mjs")
-          : await import("shiki/themes/light-plus.mjs");
-
-        theme = isDark ? "dark-plus" : "light-plus";
-        themes = [bundled.default];
+        const fallbackTheme = isDark
+          ? "Default Dark Modern"
+          : "Default Light Modern";
+        logger.info(
+          `failed to resolve the users theme, falling back to load the ${fallbackTheme} theme`
+        );
+        [theme, themes] = await getTheme(fallbackTheme);
       }
+      langs = await getUserLangs(["type", "ts"]);
+    } else {
+      logger.info(
+        `NOT running on the UI extension host, falling back to use bundled shiki themes and language grammars`
+      );
+      // if running in the remote host, fall back on the bundles vscode themes from shiki
+      const bundledTheme = isDark
+        ? await import("shiki/themes/dark-plus.mjs")
+        : await import("shiki/themes/light-plus.mjs");
+      theme = bundledTheme.default.name!;
+      themes = [bundledTheme.default];
 
-      const langs = await getUserLangs(["type", "ts"]);
-      const highlighter = await createHighlighterCore({
-        themes,
-        langs,
-        engine: createOnigurumaEngine(import("shiki/wasm")),
-      });
-      initHighlighter({
-        codeToHtml: (code: string, options: { lang: string }) =>
-          highlighter.codeToHtml(code, { ...options, theme }),
-      });
-      this.initialized = true;
+      // for typescript, fall back to the bundled grammar from shiki
+      const bundledTypeScriptGrammar =
+        await import("shiki/langs/typescript.mjs");
+      langs = [
+        ...bundledTypeScriptGrammar.default,
+        // 'type' will still resolve because its part of the pretty-ts-errors extension
+        ...(await getUserLangs(["type"])),
+      ];
     }
+
+    const highlighter = await createHighlighterCore({
+      themes,
+      langs,
+      engine: createOnigurumaEngine(import("shiki/wasm")),
+    });
+    initHighlighter({
+      codeToHtml: (code: string, options: { lang: string }) =>
+        highlighter.codeToHtml(code, { ...options, theme }),
+    });
+    this.initialized = true;
   }
 
   async lockToDiagnostic(range: vscode.Range, message?: string) {
