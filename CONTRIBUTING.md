@@ -67,6 +67,8 @@ When developing it is the easiest to run the `dev` command in the root of the pa
 npm run dev
 ```
 
+This will run the `dev` task in parallel for package of the project, thus immediatly propegating changes troughout the repo. For more info on the project architecture, read [`ARCHITECTURE.md`](./docs/ARCHITECTURE.md). For more info on debugging and testing see [this section](#debugging--testing).
+
 ### Issues with Local Dev Setup
 
 If you have issues with setting up your local dev environment, feel free to create a [new discussion](https://github.com/yoavbls/pretty-ts-errors/discussions/new/choose) to ask for help.
@@ -87,7 +89,12 @@ There is no specific styleguide to adhere to, besides the `eslint` and `prettier
 
 ### Debugging & Testing
 
-See the [`.vscode/launch.json`](.vscode/launch.json) for the available debug configurations. You can use the [VS Code debugger](https://code.visualstudio.com/docs/debugtest/debugging) (default `F5` key) to start a debugging sessions. It is recommended to use `Run Extension (all extensions disabled)` to improve startup time when iterating, use the `Run Extension` if you want to debug the extension with all you installed extensions enabled.
+#### Debugging
+
+See the [`.vscode/launch.json`](.vscode/launch.json) for the available debug configurations. You can use the [VS Code debugger](https://code.visualstudio.com/docs/debugtest/debugging) (default `F5` key) to start a debugging sessions. It is recommended to use `Run Extension (all extensions disabled)` to improve startup time when iterating but only loading the default extesions. Use the `Run Extension` if you want to debug the extension with all your installed extensions enabled.
+
+> !NOTE
+> Most Themes and Programming Languages require non-default extensions and will not load when running with `Run Extension (all extensions disabled)`
 
 When running either of these debug tasks the `watch` task of the `apps/vscode-extension` directory will be run in the background, no additional actions are required to debug the extension.
 
@@ -98,6 +105,21 @@ The [`@pretty-ts-errors/formatter`](./packages/formatter/) does have some unit t
 When running the extension with the debugger there is a [`selectedTextHoverProvider`](./apps/vscode-extension/src/provider/selectedTextHoverProvider.ts) that allows for selecting text in the `test` directories and treat them as a typescript error message:
 ![example of the selected text hover provider](./docs/selected-text-hover-provider-example.png)
 
+#### Installing the packaged extension manually
+
+By running the `npm run build` command, the extension will be build in production mode and packaged as a `apps/vscode-extensions/pretty-ts-errors-{version}.vsix` file. These files can [be installed manually](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_install-from-a-vsix) to install the build without having to use the marketplace.
+
+> !NOTE
+> When running a manually installed `.vsix` file, the [`ExtensionMode`](https://code.visualstudio.com/api/references/vscode-api#ExtensionMode) will be set to `Production`.
+
+#### Testing
+
+To see the currently configured command to run tests, check the [`.github/workflows/pr-ci.yml`](./.github/workflows/pr-ci.yml).
+
+The packages in [`packages/`](./packages/) will use test runners to test package specific functionality.
+
+The [`apps/vscode-extension/`](./apps/vscode-extension/) is scaffolded to use the [VS Code testing utilities](https://code.visualstudio.com/api/working-with-extensions/testing-extension).
+
 ### Documentation & Resources
 
 The documentation regarding `pretty-ts-errors` is found in the [`README.md`](./README.md), `CONTRIBUTING.md` or the [`docs`](./docs) directory.
@@ -105,7 +127,7 @@ The documentation regarding `pretty-ts-errors` is found in the [`README.md`](./R
 Some comments in the code can be found where specific behaviour or caveats are documented, like the caching mechanism or performance critical sections.
 
 The [Visual Studio Code Extension API documentation](https://code.visualstudio.com/api) is a good place to read about the extension API.
-When external libraries are used, always check and read their respective documentation to ensure you are properly using them.
+When external libraries are used, always check and read their respective documentation to ensure they are used properly.
 
 ## Attribution
 
