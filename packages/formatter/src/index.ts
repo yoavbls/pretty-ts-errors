@@ -1,1 +1,4 @@
-export { formatDiagnosticMessage } from "./formatDiagnosticMessage";
+export {
+  createErrorMessagePrettifier,
+  type CodeBlockFn,
+} from "./errorMessagePrettifier";

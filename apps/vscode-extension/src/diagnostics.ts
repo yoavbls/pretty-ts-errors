@@ -1,5 +1,5 @@
 import { has } from "@pretty-ts-errors/utils";
-import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
+import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -34,30 +34,35 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
   const converter = createConverter();
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
-      logger.measure("onDidChangeDiagnostics", () => {
-        e.uris.forEach((uri) => {
-          logger.measure(`diagnostics for: ${uri.toString(true)}`, () => {
-            const diagnostics = languages.getDiagnostics(uri);
-            const supportedDiagnostics = diagnostics.filter(
-              (diagnostic) =>
-                diagnostic.source &&
-                has(supportedDiagnosticSources, diagnostic.source)
-            );
+      await logger.measure("onDidChangeDiagnostics", async () => {
+        for (const uri of e.uris) {
+          await logger.measure(
+            `diagnostics for: ${uri.toString(true)}`,
+            async () => {
+              const diagnostics = languages.getDiagnostics(uri);
+              const supportedDiagnostics = diagnostics.filter(
+                (diagnostic) =>
+                  diagnostic.source &&
+                  has(supportedDiagnosticSources, diagnostic.source)
+              );
 
-            const items: FormattedDiagnostic[] = supportedDiagnostics.map(
-              (diagnostic) => getFormattedDiagnostic(diagnostic, uri, converter)
-            );
+              const items: FormattedDiagnostic[] = await Promise.all(
+                supportedDiagnostics.map((diagnostic) =>
+                  getFormattedDiagnostic(diagnostic, converter)
+                )
+              );
 
-            // TODO: we should check if never deleting the entries is a performance issue
-            //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
-            //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
-            formattedDiagnosticsStore.set(uri.fsPath, items);
+              // TODO: we should check if never deleting the entries is a performance issue
+              //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
+              //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
+              formattedDiagnosticsStore.set(uri.fsPath, items);
 
-            if (items.length > 0) {
-              ensureHoverProviderIsRegistered(uri, context);
+              if (items.length > 0) {
+                ensureHoverProviderIsRegistered(uri, context);
+              }
             }
-          });
-        });
+          );
+        }
       });
     })
   );
@@ -83,21 +88,17 @@ const CACHE_SIZE_MAX = 100;
  */
 const cache = new Map<string, MarkdownString>();
 
-function getFormattedDiagnostic(
+async function getFormattedDiagnostic(
   diagnostic: Diagnostic,
-  uri: Uri,
   converter: Converter
-): FormattedDiagnostic {
-  let formattedMessage = cache.get(diagnostic.message);
+): Promise<FormattedDiagnostic> {
+  // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
+  // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
+  const lspDiagnostic = converter.asDiagnostic(diagnostic);
 
+  let formattedMessage = cache.get(diagnostic.message);
   if (!formattedMessage) {
-    // formatDiagnostic converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-    // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnostic recognize it.
-    const lspDiagnostic = converter.asDiagnostic(diagnostic);
-    const formattedDiagnostic = logger.measure(
-      `formatDiagnostic(\`${lspDiagnostic.message}\`)`,
-      () => formatDiagnostic(lspDiagnostic, { uri })
-    );
+    const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
     const markdownString = new MarkdownString(formattedDiagnostic);
 
     // TODO: consider using the `{ enabledCommands: string[] }` variant, to only allow whitelisted commands
@@ -115,6 +116,7 @@ function getFormattedDiagnostic(
   return {
     range: diagnostic.range,
     contents: [formattedMessage],
+    lspDiagnostic,
   };
 }
 

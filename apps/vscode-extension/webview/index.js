@@ -26,12 +26,12 @@ const api = (function () {
   };
 })();
 
-const $content = window.document.querySelector('#content');
+const $content = window.document.querySelector("#content");
 
-window.addEventListener('message', (event) => {
+window.addEventListener("message", (event) => {
   const message = event.data;
   switch (message.command) {
-    case 'update-content': {
+    case "update-content": {
       if ($content) {
         $content.innerHTML = message.html;
       }
@@ -55,9 +55,9 @@ window.document.addEventListener("click", (event) => {
  */
 function handleCopyContentEvent(element) {
   const parent = element.parentElement;
-  if (parent?.classList.contains('code-container')) {
-    const pre = parent.querySelector('pre');
-    const code = pre?.querySelector('code');
+  if (parent?.classList.contains("code-container")) {
+    const pre = parent.querySelector("pre");
+    const code = pre?.querySelector("code");
     const content = code?.innerText;
     if (content) {
       copyToClipboard(content);

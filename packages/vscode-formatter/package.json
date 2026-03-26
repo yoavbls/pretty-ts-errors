@@ -12,6 +12,8 @@
     "build": "tsdown  src/index.ts --format cjs,esm --dts",
     "dev": "tsdown src/index.ts --format cjs,esm --dts --watch",
     "lint": "tsc -p . --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "publish": "npm run build && npm publish --access public"
   },
   "repository": {
@@ -29,7 +31,8 @@
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "devDependencies": {
-    "tsdown": "^0.15.6"
+    "tsdown": "^0.15.6",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",

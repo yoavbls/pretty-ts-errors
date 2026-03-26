@@ -1,5 +1,5 @@
 import { d } from "@pretty-ts-errors/utils";
-import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
+import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   ExtensionMode,
@@ -27,7 +27,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
         pattern: "**/test/**/*.ts",
       },
       {
-        provideHover(document, position) {
+        async provideHover(document, position) {
           const editor = window.activeTextEditor;
 
           if (!editor) {
@@ -41,25 +41,27 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             return null;
           }
 
+          const lspDiagnostic = converter.asDiagnostic({
+            message,
+            range,
+            severity: 0,
+            source: "ts",
+            code: 1337,
+          });
+
           const markdown = new MarkdownString(
-            debugHoverHeader +
-              formatDiagnostic(
-                converter.asDiagnostic({
-                  message,
-                  range,
-                  severity: 0,
-                  source: "ts",
-                  code: 1337,
-                }),
-                { uri: document.uri }
-              )
+            debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
           );
 
           markdown.isTrusted = true;
           markdown.supportHtml = true;
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
-            { range, contents: [markdown] },
+            {
+              range,
+              contents: [markdown],
+              lspDiagnostic,
+            },
           ]);
 
           return {
@@ -71,7 +73,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `
+const debugHoverHeader = d /*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

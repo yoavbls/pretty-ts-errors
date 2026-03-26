@@ -1,10 +1,13 @@
 import { MarkdownString, Range, Uri } from "vscode";
+import type { Diagnostic } from "vscode-languageserver-types";
 
 type StoreKey = Uri["fsPath"];
 
 export interface FormattedDiagnostic {
   range: Range;
   contents: MarkdownString[];
+  /** Original LSP diagnostic for on-demand sidebar formatting */
+  lspDiagnostic: Diagnostic;
 }
 
 /**

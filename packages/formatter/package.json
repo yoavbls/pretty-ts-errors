@@ -30,15 +30,12 @@
     "url": "https://github.com/yoavbls/pretty-ts-errors/issues"
   },
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
-  "dependencies": {
-    "@pretty-ts-errors/utils": "*"
-  },
   "devDependencies": {
-    "@types/prettier": "^2.7.3",
     "tsdown": "^0.15.6",
     "vitest": "^3.2.4"
   },
-  "peerDependencies": {
-    "prettier": "^2.8.8"
+  "dependencies": {
+    "@pretty-ts-errors/utils": "*",
+    "prettier": "^3.6.2"
   }
 }

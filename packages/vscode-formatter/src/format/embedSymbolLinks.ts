@@ -8,7 +8,7 @@ export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {
     return diagnostic;
   }
   const ref = diagnostic.relatedInformation[0];
-  const symbol = ref?.message.match(/(?<symbol>'.*?') is declared here./)
+  const symbol = ref?.message.match(/(?<symbol>'[^']*') is declared here./)
     ?.groups?.["symbol"];
 
   if (!symbol) {

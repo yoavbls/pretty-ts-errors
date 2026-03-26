@@ -1,0 +1,49 @@
+name: PR CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Install, Build, and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install VSCE CLI
+        run: npm install -g @vscode/vsce
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Build all workspaces
+        run: npm run build
+
+      - name: Run formatter tests
+        run: npm -w @pretty-ts-errors/formatter run test -- --reporter=verbose
+
+      - name: Run VS Code formatter tests
+        run: npm -w @pretty-ts-errors/vscode-formatter run test -- --reporter=verbose
+
+      - name: Run VS Code extension tests
+        run: xvfb-run -a npm --workspace apps/vscode-extension run test
