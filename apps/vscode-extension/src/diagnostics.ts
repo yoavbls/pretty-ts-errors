@@ -18,6 +18,7 @@ import {
   type FormattedDiagnostic,
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
+import { enabledCommands } from "./commands/enabledCommands";
 
 /**
  * The list of diagnostic sources that pretty-ts-errors supports
@@ -101,8 +102,7 @@ async function getFormattedDiagnostic(
     const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
     const markdownString = new MarkdownString(formattedDiagnostic);
 
-    // TODO: consider using the `{ enabledCommands: string[] }` variant, to only allow whitelisted commands
-    markdownString.isTrusted = true;
+    markdownString.isTrusted = { enabledCommands };
     markdownString.supportHtml = true;
 
     formattedMessage = markdownString;

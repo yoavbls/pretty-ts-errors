@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { enabledCommands } from "../commands/enabledCommands";
 
 /**
  * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
@@ -28,12 +29,7 @@ export class MarkdownWebviewProvider {
 
   getWebviewOptions(): vscode.WebviewOptions {
     return {
-      enableCommandUris: [
-        "prettyTsErrors.revealSelection",
-        "prettyTsErrors.copyError",
-        "prettyTsErrors.pinError",
-        "prettyTsErrors.unpinError",
-      ],
+      enableCommandUris: enabledCommands,
       enableScripts: true,
       enableForms: false,
       localResourceRoots: [this.webviewRootUri],
