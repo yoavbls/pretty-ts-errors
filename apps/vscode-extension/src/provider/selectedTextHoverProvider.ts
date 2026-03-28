@@ -9,6 +9,7 @@ import {
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
+import { enabledCommands } from "../commands/enabledCommands";
 
 /**
  * Register an hover provider in debug only.
@@ -53,7 +54,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
           );
 
-          markdown.isTrusted = true;
+          markdown.isTrusted = { enabledCommands };
           markdown.supportHtml = true;
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
