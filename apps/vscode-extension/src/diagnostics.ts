@@ -52,10 +52,17 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
                 )
               );
 
-              // TODO: we should check if never deleting the entries is a performance issue
-              //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
-              //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
-              formattedDiagnosticsStore.set(uri.fsPath, items);
+              if (items.length === 0) {
+                logger.trace(
+                  `no diagnostics for ${uri.toString(true)}, removing from store`
+                );
+                formattedDiagnosticsStore.delete(uri.fsPath);
+              } else {
+                logger.trace(
+                  `storing ${items.length} formatted diagnostics for ${uri.toString(true)}`
+                );
+                formattedDiagnosticsStore.set(uri.fsPath, items);
+              }
 
               if (items.length > 0) {
                 ensureHoverProviderIsRegistered(uri, context);
