@@ -8,7 +8,7 @@ export class MarkdownWebviewProvider {
   private webviewRootUri: vscode.Uri;
   private webviewHtmlTemplate: Promise<string>;
 
-  constructor(private readonly context: vscode.ExtensionContext) {
+  constructor(public readonly context: vscode.ExtensionContext) {
     this.webviewRootUri = vscode.Uri.joinPath(
       this.context.extensionUri,
       "webview"
