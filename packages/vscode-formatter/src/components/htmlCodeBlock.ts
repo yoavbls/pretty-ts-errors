@@ -29,7 +29,7 @@ export const htmlCodeBlock: CodeBlockFn = (code, language, multiLine) => {
     return (
       `<p></p>` +
       `<div class="code-container">` +
-      `<button class="copy-button" data-copy-content><span class="codicon codicon-copy" title="Copy type to clipboard"><span></button>` +
+      `<button class="copy-button" data-copy-content><span class="codicon codicon-copy" title="Copy type to clipboard"></span></button>` +
       highlighted +
       `</div>` +
       `<p></p>`
