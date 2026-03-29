@@ -20,8 +20,10 @@ import {
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 import { logger } from "../logger";
 
-const NO_DIAGNOSTICS_MESSAGE =
-  "Select code with an error to show the prettified diagnostic in this view.";
+const NO_DIAGNOSTICS_MESSAGE = () =>
+  vscode.l10n.t(
+    "Select code with an error to show the prettified diagnostic in this view."
+  );
 
 const SIDEBAR_CACHE_SIZE_MAX = 100;
 const sidebarHtmlCache = new Map<string, string>();
@@ -328,7 +330,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
 
   private async getActiveContentHtml(): Promise<string> {
     const items = await this.getActiveDiagnosticItems();
-    if (items.length === 0) return NO_DIAGNOSTICS_MESSAGE;
+    if (items.length === 0) return NO_DIAGNOSTICS_MESSAGE();
     return items.map((item) => item.html).join("<hr>");
   }
 
@@ -367,9 +369,9 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
           `<div class="pinned-header">` +
           `<span class="pinned-label">` +
           `<span class="codicon codicon-pinned"></span>` +
-          ` Pinned error` +
+          ` ${vscode.l10n.t("Pinned error")}` +
           `</span>` +
-          `<a class="unpin-button codicon codicon-close" title="Unpin error" href="command:prettyTsErrors.unpinError"></a>` +
+          `<a class="unpin-button codicon codicon-close" title="${vscode.l10n.t("Unpin error")}" href="command:prettyTsErrors.unpinError"></a>` +
           `</div>` +
           this.pinnedError.html +
           `</div>`
@@ -380,7 +382,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     // Render active diagnostic items
     const items = await this.getActiveDiagnosticItems();
     if (items.length === 0) {
-      sections.push(NO_DIAGNOSTICS_MESSAGE);
+      sections.push(NO_DIAGNOSTICS_MESSAGE());
     } else {
       for (let i = 0; i < items.length; i++) {
         if (i > 0) sections.push(`<hr>`);
@@ -388,7 +390,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         if (this.pinnedError && item.html === this.pinnedError.html) {
           sections.push(
             `<div class="diagnostic-item pinned-message">` +
-              `<em>This item is pinned on top.</em>` +
+              `<em>${vscode.l10n.t("This item is pinned on top.")}</em>` +
               `</div>`
           );
         } else {

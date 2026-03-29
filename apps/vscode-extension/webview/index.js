@@ -71,5 +71,7 @@ function handleCopyContentEvent(element) {
  */
 async function copyToClipboard(text) {
   await navigator.clipboard.writeText(text);
-  api.notify("Copied type to clipboard!");
+  api.notify(
+    window.__i18n?.copiedTypeToClipboard ?? "Copied type to clipboard!"
+  );
 }

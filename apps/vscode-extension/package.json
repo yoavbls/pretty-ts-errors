@@ -43,6 +43,7 @@
     "onLanguage:glimmer-js",
     "onLanguage:glimmer-ts"
   ],
+  "l10n": "./l10n",
   "main": "./dist/extension.js",
   "browser": "./dist/extension.js",
   "files": [

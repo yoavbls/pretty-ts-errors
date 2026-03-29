@@ -1,4 +1,4 @@
-import { commands, env, window, type ExtensionContext } from "vscode";
+import { commands, env, l10n, window, type ExtensionContext } from "vscode";
 import { execute } from "./execute";
 
 const COMMAND_ID = "prettyTsErrors.copyError";
@@ -13,7 +13,7 @@ export function registerCopyError(context: ExtensionContext) {
           });
         }
         await env.clipboard.writeText(errorMessage);
-        window.showInformationMessage("Copied error message to clipboard!");
+        window.showInformationMessage(l10n.t("Copied error message to clipboard!"));
       })
     )
   );

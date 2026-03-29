@@ -57,7 +57,11 @@ export class MarkdownWebviewProvider {
     classList: string[] = []
   ): Promise<string> {
     const template = await this.webviewHtmlTemplate;
-    const html = this.patchCspSafeAttrs(template, webview);
+    let html = this.patchCspSafeAttrs(template, webview);
+    const i18nScript = `<script>window.__i18n=${JSON.stringify({
+      copiedTypeToClipboard: vscode.l10n.t("Copied type to clipboard!"),
+    })};</script>`;
+    html = html.replace("</head>", `${i18nScript}</head>`);
     return html.replace(
       '<div id="content"></div>',
       `<div id="content" class="${classList.join(" ")}">${content}</div>`
