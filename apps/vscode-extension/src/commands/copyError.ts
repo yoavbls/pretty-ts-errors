@@ -13,7 +13,9 @@ export function registerCopyError(context: ExtensionContext) {
           });
         }
         await env.clipboard.writeText(errorMessage);
-        window.showInformationMessage(l10n.t("Copied error message to clipboard!"));
+        window.showInformationMessage(
+          l10n.t("Copied error message to clipboard!")
+        );
       })
     )
   );
