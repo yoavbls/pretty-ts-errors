@@ -20,7 +20,7 @@ const stubCodeBlock: CodeBlockFn = (code, language, multiLine) => {
 
 const prettifyErrorMessage = createErrorMessagePrettifier(stubCodeBlock);
 
-describe("formatter", () => {
+describe("formatter", (context) => {
   it("adds missing parentheses", () => {
     expect(addMissingParentheses("Hello, {world! [This] is a (test.")).toBe(
       "Hello, {world! [This] is a (test.\n...)}"
@@ -58,10 +58,12 @@ describe("formatter", () => {
     ).resolves.toBeTypeOf("string");
   });
 
-  it.each(Object.entries(errorMessageMocks))(
+  it.for(Object.entries(errorMessageMocks))(
     "prettifies mock error message: %s",
-    async (_name, message) => {
-      await expect(prettifyErrorMessage(message)).resolves.toBeTypeOf("string");
+    async ([_name, message], { expect }) => {
+      const prettified = await prettifyErrorMessage(message);
+      expect(prettified).toBeTypeOf("string");
+      expect(prettified).toMatchSnapshot();
     }
   );
 });
