@@ -14,6 +14,7 @@
     "lint": "tsc -p . --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "publish": "npm run build && npm publish --access public"
   },
   "repository": {
@@ -32,7 +33,7 @@
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "devDependencies": {
     "tsdown": "^0.15.6",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.2"
   },
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",
