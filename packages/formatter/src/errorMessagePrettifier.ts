@@ -125,9 +125,9 @@ async function getRules(codeBlock: CodeBlockFn): Promise<Rule[]> {
     },
     {
       pattern:
-        /(.*)['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
-      replacer: async (p1: string, p2: string, p3: string) =>
-        `${p1}${await formatTypeOrModuleBlock("", p2)} ${p3}`,
+        /['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
+      replacer: async (p1: string, p2: string) =>
+        `${await formatTypeOrModuleBlock("", p1)} ${p2}`,
     },
     {
       pattern:
