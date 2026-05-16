@@ -27,6 +27,16 @@ describe("formatter", (context) => {
     );
   });
 
+  it("adds missing function return types", () => {
+    expect(addMissingParentheses("(ref: any)")).toBe("(ref: any) => ...\n...");
+  });
+
+  it("handles adversarial missing-parentheses parameter patterns without catastrophic backtracking", () => {
+    const message = "(:".repeat(40_000);
+
+    expect(addMissingParentheses(message)).toContain(" => ...");
+  }, 2_000);
+
   it("handles adversarial formatter patterns without catastrophic backtracking", async () => {
     const repeat = 5_000;
     const messages = [
