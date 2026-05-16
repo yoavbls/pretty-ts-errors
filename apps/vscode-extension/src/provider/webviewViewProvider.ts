@@ -19,6 +19,7 @@ import {
 } from "@pretty-ts-errors/vscode-formatter";
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 import { logger } from "../logger";
+import { getDiagnosticCacheKey } from "../diagnosticCacheKey";
 
 const NO_DIAGNOSTICS_MESSAGE =
   "Select code with an error to show the prettified diagnostic in this view.";
@@ -81,7 +82,7 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
 async function diagnosticToItem(
   formattedDiagnostic: FormattedDiagnostic
 ): Promise<DiagnosticItem> {
-  const cacheKey = formattedDiagnostic.lspDiagnostic.message;
+  const cacheKey = getDiagnosticCacheKey(formattedDiagnostic.lspDiagnostic);
   let html = sidebarHtmlCache.get(cacheKey);
   if (!html) {
     html = await prettifyDiagnosticForSidebar(

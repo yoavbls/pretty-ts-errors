@@ -19,6 +19,7 @@ import {
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
 import { enabledCommands } from "./commands/enabledCommands";
+import { getDiagnosticCacheKey } from "./diagnosticCacheKey";
 
 /**
  * The list of diagnostic sources that pretty-ts-errors supports
@@ -84,7 +85,7 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
 const CACHE_SIZE_MAX = 100;
 
 /**
- * A local cache that maps TS diagnostics as `string` to their formatted `MarkdownString` counter part.
+ * A local cache that maps TS diagnostics to their formatted `MarkdownString` counter part.
  * @see https://github.com/yoavbls/pretty-ts-errors/pull/62
  *
  * One reason this cache is critical is because the TypeScript Language Features extension is very noisy and will constantly push all diagnostics for a file,
@@ -103,8 +104,9 @@ async function getFormattedDiagnostic(
   // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
   // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
   const lspDiagnostic = converter.asDiagnostic(diagnostic);
+  const cacheKey = getDiagnosticCacheKey(lspDiagnostic);
 
-  let formattedMessage = cache.get(diagnostic.message);
+  let formattedMessage = cache.get(cacheKey);
   if (!formattedMessage) {
     const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
     const markdownString = new MarkdownString(formattedDiagnostic);
@@ -117,7 +119,7 @@ async function getFormattedDiagnostic(
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
     }
-    cache.set(diagnostic.message, formattedMessage);
+    cache.set(cacheKey, formattedMessage);
   }
 
   return {
