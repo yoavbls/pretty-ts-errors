@@ -27,6 +27,22 @@ describe("formatter", (context) => {
     );
   });
 
+  it("handles adversarial formatter patterns without catastrophic backtracking", async () => {
+    const repeat = 5_000;
+    const messages = [
+      "\\" + "\t'\"\t".repeat(repeat) + "\n",
+      "is missing the following properties from type's".repeat(repeat) + "\n",
+      "TYPE ANNOTATION MUST BE “".repeat(repeat) + "'",
+      "OVERLOAD 0 OF 0, “".repeat(repeat) + "\nOVERLOAD 0 OF 0, '', ",
+      "E" + "MTYPE 'R".repeat(repeat) + "\n",
+      "'" + "'0'0\x00".repeat(repeat) + "\n",
+    ];
+
+    for (const message of messages) {
+      await expect(prettifyErrorMessage(message)).resolves.toBeTypeOf("string");
+    }
+  }, 2_000);
+
   it("formats Special characters in object keys", async () => {
     expect(await prettifyErrorMessage(errorWithSpecialCharsInObjectKeys)).toBe(
       'Type `string` is not assignable to type `{ "abc*bc": string }`.'
