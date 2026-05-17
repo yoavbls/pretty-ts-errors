@@ -41,10 +41,16 @@ describe("formatter", (context) => {
     const repeat = 5_000;
     const messages = [
       "\\" + "\t'\"\t".repeat(repeat) + "\n",
+      ";'declare module ”".repeat(repeat) + ";”\n'declare module '“;'",
       "is missing the following properties from type's".repeat(repeat) + "\n",
+      "TYPES “".repeat(repeat) + "'\nTYPES “” AND ''",
       "TYPE ANNOTATION MUST BE “".repeat(repeat) + "'",
       "OVERLOAD 0 OF 0, “".repeat(repeat) + "\nOVERLOAD 0 OF 0, '', ",
+      " " + 'FILE "P'.repeat(repeat) + "\n",
       "E" + "MTYPE 'R".repeat(repeat) + "\n",
+      " FILE“".repeat(repeat) + " FILE",
+      "'0" + "0".repeat(repeat) + "\n“0”",
+      "RETURN “".repeat(repeat) + "\nRETURN '”",
       "'" + "'0'0\x00".repeat(repeat) + "\n",
     ];
 
@@ -52,6 +58,30 @@ describe("formatter", (context) => {
       await expect(prettifyErrorMessage(message)).resolves.toBeTypeOf("string");
     }
   }, 2_000);
+
+  it("does not prettify quoted string literals across line breaks", async () => {
+    const message = "Type '\"first\nsecond\"' remains unjoined.";
+
+    expect(await prettifyErrorMessage(message)).toContain(
+      "'\"first\nsecond\"' remains"
+    );
+  });
+
+  it("preserves text after quoted string literal replacements", async () => {
+    await expect(
+      prettifyErrorMessage(`Type '"' 'Oh no"' is not assignable.`)
+    ).resolves.toContain("`\"' 'Oh no\"` is not assignable");
+  });
+
+  it("formats double-quoted module names containing apostrophes", async () => {
+    await expect(
+      prettifyErrorMessage(
+        `Cannot find module "C:/Users/O'Connor/project/file.ts" or its corresponding type declarations.`
+      )
+    ).resolves.toBe(
+      `Cannot find module \`"C:/Users/O'Connor/project/file.ts"\` or its corresponding type declarations.`
+    );
+  });
 
   it("formats Special characters in object keys", async () => {
     expect(await prettifyErrorMessage(errorWithSpecialCharsInObjectKeys)).toBe(

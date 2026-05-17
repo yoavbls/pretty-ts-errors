@@ -69,15 +69,23 @@ async function replaceQuotedStringLiteralTypes(
     if (startIndex === -1) break;
 
     const contentStart = startIndex + 3;
-    let endIndex = contentStart;
-    while (true) {
-      endIndex = output.indexOf(`"'`, endIndex);
-      if (endIndex === -1) break;
-      if (output[endIndex - 1] !== "\\") break;
-      endIndex += 1;
+    let endIndex = -1;
+    for (let i = contentStart; i < output.length - 1; i++) {
+      if (output[i] === "\n" || output[i] === "\r") break;
+      if (
+        output[i] === `"` &&
+        output[i + 1] === "'" &&
+        output[i - 1] !== "\\"
+      ) {
+        endIndex = i;
+        break;
+      }
     }
 
-    if (endIndex === -1) break;
+    if (endIndex === -1) {
+      searchIndex = contentStart;
+      continue;
+    }
 
     result += output.slice(lastIndex, startIndex);
     result += await formatTypeBlock(
@@ -86,8 +94,7 @@ async function replaceQuotedStringLiteralTypes(
       codeBlock
     );
 
-    const matchEnd = endIndex + 2;
-    lastIndex = matchEnd < output.length ? matchEnd + 1 : matchEnd;
+    lastIndex = endIndex + 2;
     searchIndex = lastIndex;
   }
 
@@ -174,9 +181,18 @@ async function getRules(codeBlock: CodeBlockFn): Promise<Rule[]> {
     },
     {
       pattern:
-        /(module|file|file name|imported via) ['"“]([^'"“”\r\n]*)['"“](?=[\s(.|,]|$)/gi,
-      replacer: async (p1: string, p2: string) =>
-        formatTypeBlock(p1, `"${p2}"`, codeBlock),
+        /(module|file|file name|imported via) (?:"([^"\r\n]*)"|'([^'\r\n]*)'|“([^“”\r\n]*)[“”])(?=[\s(.|,]|$)/gi,
+      replacer: async (
+        p1: string,
+        doubleQuoted: string | undefined,
+        singleQuoted: string | undefined,
+        curlyQuoted: string | undefined
+      ) =>
+        formatTypeBlock(
+          p1,
+          `"${doubleQuoted ?? singleQuoted ?? curlyQuoted ?? ""}"`,
+          codeBlock
+        ),
     },
     {
       pattern:
