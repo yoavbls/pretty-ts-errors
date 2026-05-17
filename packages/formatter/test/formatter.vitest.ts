@@ -27,6 +27,27 @@ describe("formatter", (context) => {
     );
   });
 
+  it("handles malformed ReDoS regression inputs", async () => {
+    const attackMessages = [
+      "\\\\" + "\t'\"\t".repeat(2_000) + "\n",
+      "'declare module ”".repeat(2_000) + ";”\n'declare module '“;'",
+      "TYPES “".repeat(2_000) + "'\nTYPES “” AND ''",
+      "TYPE ANNOTATION MUST BE “".repeat(2_000) + "'",
+      "OVERLOAD 0 OF 0, “".repeat(2_000) + "\nOVERLOAD 0 OF 0, '', ",
+      " " + 'FILE "P'.repeat(2_000) + "\n",
+      " FILE“".repeat(2_000) + " FILE",
+      "'0" + "0".repeat(8_000) + "\n“0”",
+      "RETURN “".repeat(2_000) + "\nRETURN '”",
+      "'" + "'0'0\x00".repeat(2_000) + "\n",
+    ];
+
+    expect(addMissingParentheses("(:".repeat(2_000))).toBeTypeOf("string");
+
+    for (const message of attackMessages) {
+      await expect(prettifyErrorMessage(message)).resolves.toBeTypeOf("string");
+    }
+  }, 3_000);
+
   it("formats Special characters in object keys", async () => {
     expect(await prettifyErrorMessage(errorWithSpecialCharsInObjectKeys)).toBe(
       'Type `string` is not assignable to type `{ "abc*bc": string }`.'
