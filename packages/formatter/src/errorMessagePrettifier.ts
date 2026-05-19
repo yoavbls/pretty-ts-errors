@@ -9,8 +9,9 @@ export type CodeBlockFn = (
 export function createErrorMessagePrettifier(
   codeBlock: CodeBlockFn
 ): (message: string) => Promise<string> {
+  const rules = getRules(codeBlock);
+
   return async (message: string) => {
-    const rules = await getRules(codeBlock);
     let output = message;
 
     for (const { pattern, replacer } of rules) {
@@ -35,7 +36,7 @@ type Rule = {
   replacer: (...args: any[]) => string | Promise<string>;
 };
 
-async function getRules(codeBlock: CodeBlockFn): Promise<Rule[]> {
+function getRules(codeBlock: CodeBlockFn): Rule[] {
   const formatTypeScriptBlock = (code: string) => codeBlock(code, "typescript");
 
   const formatSimpleTypeBlock = (code: string) => codeBlock(code, "type");
