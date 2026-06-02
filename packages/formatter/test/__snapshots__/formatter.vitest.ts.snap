@@ -112,7 +112,7 @@ exports[`formatter > prettifies mock error message: errorWithSimpleIndentations 
 
 exports[`formatter > prettifies mock error message: errorWithSpecialCharsInObjectKeys 1`] = `"Type \`string\` is not assignable to type \`{ "abc*bc": string }\`."`;
 
-exports[`formatter > prettifies mock error message: errorWithStringChars 1`] = `"Type \`"' 'Oh no"\`is not assignable to type \`"'  'Oh n"o"\`  "'."`;
+exports[`formatter > prettifies mock error message: errorWithStringChars 1`] = `"Type \`"' 'Oh no"\` is not assignable to type \`"'  'Oh n"o"\`   "'."`;
 
 exports[`formatter > prettifies mock error message: errorWithTruncatedType2 1`] = `
 "Type: 
@@ -181,7 +181,7 @@ exports[`formatter > prettifies mock error message: ts1378Error 1`] = `"Top-leve
 
 exports[`formatter > prettifies mock error message: ts2304Error 1`] = `"Cannot find name  \`varname\` ."`;
 
-exports[`formatter > prettifies mock error message: ts2305Error 1`] = `"Module \`"@pretty-ts-errors/formatter"\`has no exported member  \`values\` ."`;
+exports[`formatter > prettifies mock error message: ts2305Error 1`] = `"Module \`"@pretty-ts-errors/formatter"\` has no exported member  \`values\` ."`;
 
 exports[`formatter > prettifies mock error message: ts2307Error 1`] = `"Cannot find module \`"events"\` or its corresponding type declarations."`;
 

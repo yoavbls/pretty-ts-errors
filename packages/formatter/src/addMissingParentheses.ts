@@ -9,6 +9,37 @@ const parentheses = {
 const openParentheses = objectKeys(parentheses);
 const closeParentheses = Object.values(parentheses);
 
+function isAsciiAlphaNumeric(char: string): boolean {
+  const code = char.charCodeAt(0);
+  return (
+    (code >= 48 && code <= 57) ||
+    (code >= 65 && code <= 90) ||
+    (code >= 97 && code <= 122)
+  );
+}
+
+function addMissingFunctionReturnType(type: string): string {
+  for (let openIndex = 0; openIndex < type.length; openIndex++) {
+    if (type[openIndex] !== "(") continue;
+
+    let colonIndex = openIndex + 1;
+    while (colonIndex < type.length && isAsciiAlphaNumeric(type[colonIndex]!)) {
+      colonIndex++;
+    }
+
+    if (type[colonIndex] !== ":") continue;
+
+    const closeIndex = type.indexOf(")", colonIndex + 1);
+    if (closeIndex === -1) return type;
+
+    return `${type.slice(0, closeIndex + 1)} => ...${type.slice(
+      closeIndex + 1
+    )}`;
+  }
+
+  return type;
+}
+
 export function addMissingParentheses(type: string): string {
   const openStack: (typeof openParentheses)[number][] = [];
   const missingClosingChars: string[] = [];
@@ -49,10 +80,8 @@ export function addMissingParentheses(type: string): string {
     validType += "...";
   }
 
-  validType = (validType + "\n..." + missingClosingChars.join("")).replace(
-    // Change (param: ...) to (param) => __RETURN_TYPE__ if needed
-    /(\([a-zA-Z0-9]*:[^)]*\))/,
-    (p1) => `${p1} => ...`
+  validType = addMissingFunctionReturnType(
+    validType + "\n..." + missingClosingChars.join("")
   );
 
   return validType;
