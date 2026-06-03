@@ -52,11 +52,11 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
 
   return [
     {
-      pattern: /(?:\s)'"(.*?)(?<!\\)"'(?:\s|:|.|$)/g,
+      pattern: /(?:\s)'"((?:[^"\\\n]|"(?!')|\\.)*)"'(?:\s|:|.|$)/g,
       replacer: async (p1: string) => formatTypeBlock("", `"${p1}"`, codeBlock),
     },
     {
-      pattern: /['“](declare module )['”](.*)['“];['”]/g,
+      pattern: /['“](declare module )['”]([^'“”\n]*)['“];['”]/g,
       replacer: (p1: string, p2: string) =>
         formatTypeScriptBlock(`${p1} "${p2}"`),
     },
@@ -74,7 +74,7 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
       },
     },
     {
-      pattern: /(types) ['“](.*?)['”] and ['“](.*?)['”][.]?/gi,
+      pattern: /(types) ['“]([^'“”\n]*)['”] and ['“]([^'“”\n]*)['”][.]?/gi,
       replacer: async (p1: string, p2: string, p3: string) => {
         const [left, right] = await Promise.all([
           formatTypeBlock(p1, p2, codeBlock),
@@ -84,7 +84,8 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
       },
     },
     {
-      pattern: /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
+      pattern:
+        /type annotation must be ['“]([^'“”\n]*)['”] or ['“]([^'“”\n]*)['”][.]?/gi,
       replacer: async (p1: string, p2: string, p3: string | number) => {
         if (typeof p3 === "string") {
           const [left, right] = await Promise.all([
@@ -101,7 +102,7 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
       },
     },
     {
-      pattern: /(Overload \d of \d), ['“](.*?)['”], /gi,
+      pattern: /(Overload \d of \d), ['“]([^'“”\n]*)['”], /gi,
       replacer: async (p1: string, p2: string) =>
         `${p1}${await formatTypeBlock("", p2, codeBlock)}`,
     },
@@ -115,7 +116,7 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
     },
     {
       pattern:
-        /(module|file|file name|imported via) ['"“](.*?)['"“](?=[\s(.|,]|$)/gi,
+        /(module|file|file name|imported via) ['"“]([^'"“”\n]*)['"“](?=[\s(.|,]|$)/gi,
       replacer: async (p1: string, p2: string) =>
         formatTypeBlock(p1, `"${p2}"`, codeBlock),
     },
@@ -126,7 +127,7 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
     },
     {
       pattern:
-        /['“]([^>]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
+        /['“]([^'“”>\n]*)['”] (type|interface|return type|file|module|is (not )?assignable)/gi,
       replacer: async (p1: string, p2: string) =>
         `${await formatTypeOrModuleBlock("", p1)} ${p2}`,
     },
@@ -137,16 +138,16 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
     },
     {
       pattern:
-        /['“](import|export|require|in|continue|break|let|false|true|const|new|throw|await|for await|[0-9]+)( ?.*?)['”]/g,
+        /['“](import|export|require|in|continue|break|let|false|true|const|new|throw|await|for await|[0-9]+)( ?[^'“”\n]*)['”]/g,
       replacer: (p1: string, p2: string) => formatTypeScriptBlock(`${p1}${p2}`),
     },
     {
-      pattern: /(return|operator) ['“](.*?)['”]/gi,
+      pattern: /(return|operator) ['“]([^'“”\n]*)['”]/gi,
       replacer: (p1: string, p2: string) =>
         `${p1} ${formatTypeScriptBlock(p2)}`,
     },
     {
-      pattern: /(?<!\w)'((?:(?!["]).)*?)'(?!\w)/g,
+      pattern: /(?<!\w)'([^'"\n]*)'(?![\w:])/g,
       replacer: (p1: string) => ` ${codeBlock(p1)} `,
     },
   ];
