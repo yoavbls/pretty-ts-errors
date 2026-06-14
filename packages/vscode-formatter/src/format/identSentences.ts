@@ -15,7 +15,7 @@ export const identSentences = (message: string): string =>
         whiteSpacesCount -= 2;
       }
 
-      return d/*html*/ `
+      return d /*html*/ `
         </span>
         <p></p>
         <span>

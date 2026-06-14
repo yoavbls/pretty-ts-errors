@@ -8,5 +8,13 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../formatter"
+    },
+    {
+      "path": "../utils"
+    }
+  ]
 }

@@ -1,11 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "nodenext",
     "target": "ES2022",
     "rootDir": "src",
     "outDir": "out",
-  "moduleResolution": "node",
+    "moduleResolution": "nodenext"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/vscode-formatter" }
+  ]
 }

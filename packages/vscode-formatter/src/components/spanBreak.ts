@@ -5,7 +5,7 @@ import { d } from "@pretty-ts-errors/utils";
  * we need to close the previous span before we're opening a new one
  * Note: the line breaks is important here
  */
-export const spanBreak = (children: string) => d/*html*/ `
+export const spanBreak = (children: string) => d /*html*/ `
   </span>
   ${children}
   <span>

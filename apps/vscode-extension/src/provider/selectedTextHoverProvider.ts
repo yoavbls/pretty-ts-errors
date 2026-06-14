@@ -1,5 +1,5 @@
 import { d } from "@pretty-ts-errors/utils";
-import { formatDiagnostic } from "@pretty-ts-errors/vscode-formatter";
+import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   ExtensionMode,
@@ -8,18 +8,19 @@ import {
   window,
 } from "vscode";
 import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
+import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
+import { enabledCommands } from "../commands/enabledCommands";
 
 /**
  * Register an hover provider in debug only.
  * It format selected text and help test things visually easier.
  */
 export function registerSelectedTextHoverProvider(context: ExtensionContext) {
-  const converter = createConverter();
-
   if (context.extensionMode !== ExtensionMode.Development) {
     return;
   }
 
+  const converter = createConverter();
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
@@ -27,8 +28,13 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
         pattern: "**/test/**/*.ts",
       },
       {
-        provideHover(document, position) {
+        async provideHover(document, position) {
           const editor = window.activeTextEditor;
+
+          if (!editor) {
+            return;
+          }
+
           const range = document.getWordRangeAtPosition(position);
           const message = editor ? document.getText(editor.selection) : "";
 
@@ -36,21 +42,28 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             return null;
           }
 
+          const lspDiagnostic = converter.asDiagnostic({
+            message,
+            range,
+            severity: 0,
+            source: "ts",
+            code: 1337,
+          });
+
           const markdown = new MarkdownString(
-            debugHoverHeader +
-              formatDiagnostic(
-                converter.asDiagnostic({
-                  message,
-                  range,
-                  severity: 0,
-                  source: "ts",
-                  code: 1337,
-                })
-              )
+            debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
           );
 
-          markdown.isTrusted = true;
+          markdown.isTrusted = { enabledCommands };
           markdown.supportHtml = true;
+
+          formattedDiagnosticsStore.set(document.uri.fsPath, [
+            {
+              range,
+              contents: [markdown],
+              lspDiagnostic,
+            },
+          ]);
 
           return {
             contents: [markdown],
@@ -61,7 +74,7 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d/*html*/ `                        
+const debugHoverHeader = d /*html*/ `
   <span style="color:#f96363;">
     <span class="codicon codicon-debug"></span>
     Formatted selected text (debug only)

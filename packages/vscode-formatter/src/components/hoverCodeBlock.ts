@@ -1,6 +1,8 @@
 import { d } from "@pretty-ts-errors/utils";
 import { miniLine } from "./miniLine";
 import { spanBreak } from "./spanBreak";
+import { CodeBlockFn } from "@pretty-ts-errors/formatter";
+import { plainCodeBlock } from "./plainCodeBlock";
 
 /**
  * @returns markdown string that will be rendered as a code block (`supportHtml` required)
@@ -9,7 +11,7 @@ import { spanBreak } from "./spanBreak";
  * VSCode [code](https://github.com/microsoft/vscode/blob/735aff6d962db49423e02c2344e60d418273ae39/src/vs/base/browser/markdownRenderer.ts#L372)
  */
 const codeBlock = (code: string, language: string) =>
-  spanBreak(d/*html*/ `
+  spanBreak(d /*html*/ `
   <span class="codicon codicon-none" style="background-color:var(--vscode-textCodeBlock-background);">
 
     \`\`\`${language}
@@ -19,10 +21,10 @@ const codeBlock = (code: string, language: string) =>
   </span>
 `);
 
-export const inlineCodeBlock = (code: string, language: string) =>
+const inlineHoverCodeBlock = (code: string, language: string) =>
   codeBlock(` ${code} `, language);
 
-export const multiLineCodeBlock = (code: string, language: string) => {
+const multiLineHoverCodeBlock = (code: string, language: string) => {
   const codeLines = code.split("\n");
   //this line is finding the longest line
   const maxLineChars = codeLines.reduce(
@@ -34,9 +36,19 @@ export const multiLineCodeBlock = (code: string, language: string) => {
     .map((line) => line.padEnd(maxLineChars + 2))
     .join("\n");
 
-  return d/*html*/ `    
+  return d /*html*/ `    
     ${miniLine}
     ${codeBlock(paddedCode, language)}
     ${miniLine}
     `;
+};
+
+export const hoverCodeBlock: CodeBlockFn = (code, language, multiLine) => {
+  if (!language) {
+    return plainCodeBlock(code);
+  }
+  if (multiLine) {
+    return multiLineHoverCodeBlock(code, language);
+  }
+  return inlineHoverCodeBlock(code, language);
 };

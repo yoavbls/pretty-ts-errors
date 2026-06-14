@@ -11,11 +11,11 @@
 <b>Make TypeScript errors prettier and human-readable in VSCode.</b>
 
 [![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
-[![Visual Studio Code](https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;[![Visual Studio Code](https://img.shields.io/visual-studio-marketplace/i/yoavbls.pretty-ts-errors)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+[![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7?logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;[![Visual Studio Code](https://img.shields.io/visual-studio-marketplace/i/yoavbls.pretty-ts-errors)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
 <a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43#user-content-jetbrains-support"><img src="https://cdn.icon-icons.com/icons2/2530/PNG/512/jetbrains_webstorm_button_icon_151873.png" height="20" alt="Webstorm logo"></a>
-[![Cursor](https://custom-icon-badges.demolab.com/badge/Cursor-000000?logo=cursor-ai-white)](https://open-vsx.org/extension/yoavbls/pretty-ts-errors)
+[![Cursor](https://img.shields.io/badge/Cursor-000000?logo=cursor)](https://open-vsx.org/extension/yoavbls/pretty-ts-errors)
 
-TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.  
+TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.
 This extension will help you understand what's going on. For example, in this relatively simple error:
 
 <img src="./assets/this.png" width="340.438px" />&nbsp; &nbsp; <img src="./assets/instead-of-that.png" width="350px" />
@@ -61,10 +61,10 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
 
 ## Why isn't it trivial
 
-1. TypeScript errors contain types that are not valid in TypeScript.  
+1. TypeScript errors contain types that are not valid in TypeScript.
    Yes, these types include things like `... more ...`, `{ ... }`, etc in an inconsistent manner. Some are also cutting in the middle because they're too long.
 2. Types can't be syntax highlighted in code blocks because the part of `type X = ...` is missing, so I needed to create a new TextMate grammar, a superset of TypeScript grammar called `type`.
-3. VSCode markdown blocks all styling options, so I had to find hacks to style the error messages. e.g., there isn't an inlined code block on VSCode markdown, so I used a code block inside a codicon icon, which is the only thing that can be inlined. That's why it can't be copied. but it isn't a problem because you can still hover on the error and copy things from the original error pane.  
+3. VSCode markdown blocks all styling options, so I had to find hacks to style the error messages. e.g., there isn't an inlined code block on VSCode markdown, so I used a code block inside a codicon icon, which is the only thing that can be inlined. That's why it can't be copied. but it isn't a problem because you can still hover on the error and copy things from the original error pane.
    <img src="./assets/errors-hover.png" width="600" />
 
 ## Hype section
@@ -82,7 +82,7 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
   </picture>
 </a>
 <a href="https://twitter.com/t3dotgg/status/1647759462709747713">
-  <picture>    
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-light.png#gh-light-mode-only">
     <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only" alt="Theo's tweet">
@@ -104,13 +104,13 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
       <td align="center">
         <a href="https://github.com/kentcdodds">
           <img src="https://images.weserv.nl/?url=github.com/kentcdodds.png&fit=cover&mask=circle" width="80"><br>
-          Kent C. Dodds  
+          Kent C. Dodds
         <a/>
       </td>
       <td align="center">
         <a href="https://github.com/mattpocock">
           <img src="https://images.weserv.nl/?url=github.com/mattpocock.png&fit=cover&mask=circle" width="80"><br>
-          Matt Pocock  
+          Matt Pocock
         <a/>
       </td>
       <td align="center">
@@ -122,7 +122,7 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
       <td align="center">
         <a href="https://github.com/tannerlinsley">
           <img src="https://images.weserv.nl/?url=github.com/tannerlinsley.png&fit=cover&mask=circle" width="80"><br>
-          Tanner Linsley  
+          Tanner Linsley
         <a/>
       </td>
       <td align="center">
@@ -137,10 +137,10 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
 
 ## Sponsorship
 
-Every penny will be invested in other contributors to the project, especially ones that work  
+Every penny will be invested in other contributors to the project, especially ones that work
 on things that I can't be doing myself like adding support to the extension for other IDEs 🫂
 
 ## Contribution
 
-Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/discussions/43)  
+Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/discussions/43)
 Any other contribution is welcome. Feel free to open any issue / PR you think.

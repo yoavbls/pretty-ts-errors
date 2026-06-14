@@ -1,0 +1,219 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`formatter > prettifies mock error message: errorWithComma 1`] = `
+"Argument of type \`{ filters: Filters } & T\` is not assignable to parameter of type \`T & F\`.
+  Type \`{ filters: Filters } & T\` is not assignable to type \`F\`.
+     \`{ filters: Filters } & T\` is assignable to the constraint of type \`F\`, but  \`F\`  could be instantiated with a different subtype of constraint \`{ filters: Filters }\`."
+`;
+
+exports[`formatter > prettifies mock error message: errorWithDashInObjectKeys 1`] = `"Type \`{ person: { "first-name": string } }\` is not assignable to type \`string\`."`;
+
+exports[`formatter > prettifies mock error message: errorWithLongType 1`] = `
+"Property  \`isFlying\`  is missing in type: 
+\`\`\`type
+{
+  animal: {
+    __typename?: "Animal" | undefined
+    id: string
+    name: string
+    age: number
+    isAlived: boolean
+    /* 8 more */
+    attributes:
+      | { ...; }
+      | /* 3 more */
+      | { ...; }
+  }
+}
+\`\`\`
+ but required in type: 
+\`\`\`type
+{
+  animal: {
+    __typename?: "Animal" | undefined
+    id: string
+    name: string
+    age: number
+    isAlived: boolean
+    isFlying: boolean
+    /* 8 more */
+    attributes:
+      | { ...; }
+      | /* 3 more */
+      | { ...; }
+  }
+}
+\`\`\`
+."
+`;
+
+exports[`formatter > prettifies mock error message: errorWithMethodsWordInIt 1`] = `
+"The  \`this\`  context of type \`ElementHandle<Node>\` is not assignable to method's \`this\` of type \`ElementHandle<Element>\`.
+  Type \`Node\` is missing the following properties from type  \`Element\`: <ul><li>attributes</li><li>classList</li><li>className</li><li>clientHeight</li></ul>and 114 more."
+`;
+
+exports[`formatter > prettifies mock error message: errorWithParamsDestructuring 1`] = `
+"Argument of type: 
+\`\`\`type
+{
+  $ref: null
+  ref: (ref: any) => any
+  columns: (
+    | { label: string; prop: string }
+    | {
+        label: string
+        formatter: ({ ip_type }: any) => any
+      }
+    | {
+        actions: {
+          label: string
+          disabled: ({ contract_id }: any) => boolean
+          handler({ contract_id }: any): void
+        }[]
+      }
+  )[]
+  /* 4 more */
+  load(): Promise<...>
+}
+\`\`\`
+ is not assignable to parameter of type \`VTableConfig\`.
+  Property  \`data\`  is missing in type: 
+\`\`\`type
+{
+  $ref: null
+  ref: (ref: any) => any
+  columns: (
+    | { label: string; prop: string }
+    | {
+        label: string
+        formatter: ({ ip_type }: any) => any
+      }
+    | {
+        actions: {
+          label: string
+          disabled: ({ contract_id }: any) => boolean
+          handler({ contract_id }: any): void
+        }[]
+      }
+  )[]
+  /* 4 more */
+  load(): Promise<...>
+}
+\`\`\`
+ but required in type \`VTableConfig\`."
+`;
+
+exports[`formatter > prettifies mock error message: errorWithSimpleIndentations 1`] = `
+"Type \`(newIds: number[]) => void\` is not assignable to type \`(selectedId: string[]) => void\`.
+  Types of parameters \`newIds\` and  \`selectedId\`  are incompatible.
+    Type \`string[]\` is not assignable to type \`number[]\`.
+      Type \`string\` is not assignable to type \`number\`."
+`;
+
+exports[`formatter > prettifies mock error message: errorWithSpecialCharsInObjectKeys 1`] = `"Type \`string\` is not assignable to type \`{ "abc*bc": string }\`."`;
+
+exports[`formatter > prettifies mock error message: errorWithStringChars 1`] = `"Type \`"' 'Oh no"\`is not assignable to type \`"'  'Oh n"o"\`  "'."`;
+
+exports[`formatter > prettifies mock error message: errorWithTruncatedType2 1`] = `
+"Type: 
+\`\`\`type
+{
+  "!top": string[]
+  "xsl:declaration": {
+    attrs: {
+      "default-collation": null
+      "exclude-result-prefixes": null
+      "extension-element-prefixes": null
+      "use-when": null
+      "xpath-default-namespace": null
+    }
+  }
+  "xsl:instruction": { ...; }
+  /* 49 more */
+  "xsl:literal-result-element": {}
+}
+\`\`\`
+ is missing the following properties from type  \`GraphQLSchema\`: <ul><li>description</li><li>extensions</li><li>astNode</li><li>extensionASTNodes</li></ul>and 21 more."
+`;
+
+exports[`formatter > prettifies mock error message: leftSideAritmeticError 1`] = `"The left-hand side of an arithmetic operation must be of type \`any\`, \`number\`, \`bigint\` or an enum type."`;
+
+exports[`formatter > prettifies mock error message: missingPropertyError 1`] = `
+"Property  \`user\`  is missing in type \`{ person: { username: string; email: string } }\` but required in type: 
+\`\`\`type
+{
+  user: {
+    name: string
+    email: \`\${string}@\${string}.\${string}\`
+    age: number
+  }
+}
+\`\`\`
+."
+`;
+
+exports[`formatter > prettifies mock error message: missingReactPropsError 1`] = `
+"Type \`{ style: { backgroundColor: string } }\` is not assignable to type \`DropDownPickerProps<Object>\`.
+  Type \`{ style: { backgroundColor: string } }\` is not assignable to type \`DropDownPickerMultipleProps<Object> & DropDownPickerBaseProps<Object›\`.
+    Type \`{ style: { backgroundColor: string } }\` is missing the following properties from type  \`DropDownPickerMultipleProps<Object>\`: <ul><li>multiple</li><li>setValue</li><li>value</li></ul>"
+`;
+
+exports[`formatter > prettifies mock error message: theosError 1`] = `"Exported variable  \`uploadRouter\`  has or is using name  \`Uploader\`  from external module \`"/Users/theo/Code/Work/filething/packages/uploadthing/dist/types-dbaf1b46"\` but cannot be named."`;
+
+exports[`formatter > prettifies mock error message: ts1360Error 1`] = `
+"Property  \`a\`  is missing in type: 
+\`\`\`type
+{
+  b: { name: string; icon: undefined }
+  c: { name: string; icon: undefined }
+  d: { name: string; icon: undefined }
+  e: { name: string; icon: undefined }
+  f: { ...; }
+  g: { ...; }
+  h: ...
+  ...
+}
+\`\`\`
+ but required in type \`{ a: { name: string; icon: undefined } }\`."
+`;
+
+exports[`formatter > prettifies mock error message: ts1378Error 1`] = `"Top-level \`await\` expressions are only allowed when the  \`module\`  option is set to  \`es2022\` ,  \`esnext\` ,  \`system\` ,  \`node16\` , or  \`nodenext\` , and the  \`target\`  option is set to  \`es2017\`  or higher."`;
+
+exports[`formatter > prettifies mock error message: ts2304Error 1`] = `"Cannot find name  \`varname\` ."`;
+
+exports[`formatter > prettifies mock error message: ts2305Error 1`] = `"Module \`"@pretty-ts-errors/formatter"\`has no exported member  \`values\` ."`;
+
+exports[`formatter > prettifies mock error message: ts2307Error 1`] = `"Cannot find module \`"events"\` or its corresponding type declarations."`;
+
+exports[`formatter > prettifies mock error message: ts2322ErrorWithPrivateProperty 1`] = `
+"Type: 
+\`\`\`type
+Ref<{
+  name: string
+  readonly type: "json"
+  mm: <T extends Convertible = Convertible>(px: T) => T
+  px: <T extends Convertible = Convertible>(mm: T) => T
+  /* 18 more */
+  toJson: () => string
+}>
+\`\`\`
+ is not assignable to type \`Ref<MpcdiConfiguration>\`.
+  Type: 
+\`\`\`type
+{
+  name: string
+  readonly type: "json"
+  mm: <T extends Convertible = Convertible>(px: T) => T
+  px: <T extends Convertible = Convertible>(mm: T) => T
+  /* 18 more */
+  toJson: () => string
+}
+\`\`\`
+ is missing the following properties from type  \`MpcdiConfiguration\`: <ul><li>ratio</li><li>#overlaps</li><li>download</li></ul>"
+`;
+
+exports[`formatter > prettifies mock error message: ts4113Error 1`] = `"This member cannot have an  \`override\`  modifier because it is not declared in the base class \`A<T["nested"]>\`."`;
+
+exports[`formatter > prettifies mock error message: ts4117Error 1`] = `"This member cannot have an  \`override\`  modifier because it is not declared in the base class \`A<T["nested"]>\`. Did you mean  \`testA\` ?"`;
+
+exports[`formatter > prettifies mock error message: variableNotUsedEror 1`] = `" \`a\`  is declared but its value is never read."`;
