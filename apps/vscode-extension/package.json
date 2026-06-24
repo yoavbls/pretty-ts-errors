@@ -4,7 +4,7 @@
   "type": "module",
   "publisher": "CyberT33N",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",

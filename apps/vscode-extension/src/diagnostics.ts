@@ -3,10 +3,11 @@ import {
   ExtensionContext,
   languages,
   MarkdownString,
-  window,
   Uri,
   type Diagnostic,
 } from "vscode";
+import { SUPPORTED_DIAGNOSTIC_SOURCES } from "./supportedDiagnosticSources";
+import { SUPPORTED_LANGUAGE_IDS } from "./supportedLanguageIds";
 import { hoverProvider } from "./provider/hoverProvider";
 import {
   formattedDiagnosticsStore,
@@ -16,59 +17,79 @@ import { logger } from "./logger";
 import { toLspDiagnostic } from "./lspDiagnostic";
 import { createHoverContents } from "./hoverContent";
 
-/**
- * The list of diagnostic sources that pretty-ts-errors supports
- */
-const supportedDiagnosticSources = [
-  "ts",
-  "ts-plugin",
-  "deno-ts",
-  "js",
-  "glint",
-];
-
 export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
+  logger.debug("registering diagnostic change listener");
+  void syncCurrentDiagnostics();
+
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
       await logger.measure("onDidChangeDiagnostics", async () => {
         for (const uri of e.uris) {
-          await logger.measure(
-            `diagnostics for: ${uri.toString(true)}`,
-            async () => {
-              const diagnostics = languages.getDiagnostics(uri);
-              const supportedDiagnostics = diagnostics.filter(
-                (diagnostic) =>
-                  diagnostic.source &&
-                  has(supportedDiagnosticSources, diagnostic.source)
-              );
-
-              const items: FormattedDiagnostic[] = await Promise.all(
-                supportedDiagnostics.map((diagnostic) =>
-                  getFormattedDiagnostic(diagnostic)
-                )
-              );
-
-              if (items.length === 0) {
-                logger.trace(
-                  `no diagnostics for ${uri.toString(true)}, removing from store`
-                );
-                formattedDiagnosticsStore.delete(uri.fsPath);
-              } else {
-                logger.trace(
-                  `storing ${items.length} formatted diagnostics for ${uri.toString(true)}`
-                );
-                formattedDiagnosticsStore.set(uri.fsPath, items);
-              }
-
-              if (items.length > 0) {
-                ensureHoverProviderIsRegistered(uri, context);
-              }
-            }
-          );
+          await updateDiagnosticsForUri(uri);
         }
       });
     })
   );
+
+  registerHoverProviders(context);
+}
+
+function registerHoverProviders(context: ExtensionContext) {
+  logger.debug(
+    `registering hover providers for ${SUPPORTED_LANGUAGE_IDS.length} supported language ids`
+  );
+
+  for (const languageId of SUPPORTED_LANGUAGE_IDS) {
+    logger.trace(`registering hover provider for language id: ${languageId}`);
+    context.subscriptions.push(
+      languages.registerHoverProvider(
+        {
+          language: languageId,
+        },
+        hoverProvider
+      )
+    );
+  }
+}
+
+async function syncCurrentDiagnostics() {
+  const diagnosticsByUri = languages.getDiagnostics();
+  logger.debug(
+    `syncing current diagnostics for ${diagnosticsByUri.length} known document(s)`
+  );
+
+  for (const [uri] of diagnosticsByUri) {
+    await updateDiagnosticsForUri(uri);
+  }
+}
+
+async function updateDiagnosticsForUri(uri: Uri) {
+  await logger.measure(`diagnostics for: ${uri.toString(true)}`, async () => {
+    const diagnostics = languages.getDiagnostics(uri);
+    const supportedDiagnostics = diagnostics.filter(
+      (diagnostic) =>
+        diagnostic.source &&
+        has(SUPPORTED_DIAGNOSTIC_SOURCES, diagnostic.source)
+    );
+
+    logger.trace(
+      `found ${diagnostics.length} total diagnostics and ${supportedDiagnostics.length} supported diagnostics for ${uri.toString(true)}`
+    );
+
+    const items: FormattedDiagnostic[] = await Promise.all(
+      supportedDiagnostics.map((diagnostic) => getFormattedDiagnostic(diagnostic))
+    );
+
+    if (items.length === 0) {
+      logger.trace(`no diagnostics for ${uri.toString(true)}, removing from store`);
+      formattedDiagnosticsStore.delete(uri.fsPath);
+    } else {
+      logger.trace(
+        `storing ${items.length} formatted diagnostics for ${uri.toString(true)}`
+      );
+      formattedDiagnosticsStore.set(uri.fsPath, items);
+    }
+  });
 }
 
 /**
@@ -104,12 +125,15 @@ async function getFormattedDiagnostic(
 
   let formattedMessages = cache.get(cacheKey);
   if (formattedMessages === undefined) {
+    logger.trace(`cache miss for diagnostic ${cacheKey}`);
     formattedMessages = createHoverContents(lspDiagnostic);
     if (cache.size > CACHE_SIZE_MAX) {
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
     }
     cache.set(cacheKey, formattedMessages);
+  } else {
+    logger.trace(`cache hit for diagnostic ${cacheKey}`);
   }
 
   const contents = formattedMessages;
@@ -121,29 +145,3 @@ async function getFormattedDiagnostic(
   };
 }
 
-/**
- * A set to prevent registering duplicate hover providers.
- */
-const registeredLanguages = new Set<string>();
-
-/**
- * Ensure a hover provider is registered for any visible editors where pretty-ts-errors has a formatted diagnostic
- */
-function ensureHoverProviderIsRegistered(uri: Uri, context: ExtensionContext) {
-  const editor = window.visibleTextEditors.find(
-    (editor) => editor.document.uri.toString() === uri.toString()
-  );
-  const languageId = editor?.document.languageId;
-  if (languageId && !registeredLanguages.has(languageId)) {
-    logger.debug(`registering hover provider for language id: ${languageId}`);
-    registeredLanguages.add(languageId);
-    context.subscriptions.push(
-      languages.registerHoverProvider(
-        {
-          language: languageId,
-        },
-        hoverProvider
-      )
-    );
-  }
-}
