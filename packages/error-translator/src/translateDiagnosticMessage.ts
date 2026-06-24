@@ -2,7 +2,18 @@ import bundleErrors from "./generated/bundleErrors.json";
 import { fillBodyWithItems } from "./getImprovedMessage";
 import { parseErrors } from "./parseErrors";
 
-type TranslationBundle = Record<string, { body: string; code: number }>;
+export type TranslationCategory = "Error" | "Message" | "Suggestion";
+export type TranslationSource = "curated" | "generated";
+
+interface TranslationEntry {
+  body: string;
+  category: TranslationCategory;
+  code: number;
+  message: string;
+  source: TranslationSource;
+}
+
+type TranslationBundle = Record<string, TranslationEntry>;
 
 function isTranslationBundle(value: unknown): value is TranslationBundle {
   if (typeof value !== "object" || value === null) {
@@ -15,8 +26,16 @@ function isTranslationBundle(value: unknown): value is TranslationBundle {
       entry !== null &&
       "body" in entry &&
       typeof entry.body === "string" &&
+      "category" in entry &&
+      (entry.category === "Error" ||
+        entry.category === "Message" ||
+        entry.category === "Suggestion") &&
       "code" in entry &&
-      typeof entry.code === "number"
+      typeof entry.code === "number" &&
+      "message" in entry &&
+      typeof entry.message === "string" &&
+      "source" in entry &&
+      (entry.source === "curated" || entry.source === "generated")
     );
   });
 }
@@ -32,9 +51,15 @@ function ensureTranslationBundle(value: unknown): TranslationBundle {
 const translationBundle = ensureTranslationBundle(bundleErrors);
 
 export interface PlainEnglishTranslation {
+  category: TranslationCategory;
   code: number;
   rawError: string;
-  body: string | null;
+  body: string;
+  source: TranslationSource;
+}
+
+function buildFallbackBody(message: string): string {
+  return `TypeScript reports this diagnostic: ${message}`;
 }
 
 export function hasTranslation(code: number): boolean {
@@ -46,14 +71,15 @@ export function translateDiagnosticMessage(
 ): PlainEnglishTranslation[] {
   return parseErrors(message).map((error) => {
     const translation = translationBundle[String(error.code)];
+    const bodyTemplate =
+      translation?.body ?? buildFallbackBody(error.parseInfo.rawError);
 
     return {
+      category: translation?.category ?? "Error",
       code: error.code,
       rawError: error.parseInfo.rawError,
-      body:
-        translation === undefined
-          ? null
-          : fillBodyWithItems(translation.body, error.parseInfo.items).body,
+      body: fillBodyWithItems(bodyTemplate, error.parseInfo.items).body,
+      source: translation?.source ?? "generated",
     };
   });
 }

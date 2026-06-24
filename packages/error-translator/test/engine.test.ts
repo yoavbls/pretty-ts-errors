@@ -107,7 +107,7 @@ describe("parseErrors", () => {
     expect(result[0].parseInfo.items).toEqual(['A', 'B']);
   });
 
-  it.skip("Should handle params in the incorrect order", () => {
+  it("Should handle params in the incorrect order", () => {
     const result = parseErrorsWithDb(
       {
         [`{2}, {0}, {1}`]: {
@@ -118,6 +118,21 @@ describe("parseErrors", () => {
     );
 
     expect(result[0].parseInfo.items).toEqual(['A', 'B', 'C']);
+  });
+
+  it("should parse current TypeScript diagnostics with out-of-order placeholders", () => {
+    const [result] = parseErrors(
+      "The parser expected to find a ')' to match the '(' token here.",
+    );
+
+    expect(result).toMatchObject({
+      code: 1007,
+      parseInfo: {
+        items: ["(", ")"],
+        rawError:
+          "The parser expected to find a ')' to match the '(' token here.",
+      },
+    });
   });
 
   it("Should handle params specified multiple times", () => {
@@ -180,10 +195,12 @@ describe("translateDiagnosticMessage", () => {
       "Type 'A' is not assignable to type 'B'.",
     );
 
-    expect(translation).toEqual({
+    expect(translation).toMatchObject({
+      category: "Error",
       code: 2322,
       rawError: "Type 'A' is not assignable to type 'B'.",
       body: "I was expecting a type matching `B`, but instead you passed `A`.",
+      source: "curated",
     });
   });
 });

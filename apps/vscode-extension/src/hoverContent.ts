@@ -63,18 +63,13 @@ function createBodyMarkdown(
 
   const translations = translateDiagnosticMessage(diagnostic.message);
   if (translations.length > 0) {
-    markdown.appendMarkdown("\n\n**Plain English**");
+    markdown.appendMarkdown("\n\n**Local explanation**");
     translations.forEach((translation) => {
       markdown.appendMarkdown(`\n\n**TS${translation.code}**\n\n`);
       if (translations.length > 1 || translation.rawError !== diagnostic.message) {
         markdown.appendCodeblock(translation.rawError, "txt");
       }
-      markdown.appendMarkdown(
-        `\n${
-          translation.body ??
-          `No local plain-English translation is available for TS${translation.code} yet.`
-        }\n`,
-      );
+      markdown.appendMarkdown(`\n${translation.body}\n`);
     });
   }
 

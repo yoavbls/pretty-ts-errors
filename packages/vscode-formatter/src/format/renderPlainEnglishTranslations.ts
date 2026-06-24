@@ -70,14 +70,11 @@ export function renderPlainEnglishTranslations(
 
   const cards = translations
     .map((translation) => {
-      const body =
-        translation.body === null
-          ? `<p>No local plain-English translation is available for TS${translation.code} yet.</p>`
-          : renderTranslationBody(translation.body);
+      const body = renderTranslationBody(translation.body);
 
       return d /*html*/ `
         <div class="pretty-ts-errors-translation-card" style="margin-top: 12px; padding: 12px; border: 1px solid var(--vscode-panel-border); border-radius: 6px;">
-          <div style="font-weight: 600; margin-bottom: 8px;">Plain English · TS${translation.code}</div>
+          <div style="font-weight: 600; margin-bottom: 8px;">Local explanation · TS${translation.code}</div>
           <div style="line-height: 1.6;">
             ${body}
           </div>

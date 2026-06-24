@@ -13,6 +13,18 @@
         "command": "node scripts/refreshTsErrorMessages.mjs"
       }
     },
+    "refresh-contract-data": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "commands": [
+          "node scripts/refreshTsErrorMessages.mjs",
+          "node scripts/bundleErrors.mjs"
+        ],
+        "parallel": false
+      }
+    },
     "bundle-data": {
       "executor": "nx:run-commands",
       "cache": false,
@@ -21,9 +33,17 @@
         "command": "node scripts/bundleErrors.mjs"
       }
     },
+    "validate-contract-data": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "command": "node scripts/validateContractData.mjs"
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
-      "dependsOn": ["bundle-data", "^build"],
+      "dependsOn": ["validate-contract-data", "^build"],
       "outputs": ["{workspaceRoot}/packages/error-translator/dist"],
       "options": {
         "main": "packages/error-translator/src/index.ts",

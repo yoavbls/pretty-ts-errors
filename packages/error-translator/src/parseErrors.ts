@@ -5,7 +5,7 @@ type TsErrorMessageDb = Record<string, { code: number }>;
 interface TSDiagnosticMatcher {
   regexGlobal: RegExp;
   regexLocal: RegExp;
-  parameters: string[];
+  parameterIndexes: number[];
 }
 
 const DiagnosticHashMap = new Map<string, TSDiagnosticMatcher>();
@@ -16,8 +16,8 @@ function escapeRegExp(str: string) {
   return str.replace(escapeRegex, "\\$&");
 }
 
-const parameterRegex = /{(\d)}/g;
-const escapedParameterRegex = /\\\{(\d)\\\}/g;
+const parameterRegex = /{(\d+)}/g;
+const escapedParameterRegex = /\\\{(\d+)\\\}/g;
 
 function isTsErrorMessageDb(value: unknown): value is TsErrorMessageDb {
   if (typeof value !== "object" || value === null) {
@@ -52,12 +52,15 @@ function getDiagnosticMatcher(text: string): TSDiagnosticMatcher {
   const regexSource = escapeRegExp(text).replace(escapedParameterRegex, "(.+)");
   const regexLocal = new RegExp(regexSource);
   const regexGlobal = new RegExp(regexSource, "g");
-  const parameters = text.match(parameterRegex) ?? [];
+  const parameterIndexes = Array.from(
+    text.matchAll(parameterRegex),
+    ([, parameterIndex]) => Number(parameterIndex),
+  );
 
   const diagnosticMatcher = {
     regexGlobal,
     regexLocal,
-    parameters,
+    parameterIndexes,
   };
 
   DiagnosticHashMap.set(text, diagnosticMatcher);
@@ -66,19 +69,31 @@ function getDiagnosticMatcher(text: string): TSDiagnosticMatcher {
 }
 
 function associateMatchedParameters(
-  parameters: string[],
+  parameterIndexes: number[],
   matchedParams: string[],
 ): (string | number)[] {
-  const params: Record<string, string | number> = Object.create(null);
+  const paramsByIndex = new Map<number, string | number>();
 
   for (let i = 0; i < matchedParams.length; i++) {
-    const parameter = parameters[i];
-    if (parameter !== undefined && !(parameter in params)) {
-      params[parameter] = matchedParams[i] ?? "";
+    const parameterIndex = parameterIndexes[i];
+    if (
+      parameterIndex !== undefined &&
+      Number.isInteger(parameterIndex) &&
+      !paramsByIndex.has(parameterIndex)
+    ) {
+      paramsByIndex.set(parameterIndex, matchedParams[i] ?? "");
     }
   }
 
-  return Object.values(params);
+  if (paramsByIndex.size === 0) {
+    return [];
+  }
+
+  const highestParameterIndex = Math.max(...paramsByIndex.keys());
+
+  return Array.from({ length: highestParameterIndex + 1 }, (_unused, index) => {
+    return paramsByIndex.get(index) ?? "";
+  });
 }
 
 interface ParseInfo {
@@ -110,7 +125,8 @@ export function parseErrorsWithDb(
       return;
     }
 
-    const { regexGlobal, regexLocal, parameters } = getDiagnosticMatcher(newError);
+    const { regexGlobal, regexLocal, parameterIndexes } =
+      getDiagnosticMatcher(newError);
     const matches = message.match(regexGlobal);
 
     if (matches === null) {
@@ -129,7 +145,7 @@ export function parseErrorsWithDb(
       searchOffset = endIndex;
 
       const items = associateMatchedParameters(
-        parameters,
+        parameterIndexes,
         matchElem.match(regexLocal)?.slice(1) ?? [],
       );
 

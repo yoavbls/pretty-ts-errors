@@ -90,7 +90,7 @@ export async function prettifyDiagnosticForHover(
 
   const translations = translateDiagnosticMessage(diagnostic.message);
   if (translations.length > 0) {
-    sections.push("", "**Plain English**");
+    sections.push("", "**Local explanation**");
 
     translations.forEach((translation) => {
       if (translations.length > 1 || translation.rawError !== diagnostic.message) {
@@ -99,11 +99,7 @@ export async function prettifyDiagnosticForHover(
         sections.push("", `**TS${translation.code}**`);
       }
 
-      sections.push(
-        "",
-        translation.body ??
-          `No local plain-English translation is available for TS${translation.code} yet.`,
-      );
+      sections.push("", translation.body);
     });
   }
 

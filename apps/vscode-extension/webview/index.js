@@ -22,7 +22,7 @@
  * @typedef {{
  *   code: number;
  *   rawError: string;
- *   body: string | null;
+ *   body: string;
  * }} SidebarTranslationModel
  *
  * @typedef {{
@@ -41,9 +41,10 @@
  */
 
 const api = (function () {
+  const acquireVsCodeApiFn = Reflect.get(globalThis, "acquireVsCodeApi");
   const vscode =
-    typeof acquireVsCodeApi === "function"
-      ? acquireVsCodeApi()
+    typeof acquireVsCodeApiFn === "function"
+      ? acquireVsCodeApiFn()
       : {
           /**
            * @param {unknown} message
@@ -70,7 +71,7 @@ const $content = window.document.querySelector("#content");
 
 window.addEventListener("message", (event) => {
   const message = event.data;
-  if (message?.command === "render-sidebar" && $content) {
+  if (message?.command === "render-sidebar" && $content instanceof HTMLElement) {
     renderSidebar($content, /** @type {SidebarViewModel} */ (message.model));
   }
 });
@@ -226,7 +227,7 @@ function createTranslationsSection(translations, originalMessage) {
 
     const title = document.createElement("div");
     title.className = "translation-title";
-    title.textContent = `Plain English · TS${translation.code}`;
+    title.textContent = `Local explanation · TS${translation.code}`;
     card.appendChild(title);
 
     if (translations.length > 1 || translation.rawError !== originalMessage) {
@@ -237,13 +238,7 @@ function createTranslationsSection(translations, originalMessage) {
       card.appendChild(pre);
     }
 
-    if (translation.body === null) {
-      const fallback = document.createElement("p");
-      fallback.textContent = `No local plain-English translation is available for TS${translation.code} yet.`;
-      card.appendChild(fallback);
-    } else {
-      appendMarkdownParagraphs(card, translation.body);
-    }
+    appendMarkdownParagraphs(card, translation.body);
 
     section.appendChild(card);
   });

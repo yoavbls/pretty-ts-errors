@@ -32,7 +32,7 @@ export type SidebarActionModel =
 export interface SidebarTranslationModel {
   code: number;
   rawError: string;
-  body: string | null;
+  body: string;
 }
 
 export interface SidebarDiagnosticModel {
