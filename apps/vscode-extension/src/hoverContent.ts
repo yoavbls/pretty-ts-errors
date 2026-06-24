@@ -2,9 +2,13 @@ import {
   createErrorMessagePrettifier,
   type CodeBlockFn,
 } from "@pretty-ts-errors/formatter";
-import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
 import { MarkdownString } from "vscode";
 import { enabledCommands } from "./commands/enabledCommands";
+import {
+  createDiagnosticRichContentModel,
+  renderDiagnosticBlocksToMarkdown,
+  type DiagnosticRichContentModel,
+} from "./diagnosticRichContent";
 import type { PrettyTsLspDiagnostic } from "./lspDiagnostic";
 
 function encodeCommandArgs(args: unknown[]): string {
@@ -26,10 +30,6 @@ function toCommandRange(range: PrettyTsLspDiagnostic["range"]) {
       character: range.end.character,
     },
   };
-}
-
-function codeLabel(code: PrettyTsLspDiagnostic["code"]): string {
-  return typeof code === "number" ? ` (TS${code})` : "";
 }
 
 function buildRevealLink(diagnostic: PrettyTsLspDiagnostic): string | null {
@@ -92,29 +92,39 @@ export async function buildPrettyDiagnosticMessageMarkdown(
 
 async function createBodyMarkdown(
   diagnostic: PrettyTsLspDiagnostic,
+  layout?: DiagnosticRichContentModel,
   bodyMarkdown?: string,
   debugHeader?: string,
 ): Promise<MarkdownString> {
   const markdown = new MarkdownString();
+  const content =
+    layout ??
+    createDiagnosticRichContentModel(
+      diagnostic.code,
+      diagnostic.message,
+      bodyMarkdown ?? (await buildPrettyDiagnosticMessageMarkdown(diagnostic.message)),
+    );
 
   if (debugHeader !== undefined) {
     markdown.appendMarkdown(`${debugHeader}\n\n`);
   }
 
-  markdown.appendMarkdown(`**Error${codeLabel(diagnostic.code)}**\n\n`);
-  markdown.appendMarkdown(
-    bodyMarkdown ?? (await buildPrettyDiagnosticMessageMarkdown(diagnostic.message)),
-  );
+  markdown.appendMarkdown(`**${content.title}**\n\n`);
+  markdown.appendMarkdown(renderDiagnosticBlocksToMarkdown(content.body));
 
-  const translations = translateDiagnosticMessage(diagnostic.message);
-  if (translations.length > 0) {
+  if (content.translations.length > 0) {
     markdown.appendMarkdown("\n\n**Local explanation**");
-    translations.forEach((translation) => {
+    content.translations.forEach((translation) => {
       markdown.appendMarkdown(`\n\n**TS${translation.code}**\n\n`);
-      if (translations.length > 1 || translation.rawError !== diagnostic.message) {
+      if (
+        content.translations.length > 1 ||
+        translation.rawError !== diagnostic.message
+      ) {
         markdown.appendCodeblock(translation.rawError, "txt");
       }
-      markdown.appendMarkdown(`\n${translation.body}\n`);
+      markdown.appendMarkdown(
+        `\n${renderDiagnosticBlocksToMarkdown(translation.blocks)}\n`,
+      );
     });
   }
 
@@ -122,14 +132,20 @@ async function createBodyMarkdown(
   return markdown;
 }
 
-function createActionsMarkdown(diagnostic: PrettyTsLspDiagnostic): MarkdownString {
+function createActionsMarkdown(
+  diagnostic: PrettyTsLspDiagnostic,
+  documentUri?: string,
+): MarkdownString {
   const range = toCommandRange(diagnostic.range);
   const links = [
     `[Show in Sidebar](${buildCommandUri(
       "prettyTsErrors.showErrorInSidebar",
-      [range, diagnostic.message],
+      documentUri === undefined
+        ? [range, diagnostic.message]
+        : [documentUri, range, diagnostic.message],
     )})`,
     `[Pin](${buildCommandUri("prettyTsErrors.pinError", [
+      ...(documentUri === undefined ? [] : [documentUri]),
       range,
       diagnostic.message,
     ])})`,
@@ -155,14 +171,20 @@ function createActionsMarkdown(diagnostic: PrettyTsLspDiagnostic): MarkdownStrin
 
 export async function createHoverContents(
   diagnostic: PrettyTsLspDiagnostic,
-  options?: { bodyMarkdown?: string; debugHeader?: string },
+  options?: {
+    bodyMarkdown?: string;
+    debugHeader?: string;
+    documentUri?: string;
+    layout?: DiagnosticRichContentModel;
+  },
 ): Promise<MarkdownString[]> {
   return [
     await createBodyMarkdown(
       diagnostic,
+      options?.layout,
       options?.bodyMarkdown,
       options?.debugHeader,
     ),
-    createActionsMarkdown(diagnostic),
+    createActionsMarkdown(diagnostic, options?.documentUri),
   ];
 }

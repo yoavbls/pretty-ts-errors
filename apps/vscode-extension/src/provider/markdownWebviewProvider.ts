@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { enabledCommands } from "../commands/enabledCommands";
+import { logger } from "../logger";
 
 /**
  * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
@@ -41,7 +42,24 @@ export class MarkdownWebviewProvider {
       if (message && message.command) {
         switch (message.command) {
           case "ready": {
+            logger.debug("sidebar webview reported ready");
             onReady?.();
+            break;
+          }
+          case "log": {
+            const level =
+              message["level"] === "error" ||
+              message["level"] === "warn" ||
+              message["level"] === "info" ||
+              message["level"] === "debug" ||
+              message["level"] === "trace"
+                ? message["level"]
+                : "info";
+            const text =
+              typeof message["text"] === "string"
+                ? message["text"]
+                : "webview emitted a log message without text";
+            logger[level](`[webview] ${text}`);
             break;
           }
           case "notify": {

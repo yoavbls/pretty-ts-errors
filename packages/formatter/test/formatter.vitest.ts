@@ -39,6 +39,22 @@ describe("formatter", (context) => {
     );
   });
 
+  it("formats missing-property diagnostics as a structured list", async () => {
+    const result = await prettifyErrorMessage(
+      "Type '{ email: \"usr@usr.io\"; }' is missing the following properties from type '{ name: string; email: `${string}@${string}.${string}`; age: number; address: { street: string; city: string; country: string; }; }': name, age, address"
+    );
+
+    expect(result).toContain(
+      "is missing the following properties from type"
+    );
+    expect(result).toContain(
+      "<ul><li>name</li><li>age</li><li>address</li></ul>"
+    );
+    expect(result).toContain("```type");
+    expect(result).toContain("name: string");
+    expect(result).toContain("street: string; city: string; country: string");
+  });
+
   it("prettifies type with params destructuring", async () => {
     await expect(
       formatType(

@@ -8,6 +8,7 @@ import {
 } from "vscode";
 import { SUPPORTED_DIAGNOSTIC_SOURCES } from "./supportedDiagnosticSources";
 import { SUPPORTED_LANGUAGE_IDS } from "./supportedLanguageIds";
+import { createDiagnosticRichContentModel } from "./diagnosticRichContent";
 import { hoverProvider } from "./provider/hoverProvider";
 import {
   formattedDiagnosticsStore,
@@ -80,7 +81,7 @@ async function updateDiagnosticsForUri(uri: Uri) {
     );
 
     const items: FormattedDiagnostic[] = await Promise.all(
-      supportedDiagnostics.map((diagnostic) => getFormattedDiagnostic(diagnostic))
+      supportedDiagnostics.map((diagnostic) => getFormattedDiagnostic(uri, diagnostic))
     );
 
     if (items.length === 0) {
@@ -116,6 +117,7 @@ const CACHE_SIZE_MAX = 100;
 const cache = new Map<string, MarkdownString[]>();
 
 async function getFormattedDiagnostic(
+  uri: Uri,
   diagnostic: Diagnostic
 ): Promise<FormattedDiagnostic> {
   // The formatter consumes LSP diagnostics, so keep the VS Code -> LSP conversion as a local first-party boundary.
@@ -124,13 +126,23 @@ async function getFormattedDiagnostic(
     code: lspDiagnostic.code ?? null,
     message: diagnostic.message,
     range: lspDiagnostic.range,
+    uri: uri.toString(),
   });
 
   let formattedMessages = cache.get(cacheKey);
   const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(diagnostic.message);
+  const layout = createDiagnosticRichContentModel(
+    lspDiagnostic.code,
+    diagnostic.message,
+    bodyMarkdown,
+  );
   if (formattedMessages === undefined) {
     logger.trace(`cache miss for diagnostic ${cacheKey}`);
-    formattedMessages = await createHoverContents(lspDiagnostic, { bodyMarkdown });
+    formattedMessages = await createHoverContents(lspDiagnostic, {
+      bodyMarkdown,
+      documentUri: uri.toString(),
+      layout,
+    });
     if (cache.size > CACHE_SIZE_MAX) {
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
@@ -144,6 +156,8 @@ async function getFormattedDiagnostic(
 
   return {
     bodyMarkdown,
+    documentUri: uri,
+    layout,
     range: diagnostic.range,
     contents,
     lspDiagnostic,

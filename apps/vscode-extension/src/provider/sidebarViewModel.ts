@@ -1,5 +1,8 @@
-import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
 import type { Range } from "vscode";
+import type {
+  DiagnosticBlockNode,
+  DiagnosticTranslationContentModel,
+} from "../diagnosticRichContent";
 import type { FormattedDiagnostic } from "../formattedDiagnosticsStore";
 
 type SidebarCommandAction = {
@@ -31,14 +34,15 @@ export type SidebarActionModel =
 
 export interface SidebarTranslationModel {
   code: number;
+  blocks: DiagnosticBlockNode[];
   rawError: string;
-  body: string;
 }
 
 export interface SidebarDiagnosticModel {
-  bodyMarkdown: string;
+  body: DiagnosticBlockNode[];
   code: number | null;
   message: string;
+  title: string;
   actions: SidebarActionModel[];
   translations: SidebarTranslationModel[];
   note?: string;
@@ -96,7 +100,11 @@ export function createSidebarDiagnosticModel(
     {
       kind: "command",
       command: "prettyTsErrors.pinError",
-      args: [serializeRange(diagnostic.range), diagnostic.lspDiagnostic.message],
+      args: [
+        diagnostic.documentUri.toString(),
+        serializeRange(diagnostic.range),
+        diagnostic.lspDiagnostic.message,
+      ],
       icon: "codicon-pinned",
       title: "Pin error",
     },
@@ -122,12 +130,23 @@ export function createSidebarDiagnosticModel(
     });
   }
 
+  const translations: SidebarTranslationModel[] = diagnostic.layout.translations.map(
+    (translation: DiagnosticTranslationContentModel) => {
+      return {
+        blocks: translation.blocks,
+        code: translation.code,
+        rawError: translation.rawError,
+      };
+    },
+  );
+
   const model: SidebarDiagnosticModel = {
-    bodyMarkdown: diagnostic.bodyMarkdown,
+    body: diagnostic.layout.body,
     code,
     message: diagnostic.lspDiagnostic.message,
+    title: diagnostic.layout.title,
     actions,
-    translations: translateDiagnosticMessage(diagnostic.lspDiagnostic.message),
+    translations,
   };
 
   if (options?.note !== undefined) {

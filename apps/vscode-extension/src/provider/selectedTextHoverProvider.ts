@@ -7,6 +7,7 @@ import {
   window,
 } from "vscode";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
+import { createDiagnosticRichContentModel } from "../diagnosticRichContent";
 import { toLspDiagnostic } from "../lspDiagnostic";
 import {
   buildPrettyDiagnosticMessageMarkdown,
@@ -55,14 +56,22 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(
             lspDiagnostic.message,
           );
-          const contents = await createHoverContents(lspDiagnostic, {
+          const layout = createDiagnosticRichContentModel(
+            lspDiagnostic.code,
+            lspDiagnostic.message,
             bodyMarkdown,
+          );
+          const contents = await createHoverContents(lspDiagnostic, {
             debugHeader: debugHoverHeader,
+            documentUri: document.uri.toString(),
+            layout,
           });
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
             {
               bodyMarkdown,
+              documentUri: document.uri,
+              layout,
               range,
               contents,
               lspDiagnostic,

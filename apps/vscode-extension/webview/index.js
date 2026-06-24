@@ -20,15 +20,47 @@
  * }} SidebarActionModel
  *
  * @typedef {{
+ *   kind: "text";
+ *   text: string;
+ * } | {
+ *   kind: "inlineCode";
+ *   text: string;
+ * } | {
+ *   kind: "link";
+ *   href: string;
+ *   label: string;
+ * }} SidebarInlineNode
+ *
+ * @typedef {{
+ *   kind: "paragraph";
+ *   lines: SidebarInlineNode[][];
+ * } | {
+ *   kind: "codeBlock";
+ *   code: string;
+ *   language: string | null;
+ * } | {
+ *   kind: "typeBlock";
+ *   code: string;
+ *   language: string | null;
+ * } | {
+ *   kind: "list";
+ *   items: SidebarInlineNode[][];
+ * } | {
+ *   kind: "propertyList";
+ *   items: string[];
+ * }} SidebarBlockNode
+ *
+ * @typedef {{
+ *   blocks: SidebarBlockNode[];
  *   code: number;
  *   rawError: string;
- *   body: string;
  * }} SidebarTranslationModel
  *
  * @typedef {{
- *   bodyMarkdown: string;
+ *   body: SidebarBlockNode[];
  *   code: number | null;
  *   message: string;
+ *   title: string;
  *   actions: SidebarActionModel[];
  *   translations: SidebarTranslationModel[];
  *   note?: string;
@@ -60,6 +92,16 @@ const api = (function () {
       vscode.postMessage({ command: "ready" });
     },
     /**
+     * @param {"trace" | "debug" | "info" | "warn" | "error"} level
+     * @param {string} text
+     */
+    log(level, text) {
+      const consoleMethod =
+        typeof console[level] === "function" ? console[level] : console.log;
+      consoleMethod.call(console, `[pretty-ts-errors:webview] ${text}`);
+      vscode.postMessage({ command: "log", level, text });
+    },
+    /**
      * @param {string} text
      */
     notify(text) {
@@ -70,10 +112,30 @@ const api = (function () {
 
 const $content = window.document.querySelector("#content");
 
+window.addEventListener("error", (event) => {
+  api.log(
+    "error",
+    `window error: ${event.message} at ${event.filename}:${event.lineno}:${event.colno}`,
+  );
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  const reason =
+    event.reason instanceof Error
+      ? event.reason.stack ?? event.reason.message
+      : String(event.reason);
+  api.log("error", `unhandled rejection: ${reason}`);
+});
+
 window.addEventListener("message", (event) => {
   const message = event.data;
   if (message?.command === "render-sidebar" && $content instanceof HTMLElement) {
-    renderSidebar($content, /** @type {SidebarViewModel} */ (message.model));
+    const model = /** @type {SidebarViewModel} */ (message.model);
+    api.log(
+      "debug",
+      `render-sidebar received ${model.diagnostics.length} diagnostics and ${model.pinned === null ? 0 : 1} pinned item(s)`,
+    );
+    renderSidebar($content, model);
   }
 });
 
@@ -93,6 +155,7 @@ window.document.addEventListener("click", (event) => {
 });
 
 api.ready();
+api.log("debug", "sidebar webview script initialized");
 
 /**
  * @param {HTMLElement} container
@@ -100,27 +163,34 @@ api.ready();
  */
 function renderSidebar(container, model) {
   container.replaceChildren();
+  const stack = document.createElement("div");
+  stack.className = "diagnostic-stack";
 
   if (model.pinned !== null) {
-    container.appendChild(createPinnedSection(model.pinned));
+    stack.appendChild(createPinnedSection(model.pinned));
   }
 
   if (model.diagnostics.length === 0) {
     if (model.pinned === null) {
-      const empty = document.createElement("p");
+      const empty = document.createElement("section");
       empty.className = "sidebar-empty-state";
-      empty.textContent = model.emptyMessage;
-      container.appendChild(empty);
+      const title = document.createElement("h2");
+      title.className = "empty-state-title";
+      title.textContent = "No active diagnostics";
+      const body = document.createElement("p");
+      body.textContent = model.emptyMessage;
+      empty.append(title, body);
+      stack.appendChild(empty);
     }
+    container.appendChild(stack);
     return;
   }
 
-  model.diagnostics.forEach((diagnostic, index) => {
-    if (index > 0 || model.pinned !== null) {
-      container.appendChild(document.createElement("hr"));
-    }
-    container.appendChild(createDiagnosticCard(diagnostic));
+  model.diagnostics.forEach((diagnostic) => {
+    stack.appendChild(createDiagnosticCard(diagnostic));
   });
+
+  container.appendChild(stack);
 }
 
 /**
@@ -165,11 +235,18 @@ function createDiagnosticCard(diagnostic) {
   const header = document.createElement("div");
   header.className = "diagnostic-header";
 
-  const title = document.createElement("div");
+  const titleGroup = document.createElement("div");
+  titleGroup.className = "diagnostic-title-group";
+
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "diagnostic-eyebrow";
+  eyebrow.textContent = "TypeScript diagnostic";
+
+  const title = document.createElement("h2");
   title.className = "diagnostic-title";
-  title.textContent =
-    diagnostic.code === null ? "Error" : `Error (TS${diagnostic.code})`;
-  header.appendChild(title);
+  title.textContent = diagnostic.title;
+  titleGroup.append(eyebrow, title);
+  header.appendChild(titleGroup);
 
   const actions = document.createElement("div");
   actions.className = "diagnostic-actions";
@@ -181,7 +258,7 @@ function createDiagnosticCard(diagnostic) {
   card.appendChild(header);
 
   if (typeof diagnostic.note === "string" && diagnostic.note.length > 0) {
-    const note = document.createElement("p");
+    const note = document.createElement("div");
     note.className = "diagnostic-note";
     note.textContent = diagnostic.note;
     card.appendChild(note);
@@ -189,7 +266,7 @@ function createDiagnosticCard(diagnostic) {
 
   const messageSection = document.createElement("section");
   messageSection.className = "diagnostic-message-section";
-  appendMarkdownBlocks(messageSection, diagnostic.bodyMarkdown);
+  appendLayoutBlocks(messageSection, diagnostic.body);
   card.appendChild(messageSection);
 
   if (diagnostic.translations.length > 0) {
@@ -209,13 +286,22 @@ function createTranslationsSection(translations, originalMessage) {
   const section = document.createElement("section");
   section.className = "translation-section";
 
+  const header = document.createElement("div");
+  header.className = "translation-section-header";
+
+  const label = document.createElement("span");
+  label.className = "section-eyebrow";
+  label.textContent = "Local explanation";
+  header.appendChild(label);
+  section.appendChild(header);
+
   translations.forEach((translation) => {
     const card = document.createElement("div");
     card.className = "translation-card";
 
     const title = document.createElement("div");
     title.className = "translation-title";
-    title.textContent = `Local explanation · TS${translation.code}`;
+    title.textContent = `TS${translation.code}`;
     card.appendChild(title);
 
     if (translations.length > 1 || translation.rawError !== originalMessage) {
@@ -226,7 +312,7 @@ function createTranslationsSection(translations, originalMessage) {
       card.appendChild(pre);
     }
 
-    appendMarkdownParagraphs(card, translation.body);
+    appendLayoutBlocks(card, translation.blocks);
 
     section.appendChild(card);
   });
@@ -236,93 +322,115 @@ function createTranslationsSection(translations, originalMessage) {
 
 /**
  * @param {HTMLElement} container
- * @param {string} markdown
+ * @param {SidebarBlockNode[]} blocks
  */
-function appendMarkdownBlocks(container, markdown) {
-  const tokens = markdown
-    .split(/((?:`{3,})[^\n]*\n[\s\S]*?\n(?:`{3,}))/gu)
-    .filter(Boolean);
-
-  tokens.forEach((token) => {
-    const fenceMatch = /^(?<fence>`{3,})(?<language>[^\n]*)\n(?<code>[\s\S]*?)\n\k<fence>$/u.exec(
-      token,
-    );
-    if (fenceMatch?.groups) {
-      const codeContainer = document.createElement("div");
-      codeContainer.className = "code-container";
-
-      const copyButton = document.createElement("button");
-      copyButton.className = "copy-button";
-      copyButton.type = "button";
-      copyButton.title = "Copy code block";
-      copyButton.dataset.copyContent = fenceMatch.groups.code;
-      copyButton.appendChild(createCodicon("codicon-copy"));
-      codeContainer.appendChild(copyButton);
-
-      const pre = document.createElement("pre");
-      const code = document.createElement("code");
-      code.textContent = fenceMatch.groups.code;
-      pre.appendChild(code);
-      codeContainer.appendChild(pre);
-      container.appendChild(codeContainer);
-      return;
-    }
-
-    appendMarkdownParagraphs(container, token);
-  });
-}
-
-/**
- * @param {HTMLElement} container
- * @param {string} markdown
- */
-function appendMarkdownParagraphs(container, markdown) {
-  const paragraphs = markdown.split(/\r?\n\r?\n/gu).filter(Boolean);
-  paragraphs.forEach((paragraph) => {
-    const element = document.createElement("p");
-    const lines = paragraph.split(/\r?\n/gu);
-    lines.forEach((line, index) => {
-      element.appendChild(createInlineMarkdownFragment(line));
-      if (index < lines.length - 1) {
-        element.appendChild(document.createElement("br"));
+function appendLayoutBlocks(container, blocks) {
+  blocks.forEach((block) => {
+    switch (block.kind) {
+      case "paragraph": {
+        const paragraph = document.createElement("p");
+        paragraph.className = "diagnostic-paragraph";
+        block.lines.forEach((line, index) => {
+          paragraph.appendChild(createInlineNodesFragment(line));
+          if (index < block.lines.length - 1) {
+            paragraph.appendChild(document.createElement("br"));
+          }
+        });
+        container.appendChild(paragraph);
+        return;
       }
-    });
-    container.appendChild(element);
+      case "codeBlock":
+      case "typeBlock": {
+        container.appendChild(
+          createCodeBlockElement(
+            block.code,
+            block.kind === "typeBlock" ? "type-code-container" : "",
+          ),
+        );
+        return;
+      }
+      case "list": {
+        const list = document.createElement("ul");
+        list.className = "diagnostic-list";
+        block.items.forEach((item) => {
+          const listItem = document.createElement("li");
+          listItem.appendChild(createInlineNodesFragment(item));
+          list.appendChild(listItem);
+        });
+        container.appendChild(list);
+        return;
+      }
+      case "propertyList": {
+        const list = document.createElement("div");
+        list.className = "property-list";
+        block.items.forEach((item) => {
+          const chip = document.createElement("span");
+          chip.className = "property-chip";
+          chip.textContent = item;
+          list.appendChild(chip);
+        });
+        container.appendChild(list);
+        return;
+      }
+    }
   });
 }
 
 /**
- * @param {string} text
+ * @param {string} codeText
+ * @param {string} [extraClassName]
  */
-function createInlineMarkdownFragment(text) {
+function createCodeBlockElement(codeText, extraClassName = "") {
+  const codeContainer = document.createElement("div");
+  codeContainer.className = ["code-container", extraClassName]
+    .filter(Boolean)
+    .join(" ");
+
+  const copyButton = document.createElement("button");
+  copyButton.className = "copy-button";
+  copyButton.type = "button";
+  copyButton.title = "Copy code block";
+  copyButton.setAttribute("aria-label", "Copy code block");
+  copyButton.dataset.copyContent = codeText;
+  copyButton.appendChild(createCodicon("codicon-copy"));
+  codeContainer.appendChild(copyButton);
+
+  const pre = document.createElement("pre");
+  const code = document.createElement("code");
+  code.textContent = codeText;
+  pre.appendChild(code);
+  codeContainer.appendChild(pre);
+
+  return codeContainer;
+}
+
+/**
+ * @param {SidebarInlineNode[]} nodes
+ */
+function createInlineNodesFragment(nodes) {
   const fragment = document.createDocumentFragment();
-  const tokenPattern = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|`([^`]+)`/gu;
-  let lastIndex = 0;
-
-  for (const match of text.matchAll(tokenPattern)) {
-    const matchIndex = match.index ?? 0;
-    if (matchIndex > lastIndex) {
-      fragment.append(text.slice(lastIndex, matchIndex));
+  nodes.forEach((node) => {
+    switch (node.kind) {
+      case "text":
+        fragment.append(node.text);
+        return;
+      case "inlineCode": {
+        const code = document.createElement("code");
+        code.textContent = node.text;
+        fragment.appendChild(code);
+        return;
+      }
+      case "link": {
+        const link = document.createElement("a");
+        link.href = node.href;
+        link.target = "_blank";
+        link.rel = "noreferrer noopener";
+        link.textContent = node.label;
+        fragment.appendChild(link);
+        return;
+      }
     }
-
-    const [, linkLabel, linkHref, codeText] = match;
-    if (typeof linkLabel === "string" && typeof linkHref === "string") {
-      const link = document.createElement("a");
-      link.href = linkHref;
-      link.textContent = linkLabel;
-      fragment.appendChild(link);
-    } else if (typeof codeText === "string") {
-      const code = document.createElement("code");
-      code.textContent = codeText;
-      fragment.appendChild(code);
-    }
-
-    lastIndex = matchIndex + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    fragment.append(text.slice(lastIndex));
-  }
+  });
 
   return fragment;
 }
@@ -352,6 +460,7 @@ function createCommandLink(command, args, title, icon, extraClassName = "") {
   const link = document.createElement("a");
   link.href = `command:${command}?${encodeURIComponent(JSON.stringify(args))}`;
   link.title = title;
+  link.setAttribute("aria-label", title);
   link.className = ["action-link", extraClassName].filter(Boolean).join(" ");
   link.appendChild(createCodicon(icon));
   return link;
@@ -366,6 +475,9 @@ function createExternalLink(href, title, icon) {
   const link = document.createElement("a");
   link.href = href;
   link.title = title;
+  link.setAttribute("aria-label", title);
+  link.target = "_blank";
+  link.rel = "noreferrer noopener";
   link.className = "action-link";
   link.appendChild(createCodicon(icon));
   return link;
@@ -380,6 +492,7 @@ function createCopyButton(value, title, icon) {
   const button = document.createElement("button");
   button.type = "button";
   button.title = title;
+  button.setAttribute("aria-label", title);
   button.className = "action-button";
   button.dataset.copyContent = value;
   button.appendChild(createCodicon(icon));
@@ -400,5 +513,5 @@ function createCodicon(iconClass) {
  */
 async function copyToClipboard(text) {
   await navigator.clipboard.writeText(text);
-  api.notify("Copied type to clipboard!");
+  api.notify("Copied block to clipboard!");
 }

@@ -66,7 +66,9 @@ async function provideLiveDiagnosticHover(document: TextDocument, position: Posi
 
   const contents = await Promise.all(
     supportedDiagnostics.map((diagnostic) => {
-      return createHoverContents(toLspDiagnostic(diagnostic));
+      return createHoverContents(toLspDiagnostic(diagnostic), {
+        documentUri: document.uri.toString(),
+      });
     }),
   );
 

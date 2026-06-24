@@ -203,4 +203,18 @@ describe("translateDiagnosticMessage", () => {
       source: "curated",
     });
   });
+
+  it("Should preserve the concrete missing-property details for TS2739", () => {
+    const [translation] = translateDiagnosticMessage(
+      "Type '{ email: \"usr@usr.io\"; }' is missing the following properties from type '{ name: string; email: `${string}@${string}.${string}`; age: number; address: { street: string; city: string; country: string; }; }': name, age, address",
+    );
+
+    expect(translation).toMatchObject({
+      code: 2739,
+      source: "curated",
+    });
+    expect(translation?.body).toContain("missing some required properties");
+    expect(translation?.body).toContain("name, age, address");
+    expect(translation?.body).toContain("usr@usr.io");
+  });
 });

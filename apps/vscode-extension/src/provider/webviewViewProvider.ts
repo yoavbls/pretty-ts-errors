@@ -2,6 +2,7 @@ import type { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { has } from "@pretty-ts-errors/utils";
 import { formattedDiagnosticsStore, type FormattedDiagnostic } from "../formattedDiagnosticsStore";
+import { logger } from "../logger";
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
 import { createSidebarDiagnosticModel, type SidebarViewModel } from "./sidebarViewModel";
@@ -72,24 +73,22 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
 
   constructor(private readonly provider: MarkdownWebviewProvider) {}
 
-  async lockToDiagnostic(range: vscode.Range, message?: string) {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor) {
-      return;
-    }
-
-    const diagnostics =
-      formattedDiagnosticsStore.get(activeEditor.document.uri.fsPath) ?? [];
-    const diagnostic = diagnostics.find(
-      (item) =>
-        item.range.isEqual(range) &&
-        (message === undefined || item.lspDiagnostic.message === message)
-    );
-
+  async lockToDiagnostic(
+    uri: vscode.Uri | undefined,
+    range: vscode.Range,
+    message?: string,
+  ) {
+    const diagnostic = this.findDiagnostic(uri, range, message);
     if (!diagnostic) {
+      logger.warn(
+        `unable to lock sidebar to diagnostic at ${range.start.line}:${range.start.character}`
+      );
       return;
     }
 
+    logger.debug(
+      `locking sidebar to diagnostic ${diagnostic.documentUri.toString(true)} at ${range.start.line}:${range.start.character}`
+    );
     this.mode = "locked";
     this.lockedContent = diagnostic;
     this.skipNextSelectionChange = true;
@@ -100,20 +99,16 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  async pinDiagnostic(range: vscode.Range, message?: string) {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor) {
-      return;
-    }
-
-    const diagnostics =
-      formattedDiagnosticsStore.get(activeEditor.document.uri.fsPath) ?? [];
-    const diagnostic = diagnostics.find(
-      (item) =>
-        item.range.isEqual(range) &&
-        (message === undefined || item.lspDiagnostic.message === message)
-    );
+  async pinDiagnostic(
+    uri: vscode.Uri | undefined,
+    range: vscode.Range,
+    message?: string,
+  ) {
+    const diagnostic = this.findDiagnostic(uri, range, message);
     if (!diagnostic) {
+      logger.warn(
+        `unable to pin diagnostic at ${range.start.line}:${range.start.character}`
+      );
       return;
     }
 
@@ -139,6 +134,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext
   ): Promise<void> {
+    logger.debug("resolving prettyTsErrors side panel webview");
     this.webview = webviewView.webview;
     this.view = webviewView;
     webviewView.webview.options = this.provider.getWebviewOptions();
@@ -213,6 +209,53 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     return disposables;
   }
 
+  private findDiagnostic(
+    uri: vscode.Uri | undefined,
+    range: vscode.Range,
+    message?: string,
+  ): FormattedDiagnostic | null {
+    const activeEditor = vscode.window.activeTextEditor;
+    const storeKey = uri?.fsPath ?? activeEditor?.document.uri.fsPath;
+    if (!storeKey) {
+      logger.warn("cannot resolve diagnostic without a uri or active editor");
+      return null;
+    }
+
+    const diagnostics = formattedDiagnosticsStore.get(storeKey) ?? [];
+    if (diagnostics.length === 0) {
+      logger.warn(`no formatted diagnostics were found for ${storeKey}`);
+      return null;
+    }
+
+    const exactMatch = diagnostics.find((item) => {
+      return (
+        item.range.isEqual(range) &&
+        (message === undefined || item.lspDiagnostic.message === message)
+      );
+    });
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    const overlappingMatch = diagnostics.find((item) => {
+      return (
+        item.range.intersection(range) !== undefined &&
+        (message === undefined || item.lspDiagnostic.message === message)
+      );
+    });
+    if (overlappingMatch) {
+      logger.warn(
+        `diagnostic lookup for ${storeKey} fell back from exact range matching to overlap matching`
+      );
+      return overlappingMatch;
+    }
+
+    logger.warn(
+      `diagnostic lookup failed for ${storeKey}; formatted diagnostics count=${diagnostics.length}`
+    );
+    return null;
+  }
+
   private getActiveDiagnosticItems(): FormattedDiagnostic[] {
     switch (this.mode) {
       case "cursor":
@@ -262,15 +305,20 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
 
   async refresh(webview: vscode.Webview) {
     if (this.view && !this.view.visible) {
+      logger.trace("skipping side panel refresh because the view is hidden");
       return;
     }
 
     const model = this.createViewModel(this.getActiveDiagnosticItems());
     const modelKey = JSON.stringify(model);
     if (modelKey === this.lastModelKey) {
+      logger.trace("skipping side panel refresh because the model did not change");
       return;
     }
 
+    logger.debug(
+      `posting side panel model with ${model.diagnostics.length} active diagnostic(s) and ${model.pinned === null ? 0 : 1} pinned diagnostic(s)`
+    );
     webview.postMessage({ command: "render-sidebar", model });
     this.lastModelKey = modelKey;
   }
