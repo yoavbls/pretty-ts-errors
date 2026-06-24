@@ -55,6 +55,210 @@ code --install-extension CyberT33N.pretty-ts-errors
 
 Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=CyberT33N.pretty-ts-errors)
 
+## Development with Nx
+
+This workspace is managed with `Nx` and `pnpm`.
+
+### Prerequisites
+
+```bash
+pnpm install
+pnpm exec nx show projects
+```
+
+Current Nx projects in this workspace:
+
+- `pretty-ts-errors`
+- `@pretty-ts-errors/error-translator`
+- `@pretty-ts-errors/vscode-formatter`
+- `@pretty-ts-errors/formatter`
+- `@pretty-ts-errors/utils`
+- `workspace-root`
+
+### Build the application
+
+Build the VS Code extension together with its dependent libraries:
+
+```bash
+pnpm exec nx build pretty-ts-errors
+```
+
+Build the production bundle:
+
+```bash
+pnpm exec nx build pretty-ts-errors --configuration=production
+```
+
+Package the production build as a `.vsix`:
+
+```bash
+pnpm exec nx package pretty-ts-errors
+```
+
+### Run the application in watch mode
+
+```bash
+pnpm exec nx dev pretty-ts-errors
+```
+
+Preview the standalone webview during development:
+
+```bash
+pnpm exec nx webview pretty-ts-errors
+```
+
+### Typecheck, lint, and test the application
+
+```bash
+pnpm exec nx typecheck pretty-ts-errors
+pnpm exec nx lint pretty-ts-errors
+pnpm exec nx test pretty-ts-errors
+```
+
+Compile the extension test suite only:
+
+```bash
+pnpm exec nx run pretty-ts-errors:compile-tests
+```
+
+Watch the extension test TypeScript compilation:
+
+```bash
+pnpm exec nx run pretty-ts-errors:watch-tests
+```
+
+### Error translator package
+
+Validate the checked-in TypeScript diagnostic contract data:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:validate-contract-data
+```
+
+Refresh the full translator contract data after a deliberate TypeScript upgrade:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:refresh-contract-data
+```
+
+Refresh only the diagnostic matcher database:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:refresh-diagnostics-db
+```
+
+Rebuild only the bundled translation data:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:bundle-data
+```
+
+Build, lint, and test the translator package:
+
+```bash
+pnpm exec nx build @pretty-ts-errors/error-translator
+pnpm exec nx lint @pretty-ts-errors/error-translator
+pnpm exec nx test @pretty-ts-errors/error-translator
+```
+
+### Shared packages
+
+Build the shared packages individually:
+
+```bash
+pnpm exec nx build @pretty-ts-errors/utils
+pnpm exec nx build @pretty-ts-errors/formatter
+pnpm exec nx build @pretty-ts-errors/vscode-formatter
+pnpm exec nx build @pretty-ts-errors/error-translator
+```
+
+Run the package watch builds:
+
+```bash
+pnpm exec nx dev @pretty-ts-errors/utils
+pnpm exec nx dev @pretty-ts-errors/formatter
+pnpm exec nx dev @pretty-ts-errors/vscode-formatter
+```
+
+Lint the shared packages:
+
+```bash
+pnpm exec nx lint @pretty-ts-errors/utils
+pnpm exec nx lint @pretty-ts-errors/formatter
+pnpm exec nx lint @pretty-ts-errors/vscode-formatter
+pnpm exec nx lint @pretty-ts-errors/error-translator
+```
+
+Run the library test suites:
+
+```bash
+pnpm exec nx test @pretty-ts-errors/formatter
+pnpm exec nx test @pretty-ts-errors/vscode-formatter
+pnpm exec nx test @pretty-ts-errors/error-translator
+```
+
+Watch the library tests:
+
+```bash
+pnpm exec nx run "@pretty-ts-errors/formatter:test:watch"
+pnpm exec nx run "@pretty-ts-errors/vscode-formatter:test:watch"
+```
+
+Run the library coverage targets:
+
+```bash
+pnpm exec nx run "@pretty-ts-errors/formatter:test:coverage"
+pnpm exec nx run "@pretty-ts-errors/vscode-formatter:test:coverage"
+```
+
+Publish the public libraries:
+
+```bash
+pnpm exec nx publish @pretty-ts-errors/formatter
+pnpm exec nx publish @pretty-ts-errors/vscode-formatter
+```
+
+### Workspace commands
+
+Format the whole workspace:
+
+```bash
+pnpm exec nx run workspace-root:format
+```
+
+Check formatting without writing changes:
+
+```bash
+pnpm exec nx run "workspace-root:format:check"
+```
+
+Synchronize Nx project references:
+
+```bash
+pnpm exec nx run workspace-root:sync
+pnpm exec nx run "workspace-root:sync:check"
+```
+
+### Useful run-many examples
+
+Build all packages and the application in one command:
+
+```bash
+pnpm exec nx run-many -t build --projects=@pretty-ts-errors/utils,@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
+
+Run all currently defined test targets in one command:
+
+```bash
+pnpm exec nx run-many -t test --projects=@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
+
+Run all current lint targets in one command:
+
+```bash
+pnpm exec nx run-many -t lint --projects=@pretty-ts-errors/utils,@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
+
 #### How to hide the original errors and make the types copyable
 
 Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, this hack is required because of VSCode limitations.
