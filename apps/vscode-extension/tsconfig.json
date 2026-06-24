@@ -2,14 +2,22 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "nodenext",
-    "target": "ES2022",
+    "target": "ESNext",
     "rootDir": "src",
     "outDir": "out",
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "references": [
-    { "path": "../../packages/utils" },
-    { "path": "../../packages/vscode-formatter" }
+    {
+      "path": "../../packages/vscode-formatter"
+    },
+    {
+      "path": "../../packages/utils"
+    },
+    {
+      "path": "../../packages/formatter"
+    }
   ]
 }

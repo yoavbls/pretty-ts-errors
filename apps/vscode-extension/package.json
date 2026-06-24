@@ -1,18 +1,19 @@
 {
   "name": "pretty-ts-errors",
-  "displayName": "Pretty TypeScript Errors",
-  "publisher": "YoavBls",
+  "displayName": "Pretty TypeScript Errors [Secured]",
+  "type": "module",
+  "publisher": "CyberT33N",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
   "version": "0.8.7",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yoavbls/pretty-ts-errors",
+    "url": "https://github.com/CyberT33N/pretty-ts-errors",
     "directory": "apps/vscode-extension"
   },
-  "homepage": "https://github.com/yoavbls/pretty-ts-errors",
+  "homepage": "https://github.com/CyberT33N/pretty-ts-errors",
   "engines": {
-    "vscode": "^1.77.0"
+    "vscode": "^1.120.0"
   },
   "extensionKind": [
     "ui",
@@ -44,14 +45,6 @@
     "onLanguage:glimmer-ts"
   ],
   "main": "./dist/extension.js",
-  "browser": "./dist/extension.js",
-  "files": [
-    "dist/**/*",
-    "assets/**/*",
-    "syntaxes/**/*",
-    "webview/**/*",
-    "LICENSE"
-  ],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -124,42 +117,26 @@
       }
     ]
   },
-  "scripts": {
-    "vscode:prepublish": "cp ../../README.md README.md && npm run package",
-    "compile": "node scripts/build",
-    "watch": "npm run compile -- --watch",
-    "dev": "npm-run-all --parallel _dev:*",
-    "_dev:ext": "npm run watch",
-    "_dev:formatter": "npm run -w @pretty-ts-errors/formatter dev",
-    "_dev:vscode-formatter": "npm run -w @pretty-ts-errors/vscode-formatter dev",
-    "build": "vsce package",
-    "package": "node scripts/build -- --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "tsc -p . --noEmit",
-    "test": "node ./out/test/runTest.js",
-    "webview": "npx http-server ./webview -o -a localhost -p 8080"
-  },
   "devDependencies": {
-    "@shikijs/types": "^3.13.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^16.11.68",
-    "@types/vscode": "^1.77.0",
-    "@types/vscode-webview": "^1.57.5",
-    "@vscode/codicons": "^0.0.41",
-    "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.28.1",
-    "glob": "^13.0.6",
-    "mocha": "12.0.0-beta-10",
-    "npm-run-all": "^4.1.5"
+    "@shikijs/types": "catalog:",
+    "@types/mocha": "catalog:",
+    "@types/node": "catalog:",
+    "@types/vscode": "catalog:",
+    "@types/vscode-webview": "catalog:",
+    "@vscode/codicons": "catalog:",
+    "@vscode/vsce": "catalog:",
+    "@vscode/test-electron": "catalog:",
+    "esbuild": "catalog:",
+    "glob": "catalog:",
+    "mocha": "catalog:",
+    "yaml": "catalog:"
   },
   "dependencies": {
-    "@pretty-ts-errors/formatter": "*",
-    "@pretty-ts-errors/utils": "*",
-    "@pretty-ts-errors/vscode-formatter": "*",
-    "shiki": "^3.13.0",
-    "vscode-languageclient": "^9.0.1",
-    "vscode-shiki-bridge": "^0.5.2"
+    "@pretty-ts-errors/formatter": "workspace:*",
+    "@pretty-ts-errors/utils": "workspace:*",
+    "@pretty-ts-errors/vscode-formatter": "workspace:*",
+    "shiki": "catalog:",
+    "vscode-languageclient": "catalog:",
+    "vscode-shiki-bridge": "catalog:"
   }
 }

@@ -1,0 +1,77 @@
+{
+  "name": "@pretty-ts-errors/formatter",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/formatter/src",
+  "projectType": "library",
+  "tags": ["scope:packages", "type:library"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/packages/formatter/dist"],
+      "options": {
+        "main": "packages/formatter/src/index.ts",
+        "outputPath": "packages/formatter/dist",
+        "tsConfig": "packages/formatter/tsconfig.lib.json",
+        "rootDir": "packages/formatter/src",
+        "generatePackageJson": true,
+        "generateExportsField": true,
+        "clean": true
+      }
+    },
+    "dev": {
+      "executor": "@nx/js:tsc",
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "main": "packages/formatter/src/index.ts",
+        "outputPath": "packages/formatter/dist",
+        "tsConfig": "packages/formatter/tsconfig.lib.json",
+        "rootDir": "packages/formatter/src",
+        "generatePackageJson": true,
+        "generateExportsField": true,
+        "clean": false,
+        "watch": true
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/formatter",
+        "command": "pnpm exec tsc -p tsconfig.json --noEmit"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/formatter",
+        "command": "pnpm exec vitest run"
+      }
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "cwd": "packages/formatter",
+        "command": "pnpm exec vitest"
+      }
+    },
+    "test:coverage": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/formatter",
+        "command": "pnpm exec vitest run --coverage"
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "packages/formatter",
+        "command": "pnpm publish --access public"
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@
     "out": true, // set this to false to include "out" folder in search results
     "dist": true // set this to false to include "dist" folder in search results
   },
-  // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
+  // Turn off tsc task auto detection since the workspace uses explicit Nx tasks.
   "typescript.tsc.autoDetect": "off",
   "chat.tools.terminal.autoApprove": {
     "npx vitest": true

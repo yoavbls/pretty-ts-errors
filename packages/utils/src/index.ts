@@ -1,11 +1,5 @@
 import dedent from "ts-dedent";
 
-export function objectKeys<T extends Record<string, unknown>>(
-  obj: T
-): (keyof T & string)[] {
-  return Object.keys(obj) as (keyof T & string)[];
-}
-
 export function invert<T extends Record<string, string>>(
   obj: T
 ): Partial<{
@@ -33,7 +27,9 @@ export const d = dedent;
  * Check if an array contains a string.
  * Type guard the string if it does.
  */
-export const has = (
-  array: unknown[],
+export function has<T extends string>(
+  array: readonly T[],
   item: string
-): item is Extract<(typeof array)[number], string> => array.includes(item);
+): item is T {
+  return array.some((value) => value === item);
+}

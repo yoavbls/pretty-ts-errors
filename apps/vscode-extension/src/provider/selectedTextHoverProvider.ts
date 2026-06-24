@@ -1,15 +1,16 @@
-import { d } from "@pretty-ts-errors/utils";
 import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
+  Diagnostic,
+  DiagnosticSeverity,
   ExtensionContext,
   ExtensionMode,
   MarkdownString,
   languages,
   window,
 } from "vscode";
-import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 import { enabledCommands } from "../commands/enabledCommands";
+import { toLspDiagnostic } from "../lspDiagnostic";
 
 /**
  * Register an hover provider in debug only.
@@ -20,7 +21,6 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
     return;
   }
 
-  const converter = createConverter();
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
@@ -42,13 +42,15 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             return null;
           }
 
-          const lspDiagnostic = converter.asDiagnostic({
-            message,
+          const debugDiagnostic = new Diagnostic(
             range,
-            severity: 0,
-            source: "ts",
-            code: 1337,
-          });
+            message,
+            DiagnosticSeverity.Error
+          );
+          debugDiagnostic.source = "ts";
+          debugDiagnostic.code = 1337;
+
+          const lspDiagnostic = toLspDiagnostic(debugDiagnostic);
 
           const markdown = new MarkdownString(
             debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
@@ -74,12 +76,12 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d /*html*/ `
-  <span style="color:#f96363;">
-    <span class="codicon codicon-debug"></span>
-    Formatted selected text (debug only)
-  </span>
-  <br>
-  <hr>
-  <p></p>
-`;
+const debugHoverHeader = [
+  '<span style="color:#f96363;">',
+  '  <span class="codicon codicon-debug"></span>',
+  "  Formatted selected text (debug only)",
+  "</span>",
+  "<br>",
+  "<hr>",
+  "<p></p>",
+].join("\n");

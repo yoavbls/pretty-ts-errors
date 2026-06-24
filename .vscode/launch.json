@@ -13,10 +13,9 @@
         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
       ],
       "outFiles": [
-        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
-        "${workspaceFolder}/apps/vscode-extension/out/**/*.js"
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js"
       ],
-      "preLaunchTask": "watch - apps/vscode-extension"
+      "preLaunchTask": "watch - pretty-ts-errors"
     },
     {
       "name": "Run Extension (all extensions disabled)",
@@ -27,10 +26,9 @@
         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
       ],
       "outFiles": [
-        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
-        "${workspaceFolder}/apps/vscode-extension/out/**/*.js"
+        "${workspaceFolder}/apps/vscode-extension/dist/**/*.js"
       ],
-      "preLaunchTask": "watch - apps/vscode-extension"
+      "preLaunchTask": "watch - pretty-ts-errors"
     },
     {
       "name": "Extension Tests",

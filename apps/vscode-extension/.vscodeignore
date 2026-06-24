@@ -1,0 +1,11 @@
+src/**
+out/**
+coverage/**
+test/**
+node_modules/**
+.pnpm/**
+scripts/**
+project.json
+tsconfig.json
+*.tsbuildinfo
+vitest.config.*

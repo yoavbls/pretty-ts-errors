@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false
+  },
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../utils/tsconfig.lib.json"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "workspace-root",
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "root": ".",
+  "targets": {
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec prettier --write \"**/*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml,css,html}\""
+      }
+    },
+    "format:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec prettier --check \"**/*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml,css,html}\""
+      }
+    },
+    "sync": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx sync"
+      }
+    },
+    "sync:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx sync:check"
+      }
+    }
+  }
+}

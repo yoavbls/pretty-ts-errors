@@ -1,0 +1,270 @@
+{
+  "1002": {
+    "body": "You've started a string (via a single or double quote) but haven't ended it.",
+    "code": 1002
+  },
+  "1003": {
+    "body": "I was expecting a name but none was provided.",
+    "code": 1003
+  },
+  "1006": {
+    "body": "You've got a triple-slash reference inside a file that's referencing itself.",
+    "code": 1006
+  },
+  "1009": {
+    "body": "You've added a trailing comma when you're not supposed to add it.",
+    "code": 1009
+  },
+  "1014": {
+    "body": "A parameter in a function that starts with `...` must be the last one in the list.",
+    "code": 1014
+  },
+  "1015": {
+    "body": "You can use a question mark or an default value, but not both at once.",
+    "code": 1015
+  },
+  "1091": {
+    "body": "You can only create a single variable in a 'for...in' statement",
+    "code": 1091
+  },
+  "1109": {
+    "body": "I am expecting a code that resolves to a value.",
+    "code": 1109
+  },
+  "1117": {
+    "body": "You can't add the same property multiple times to an object.",
+    "code": 1117
+  },
+  "1155": {
+    "body": "A `const` must be given a value when it's declared.",
+    "code": 1155
+  },
+  "1163": {
+    "body": "The `yield` keyword can only be used inside a generator function",
+    "code": 1163
+  },
+  "1208": {
+    "body": "You have set the 'isolatedModules' flag. Therefore all implementation files must be modules (which means it has some form of import/export). Add an import, export, or an empty 'export {}' statement to make it a module.",
+    "code": 1208
+  },
+  "1240": {
+    "body": "You can't use a decorator on an expression, like an arrow function.",
+    "code": 1240
+  },
+  "1254": {
+    "body": "You can't use runtime code in a declaration file.",
+    "code": 1254
+  },
+  "1268": {
+    "body": "Objects in TypeScript (and JavaScript!) can only have strings, numbers or symbols as keys. [Template literal types](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html) are a way of constructing strings.",
+    "code": 1268
+  },
+  "1313": {
+    "body": "An if statement shouldn't be empty",
+    "code": 1313
+  },
+  "1434": {
+    "body": "There's a syntax error in your code, so I can't tell exactly what's wrong.",
+    "code": 1434
+  },
+  "2304": {
+    "body": "I can't find the variable you're trying to access.",
+    "code": 2304
+  },
+  "2305": {
+    "body": "'{1}' is not one of the things exported from '{0}'.",
+    "code": 2305
+  },
+  "2307": {
+    "body": "This could be one of two things - either '{0}' doesn't exist on your file system, or I can't find any type declarations for it.",
+    "code": 2307
+  },
+  "2312": {
+    "body": "You might be trying to use an interface to extend a union type. This isn't possible.",
+    "code": 2312
+  },
+  "2314": {
+    "body": "It looks like '{0}' requires '{1}' type arguments, which means you need to pass them in via a generic.",
+    "code": 2314
+  },
+  "2322": {
+    "body": "I was expecting a type matching '{1}', but instead you passed '{0}'.",
+    "code": 2322
+  },
+  "2324": {
+    "body": "You haven't passed all the required properties to '{1}' - you've missed out '{0}'",
+    "code": 2324
+  },
+  "2326": {
+    "body": "Two similar types have a property '{0}' which is different, making them incompatible.",
+    "code": 2326
+  },
+  "2327": {
+    "body": "Property '{0}' in type '{2}' must exist.",
+    "code": 2327
+  },
+  "2339": {
+    "body": "You're trying to access '{0}' on an object that doesn't contain it. [Learn more](https://totaltypescript.com/concepts/property-does-not-exist-on-type).",
+    "code": 2339
+  },
+  "2344": {
+    "body": "You're trying to pass in '{0}' into a slot where I can see only '{1}' can be passed.",
+    "code": 2344
+  },
+  "2345": {
+    "body": "I was expecting '{1}', but you passed '{0}'.",
+    "code": 2345
+  },
+  "2349": {
+    "body": "I can't call this expression because I can't call it like a function.",
+    "code": 2349
+  },
+  "2352": {
+    "body": "You can't use 'as' to convert '{0}' into a '{1}' - they don't share enough in common.",
+    "code": 2352
+  },
+  "2353": {
+    "body": "You can't pass property '{0}' to type '{1}'.",
+    "code": 2353
+  },
+  "2355": {
+    "body": "You set the function return type but it is not returning anything.",
+    "code": 2355
+  },
+  "2365": {
+    "body": "You can't use '{0}' on the types '{1}' and '{2}'.",
+    "code": 2365
+  },
+  "2393": {
+    "body": "You've already declared a function with the same name.",
+    "code": 2393
+  },
+  "2414": {
+    "body": "You can't give a class the name of '{0}' because it's protected by TypeScript.",
+    "code": 2414
+  },
+  "2451": {
+    "body": "'{0}' has already been declared - you can't declare it again. [Learn more](https://www.totaltypescript.com/cannot-redeclare-block-scoped-variable).",
+    "code": 2451
+  },
+  "2488": {
+    "body": "Type '{0}' isn't iterable. To make it iterable, add a [`Symbol.iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator) key.",
+    "code": 2488
+  },
+  "2551": {
+    "body": "You're trying to access '{0}' on an object that doesn't contain it. Did you mean '{2}'?",
+    "code": 2551
+  },
+  "2552": {
+    "body": "You are trying to reference a function or variable which I can't find in the current scope.",
+    "code": 2552
+  },
+  "2554": {
+    "body": "The function you're trying to call needs {0} arguments, but you're passing {1}.",
+    "code": 2554
+  },
+  "2556": {
+    "body": "You're spreading arguments into a function. To do that, either the argument needs to be a tuple OR the function needs to accept a dynamic number of arguments.",
+    "code": 2556
+  },
+  "2571": {
+    "body": "I don't know what type this object is, so I've defaulted it to 'unknown'. [Learn more](https://www.totaltypescript.com/concepts/object-is-of-type-unknown).",
+    "code": 2571
+  },
+  "2590": {
+    "body": "You've created a union type that's too complex for me to handle! 🤯 I can only represent 100,000 combinations in the same union, and you've gone over that limit.",
+    "code": 2590
+  },
+  "2604": {
+    "body": "'{0}' cannot be used as a JSX component because it isn't a function.",
+    "code": 2604
+  },
+  "2614": {
+    "body": "'{1}' is not one of the things exported from '{0}'. Did you mean to import '{1}' from '{0}' instead?",
+    "code": 2614
+  },
+  "2686": {
+    "body": "You might not have configured `jsx` in your `tsconfig.json` correctly. [Learn more](https://www.totaltypescript.com/react-refers-to-a-umd-global).",
+    "code": 2686
+  },
+  "2722": {
+    "body": "This function might be undefined. You'll need to check it's defined before calling it.",
+    "code": 2722
+  },
+  "2739": {
+    "body": "'{0}' is missing some required properties from type '{1}': {2}.",
+    "code": 2739
+  },
+  "2741": {
+    "body": "You haven't passed all the required properties to '{2}' - '{1}' is missing the '{0}' property.",
+    "code": 2741
+  },
+  "2749": {
+    "body": "You're trying to use a JavaScript variable where you should be passing a type.",
+    "code": 2749
+  },
+  "2761": {
+    "body": "Type '{0}' is not a class.",
+    "code": 2761
+  },
+  "2775": {
+    "body": "You might be using an `asserts` keyword on an arrow function. If you are, change the function to use the `function` keyword.",
+    "code": 2775
+  },
+  "2783": {
+    "body": "'{0}' will be overwritten by the spread.",
+    "code": 2783
+  },
+  "5075": {
+    "body": "You're passing a type '{0}' into a slot which is too narrow. It could be as wide as anything assignable to '{2}'.",
+    "code": 5075
+  },
+  "6133": {
+    "body": "I noticed that '{0}' has been declared, but it's never used in the code.",
+    "code": 6133
+  },
+  "6142": {
+    "body": "You can't import `.jsx` or `.tsx` files until you set `jsx` in your `tsconfig.json`.",
+    "code": 6142
+  },
+  "6244": {
+    "body": "You can't use const enums when `isolatedModules` is enabled.",
+    "code": 6244
+  },
+  "7006": {
+    "body": "I don't know what type '{0}' is supposed to be, so I've defaulted it to '{1}'. Your `tsconfig.json` file says I should throw an error here. [Learn more](https://www.totaltypescript.com/tutorials/beginners-typescript/beginner-s-typescript-section/implicit-any-type-error).",
+    "code": 7006
+  },
+  "7026": {
+    "body": "`JSX.IntrinsicElements` has not been declared in the global scope. [Learn more](https://www.totaltypescript.com/what-is-jsx-intrinsicelements).",
+    "code": 7026
+  },
+  "7053": {
+    "body": "You can't use '{0}' to index into '{1}'. [This article](https://www.totaltypescript.com/concepts/type-string-cannot-be-used-to-index-type) might help.",
+    "code": 7053
+  },
+  "7057": {
+    "body": "I don't know enough about your generator function's return type to safely infer here.",
+    "code": 7057
+  },
+  "7061": {
+    "body": "You're trying to create a mapped type with both static and dynamic properties.",
+    "code": 7061
+  },
+  "8016": {
+    "body": "You can't use type assertions because this isn't a TypeScript file.",
+    "code": 8016
+  },
+  "17004": {
+    "body": "You can't use JSX yet because you haven't added `jsx` to your `tsconfig.json`. [Learn more](https://www.totaltypescript.com/cannot-use-jsx-unless-the-jsx-flag-is-provided).",
+    "code": 17004
+  },
+  "18004": {
+    "body": "You're trying to pass '{0}' as a key AND value to this object using a shorthand. You'll need to declare '{0}' as a variable first.",
+    "code": 18004
+  },
+  "95050": {
+    "body": "I've spotted a bit of code that will never be run.",
+    "code": 95050
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "types": ["node", "mocha"],
+    "outDir": "out",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/test/**/*.ts"
+  ]
+}

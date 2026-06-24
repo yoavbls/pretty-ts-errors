@@ -83,16 +83,24 @@ async function diagnosticToItem(
 ): Promise<DiagnosticItem> {
   const cacheKey = formattedDiagnostic.lspDiagnostic.message;
   let html = sidebarHtmlCache.get(cacheKey);
-  if (!html) {
-    html = await prettifyDiagnosticForSidebar(
+  if (html === undefined) {
+    const renderedHtml = await prettifyDiagnosticForSidebar(
       formattedDiagnostic.lspDiagnostic
     );
     if (sidebarHtmlCache.size > SIDEBAR_CACHE_SIZE_MAX) {
-      const firstKey = sidebarHtmlCache.keys().next().value!;
-      sidebarHtmlCache.delete(firstKey);
+      const firstKey = sidebarHtmlCache.keys().next().value;
+      if (firstKey !== undefined) {
+        sidebarHtmlCache.delete(firstKey);
+      }
     }
-    sidebarHtmlCache.set(cacheKey, html);
+    sidebarHtmlCache.set(cacheKey, renderedHtml);
+    html = renderedHtml;
   }
+
+  if (html === undefined) {
+    throw new Error("Sidebar HTML rendering returned no content.");
+  }
+
   return {
     html,
     range: formattedDiagnostic.range,

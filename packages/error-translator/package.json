@@ -1,0 +1,23 @@
+{
+  "name": "@pretty-ts-errors/error-translator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local plain-English translator for TypeScript diagnostics",
+  "files": [
+    "dist/**"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "catalog:"
+  }
+}

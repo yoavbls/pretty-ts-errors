@@ -8,10 +8,6 @@ import {
   Uri,
   type Diagnostic,
 } from "vscode";
-import {
-  createConverter,
-  type Converter,
-} from "vscode-languageclient/lib/common/codeConverter";
 import { hoverProvider } from "./provider/hoverProvider";
 import {
   formattedDiagnosticsStore,
@@ -19,6 +15,7 @@ import {
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
 import { enabledCommands } from "./commands/enabledCommands";
+import { toLspDiagnostic } from "./lspDiagnostic";
 
 /**
  * The list of diagnostic sources that pretty-ts-errors supports
@@ -32,7 +29,6 @@ const supportedDiagnosticSources = [
 ];
 
 export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
-  const converter = createConverter();
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
       await logger.measure("onDidChangeDiagnostics", async () => {
@@ -49,7 +45,7 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
 
               const items: FormattedDiagnostic[] = await Promise.all(
                 supportedDiagnostics.map((diagnostic) =>
-                  getFormattedDiagnostic(diagnostic, converter)
+                  getFormattedDiagnostic(diagnostic)
                 )
               );
 
@@ -85,24 +81,22 @@ const CACHE_SIZE_MAX = 100;
 
 /**
  * A local cache that maps TS diagnostics as `string` to their formatted `MarkdownString` counter part.
- * @see https://github.com/yoavbls/pretty-ts-errors/pull/62
+ * @see https://github.com/CyberT33N/pretty-ts-errors/pull/62
  *
  * One reason this cache is critical is because the TypeScript Language Features extension is very noisy and will constantly push all diagnostics for a file,
  * even if there were no actual changes.
- * @see https://github.com/yoavbls/pretty-ts-errors/issues/139#issuecomment-3401279357
+ * @see https://github.com/CyberT33N/pretty-ts-errors/issues/139#issuecomment-3401279357
  *
  * TODO: create a proper LRU cache, to prevent exceeding the cache size being a bottleneck
- * @see https://github.com/yoavbls/pretty-ts-errors/issues/104
+ * @see https://github.com/CyberT33N/pretty-ts-errors/issues/104
  */
 const cache = new Map<string, MarkdownString>();
 
 async function getFormattedDiagnostic(
-  diagnostic: Diagnostic,
-  converter: Converter
+  diagnostic: Diagnostic
 ): Promise<FormattedDiagnostic> {
-  // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-  // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
-  const lspDiagnostic = converter.asDiagnostic(diagnostic);
+  // The formatter consumes LSP diagnostics, so keep the VS Code -> LSP conversion as a local first-party boundary.
+  const lspDiagnostic = toLspDiagnostic(diagnostic);
 
   let formattedMessage = cache.get(diagnostic.message);
   if (!formattedMessage) {

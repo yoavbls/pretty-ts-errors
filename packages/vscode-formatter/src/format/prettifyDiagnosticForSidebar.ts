@@ -1,17 +1,18 @@
 import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter";
+import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
 import { Diagnostic } from "vscode-languageserver-types";
 import { htmlCodeBlock } from "../components/htmlCodeBlock";
 import {
   divider,
   pinErrorLink,
   copyErrorLink,
-  errorMessageTranslationLink,
   errorCodeExplanationLink,
 } from "../components/actions";
 import { errorTitle } from "../components/errorTitle";
 import { d } from "@pretty-ts-errors/utils";
 import { embedSymbolLinks } from "./embedSymbolLinks";
 import { identSentences } from "./identSentences";
+import { renderPlainEnglishTranslations } from "./renderPlainEnglishTranslations";
 
 const prettifyErrorMessageForSidebar =
   createErrorMessagePrettifier(htmlCodeBlock);
@@ -27,17 +28,19 @@ export async function prettifyDiagnosticForSidebar(
   const identedSentences = identSentences(newDiagnostic.message);
   const prettifiedMessage =
     await prettifyErrorMessageForSidebar(identedSentences);
+  const translations = translateDiagnosticMessage(diagnostic.message);
+  const renderedTranslations = renderPlainEnglishTranslations(translations);
 
   return d /*html*/ `
     ${errorTitle(
       newDiagnostic.code,
       d`${pinErrorLink(newDiagnostic.range, diagnostic.message)} ${divider}
         ${copyErrorLink(newDiagnostic.message)} ${divider}
-        ${errorMessageTranslationLink(newDiagnostic.message)} ${divider}
         ${errorCodeExplanationLink(newDiagnostic.code)}`
     )}
     <div style="line-height:2; padding-top: 8px;">
     ${prettifiedMessage}
     </div>
+    ${renderedTranslations}
   `;
 }
