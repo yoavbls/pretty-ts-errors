@@ -70,7 +70,7 @@ export interface DiagnosticRichContentModel {
 const fencedCodeBlockPattern =
   /((?:`{3,})[^\n]*\n[\s\S]*?\n(?:`{3,}))/gu;
 const inlineTokenPattern =
-  /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|`([^`]+)`/gu;
+  /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(`+)([\s\S]*?)\3/gu;
 const propertyLikeItemPattern = /^[#\w.$:[\]"'-]+$/u;
 
 function normalizeLineEndings(value: string): string {
@@ -82,15 +82,33 @@ function isTypeBlockLanguage(language: string | null): boolean {
 }
 
 function createInlineCodeFence(code: string): string {
-  const fence =
-    code.includes("``") ? "```" : code.includes("`") ? "``" : "`";
-  return `${fence}${code}${fence}`;
+  const longestBacktickRun = Math.max(
+    0,
+    ...Array.from(code.matchAll(/`+/gu), (match) => match[0].length),
+  );
+  const fence = "`".repeat(longestBacktickRun + 1);
+  const needsPadding = code.startsWith("`") || code.endsWith("`");
+  const content = needsPadding ? ` ${code} ` : code;
+  return `${fence}${content}${fence}`;
 }
 
 function createFencedCodeBlock(code: string, language: string | null): string {
   const fence = code.includes("```") ? "````" : "```";
   const infoString = language ?? "";
   return `${fence}${infoString}\n${code}\n${fence}`;
+}
+
+function normalizeInlineCodeText(text: string): string {
+  if (
+    text.length >= 2 &&
+    text.startsWith(" ") &&
+    text.endsWith(" ") &&
+    /[^\s]/u.test(text)
+  ) {
+    return text.slice(1, -1);
+  }
+
+  return text;
 }
 
 function parseInlineNodes(text: string): DiagnosticInlineNode[] {
@@ -108,7 +126,7 @@ function parseInlineNodes(text: string): DiagnosticInlineNode[] {
 
     const linkLabel = match[1];
     const linkHref = match[2];
-    const codeText = match[3];
+    const codeText = match[4];
     if (typeof linkLabel === "string" && typeof linkHref === "string") {
       nodes.push({
         kind: "link",
@@ -118,7 +136,7 @@ function parseInlineNodes(text: string): DiagnosticInlineNode[] {
     } else if (typeof codeText === "string") {
       nodes.push({
         kind: "inlineCode",
-        text: codeText,
+        text: normalizeInlineCodeText(codeText),
       });
     }
 

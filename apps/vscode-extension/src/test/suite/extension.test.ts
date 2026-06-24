@@ -6,7 +6,7 @@ suite("Extension Test Suite", () => {
   test("shows the custom hover for supported JS diagnostics", async function () {
     this.timeout(30_000);
 
-    const exampleUri = await openExampleDocument();
+    const exampleUri = await openExampleDocument("errors.js");
     const diagnostic = await waitForDiagnostic(exampleUri, 2741);
     const markdownStrings = await getHoverMarkdownStrings(
       exampleUri,
@@ -26,7 +26,7 @@ suite("Extension Test Suite", () => {
   test("renders TS2739 as safe markdown with the missing-property list", async function () {
     this.timeout(30_000);
 
-    const exampleUri = await openExampleDocument();
+    const exampleUri = await openExampleDocument("errors.js");
     const diagnostic = await waitForDiagnostic(exampleUri, 2739);
     const markdownStrings = await getHoverMarkdownStrings(
       exampleUri,
@@ -50,7 +50,7 @@ suite("Extension Test Suite", () => {
   test("accepts uri-based sidebar command targets", async function () {
     this.timeout(30_000);
 
-    const exampleUri = await openExampleDocument();
+    const exampleUri = await openExampleDocument("errors.js");
     const diagnostic = await waitForDiagnostic(exampleUri, 2739);
 
     await vscode.commands.executeCommand(
@@ -60,9 +60,32 @@ suite("Extension Test Suite", () => {
       diagnostic.message,
     );
   });
+
+  test("keeps TS2741 template literal types intact in local explanations", async function () {
+    this.timeout(30_000);
+
+    const exampleUri = await openExampleDocument("errors.ts");
+    const diagnostic = await waitForDiagnostic(
+      exampleUri,
+      2741,
+      15_000,
+      "Property 'user' is missing",
+    );
+    const markdownStrings = await getHoverMarkdownStrings(
+      exampleUri,
+      diagnostic.range.start,
+    );
+
+    const hoverText = markdownStrings.map((content) => content.value).join("\n");
+    assert.match(hoverText, /Local explanation/u);
+    assert.match(
+      hoverText,
+      /``\{ user: \{ name: string; email: `\$\{string\}@\$\{string\}\.\$\{string\}`; age: number; \}; \}``/u,
+    );
+  });
 });
 
-async function openExampleDocument(): Promise<vscode.Uri> {
+async function openExampleDocument(fileName: "errors.js" | "errors.ts"): Promise<vscode.Uri> {
   const extension = vscode.extensions.all.find((candidate) => {
     return candidate.packageJSON.name === "pretty-ts-errors";
   });
@@ -71,7 +94,7 @@ async function openExampleDocument(): Promise<vscode.Uri> {
   await extension.activate();
 
   const exampleUri = vscode.Uri.file(
-    path.resolve(extension.extensionPath, "../../examples/errors.js")
+    path.resolve(extension.extensionPath, `../../examples/${fileName}`)
   );
   const document = await vscode.workspace.openTextDocument(exampleUri);
   await vscode.window.showTextDocument(document);
@@ -101,14 +124,21 @@ async function getHoverMarkdownStrings(
 async function waitForDiagnostic(
   uri: vscode.Uri,
   code: number,
-  timeoutMs = 15_000
+  timeoutMs = 15_000,
+  messageIncludes?: string,
 ): Promise<vscode.Diagnostic> {
   const startedAt = Date.now();
 
   for (;;) {
     const diagnostic = vscode.languages
       .getDiagnostics(uri)
-      .find((item) => item.code === code);
+      .find((item) => {
+        return (
+          item.code === code &&
+          (messageIncludes === undefined ||
+            item.message.includes(messageIncludes))
+        );
+      });
 
     if (diagnostic !== undefined) {
       return diagnostic;

@@ -283,9 +283,6 @@ catalogs:
     vscode-languageserver-types:
       specifier: 3.17.5
       version: 3.17.5
-    vscode-shiki-bridge:
-      specifier: 0.5.2
-      version: 0.5.2
     vscode-uri:
       specifier: 3.1.0
       version: 3.1.0
@@ -348,9 +345,6 @@ importers:
       vscode-languageclient:
         specifier: 'catalog:'
         version: 10.0.0
-      vscode-shiki-bridge:
-        specifier: 'catalog:'
-        version: 0.5.2(@types/vscode@1.105.0)(shiki@3.13.0)
     devDependencies:
       '@shikijs/types':
         specifier: 'catalog:'
@@ -2332,9 +2326,6 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==, tarball: https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz}
 
-  fast-plist@0.1.3:
-    resolution: {integrity: sha512-d9cEfo/WcOezgPLAC/8t8wGb6YOD6JTCPMw2QcG2nAdFmyY+9rTUizCTaGjIZAloWENTEUMAPpkUAIJJJ0i96A==, tarball: https://registry.npmjs.org/fast-plist/-/fast-plist-0.1.3.tgz}
-
   fast-uri@3.1.2:
     resolution: {integrity: sha512-rVjf7ArG3LTk+FS6Yw81V1DLuZl1bRbNrev6Tmd/9RaroeeRRJhAt7jg/6YFxbvAQXUCavSoZhPPj6oOx+5KjQ==, tarball: https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.2.tgz}
 
@@ -3740,12 +3731,6 @@ packages:
 
   vscode-languageserver-types@3.18.0:
     resolution: {integrity: sha512-8TsGPNMIMiiBdkORgRSvLjuiEIiAFtO+KssmYWxQ+uSVvlf7RjK8YKCOjPzZ+YA04jXEV7+7LvkSmHkhpNS99g==, tarball: https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.0.tgz}
-
-  vscode-shiki-bridge@0.5.2:
-    resolution: {integrity: sha512-/9YKUFJuNOMxpTFk0PYSSf+p+/jHktBOxMhDe1ueHvT1afhgopg1y5gKQax76gd03gYyb/kRVuiixnT5Utb58A==, tarball: https://registry.npmjs.org/vscode-shiki-bridge/-/vscode-shiki-bridge-0.5.2.tgz}
-    peerDependencies:
-      '@types/vscode': ^1.102.0
-      shiki: ^3.9.2
 
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==, tarball: https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.1.0.tgz}
@@ -6027,8 +6012,6 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fast-plist@0.1.3: {}
-
   fast-uri@3.1.2: {}
 
   fastq@1.20.1:
@@ -7541,13 +7524,6 @@ snapshots:
 
   vscode-languageserver-types@3.18.0: {}
 
-  vscode-shiki-bridge@0.5.2(@types/vscode@1.105.0)(shiki@3.13.0):
-    dependencies:
-      '@types/vscode': 1.105.0
-      fast-plist: 0.1.3
-      jsonc-parser: 3.3.1
-      shiki: 3.13.0
-
   vscode-uri@3.1.0: {}
 
   wcwidth@1.0.1:
@@ -7664,6 +7640,5 @@ time:
   vitest@4.1.2: '2026-03-26T14:36:51.447Z'
   vscode-languageclient@10.0.0: '2026-06-03T19:58:47.274Z'
   vscode-languageserver-types@3.17.5: '2023-09-26T10:23:06.690Z'
-  vscode-shiki-bridge@0.5.2: '2026-03-15T00:14:49.002Z'
   vscode-uri@3.1.0: '2025-02-04T18:18:11.908Z'
   yaml@2.9.0: '2026-05-11T10:16:24.045Z'

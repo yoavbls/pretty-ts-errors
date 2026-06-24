@@ -187,6 +187,15 @@ describe("fillBodyWithItems", () => {
 
     expect(result.body).toEqual("`A` and `B`");
   });
+
+  it("Should use a longer markdown code fence when the item contains backticks", () => {
+    const result = fillBodyWithItems(
+      "Value: '{0}'",
+      ["{ email: `${string}@${string}.${string}` }"],
+    );
+
+    expect(result.body).toContain("``{ email: `${string}@${string}.${string}` }``");
+  });
 });
 
 describe("translateDiagnosticMessage", () => {
@@ -216,5 +225,19 @@ describe("translateDiagnosticMessage", () => {
     expect(translation?.body).toContain("missing some required properties");
     expect(translation?.body).toContain("name, age, address");
     expect(translation?.body).toContain("usr@usr.io");
+  });
+
+  it("Should keep TS2741 template literal types inside a valid markdown code span", () => {
+    const [translation] = translateDiagnosticMessage(
+      "Property 'user' is missing in type '{ person: { username: string; email: string; }; }' but required in type '{ user: { name: string; email: `${string}@${string}.${string}`; age: number; }; }'.",
+    );
+
+    expect(translation).toMatchObject({
+      code: 2741,
+      source: "curated",
+    });
+    expect(translation?.body).toContain("``{ user:");
+    expect(translation?.body).toContain("`${string}@${string}.${string}`");
+    expect(translation?.body).toContain("`` - ");
   });
 });

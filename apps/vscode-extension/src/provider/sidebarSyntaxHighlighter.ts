@@ -1,5 +1,10 @@
-import { createHighlighter, type Highlighter } from "shiki";
-import { getLanguages, getUserTheme } from "vscode-shiki-bridge";
+import {
+  createHighlighter,
+  type BundledLanguage,
+  type BundledTheme,
+  type Highlighter,
+} from "shiki";
+import { ColorThemeKind, window } from "vscode";
 import { logger } from "../logger";
 
 export interface SidebarHighlightedToken {
@@ -22,21 +27,24 @@ export interface SidebarCodePresentation {
 interface SidebarSyntaxHighlighterState {
   highlighter: Highlighter;
   themeId: string;
-  languages: Awaited<ReturnType<typeof getLanguages>>;
 }
 
 type HighlighterCodeOptions = Parameters<Highlighter["codeToTokensBase"]>[1];
 type HighlighterCodeLanguage = NonNullable<HighlighterCodeOptions["lang"]>;
 type HighlighterCodeTheme = NonNullable<HighlighterCodeOptions["theme"]>;
 
-const REQUIRED_LANGUAGE_IDS = [
-  "type",
+const REQUIRED_LANGUAGES = [
   "typescript",
-  "typescriptreact",
+  "tsx",
   "javascript",
-  "javascriptreact",
+  "jsx",
   "json",
-] as const;
+] as const satisfies readonly BundledLanguage[];
+
+const DEFAULT_DARK_THEME = "dark-plus";
+const DEFAULT_LIGHT_THEME = "light-plus";
+const DEFAULT_HIGH_CONTRAST_DARK_THEME = "github-dark-high-contrast";
+const DEFAULT_HIGH_CONTRAST_LIGHT_THEME = "github-light-high-contrast";
 
 const presentationCache = new Map<string, SidebarCodePresentation | null>();
 
@@ -55,26 +63,24 @@ function cacheKey(
 }
 
 async function createState(): Promise<SidebarSyntaxHighlighterState> {
-  const [themeId, themes] = await getUserTheme();
-  const languages = await getLanguages([...REQUIRED_LANGUAGE_IDS]);
+  const themeId = getThemeIdFromActiveTheme();
   const highlighter = await createHighlighter({
-    langs: languages.langs,
-    themes,
+    langs: [...REQUIRED_LANGUAGES],
+    themes: [themeId],
   });
 
   logger.debug(
-    `initialized sidebar syntax highlighter for theme '${themeId}' with ${languages.langs.length} language registration(s)`
+    `initialized sidebar syntax highlighter with bundled shiki theme '${themeId}'`
   );
 
   return {
     highlighter,
     themeId,
-    languages,
   };
 }
 
 async function getState(): Promise<SidebarSyntaxHighlighterState> {
-  const [themeId] = await getUserTheme();
+  const themeId = getThemeIdFromActiveTheme();
   if (state !== null && state.themeId === themeId) {
     return state;
   }
@@ -90,15 +96,38 @@ async function getState(): Promise<SidebarSyntaxHighlighterState> {
   return state;
 }
 
+function getThemeIdFromActiveTheme(): BundledTheme {
+  switch (window.activeColorTheme.kind) {
+    case ColorThemeKind.Light:
+      return DEFAULT_LIGHT_THEME;
+    case ColorThemeKind.HighContrastLight:
+      return DEFAULT_HIGH_CONTRAST_LIGHT_THEME;
+    case ColorThemeKind.HighContrast:
+      return DEFAULT_HIGH_CONTRAST_DARK_THEME;
+    case ColorThemeKind.Dark:
+    default:
+      return DEFAULT_DARK_THEME;
+  }
+}
+
 function resolveLanguageId(
-  languages: SidebarSyntaxHighlighterState["languages"],
   language: string,
 ): HighlighterCodeLanguage | null {
-  const resolvedAlias = languages.resolveAlias(language);
-  const registration =
-    languages.get(resolvedAlias) ?? languages.get(language);
-
-  return (registration?.name as HighlighterCodeLanguage | undefined) ?? null;
+  switch (language) {
+    case "type":
+    case "typescript":
+      return "typescript";
+    case "typescriptreact":
+      return "tsx";
+    case "javascript":
+      return "javascript";
+    case "javascriptreact":
+      return "jsx";
+    case "json":
+      return "json";
+    default:
+      return null;
+  }
 }
 
 export function invalidateSidebarSyntaxHighlighter() {
@@ -119,10 +148,10 @@ export async function highlightSidebarCode(
 
   try {
     const currentState = await getState();
-    const resolvedLanguageId = resolveLanguageId(currentState.languages, language);
+    const resolvedLanguageId = resolveLanguageId(language);
     if (resolvedLanguageId === null) {
       logger.debug(
-        `no sidebar syntax highlighting language registration was found for '${language}'`
+        `no bundled shiki language mapping was found for '${language}'`
       );
       return null;
     }
