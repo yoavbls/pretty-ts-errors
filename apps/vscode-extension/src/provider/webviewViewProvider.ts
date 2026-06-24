@@ -5,6 +5,7 @@ import { formattedDiagnosticsStore, type FormattedDiagnostic } from "../formatte
 import { logger } from "../logger";
 import { SUPPORTED_LANGUAGE_IDS } from "../supportedLanguageIds";
 import { MarkdownWebviewProvider } from "./markdownWebviewProvider";
+import { invalidateSidebarSyntaxHighlighter } from "./sidebarSyntaxHighlighter";
 import { createSidebarDiagnosticModel, type SidebarViewModel } from "./sidebarViewModel";
 
 const NO_DIAGNOSTICS_MESSAGE =
@@ -55,7 +56,11 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
       { webviewOptions: { retainContextWhenHidden: true } }
     ),
     vscode.languages.onDidChangeDiagnostics(() => updateHasErrorsContext()),
-    vscode.window.onDidChangeActiveTextEditor(() => updateHasErrorsContext())
+    vscode.window.onDidChangeActiveTextEditor(() => updateHasErrorsContext()),
+    vscode.window.onDidChangeActiveColorTheme(() => {
+      invalidateSidebarSyntaxHighlighter();
+      viewProviderInstance?.invalidateAndRefresh();
+    })
   );
   updateHasErrorsContext();
 }
@@ -130,6 +135,13 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  invalidateAndRefresh() {
+    this.lastModelKey = null;
+    if (this.webview) {
+      void this.refresh(this.webview);
+    }
+  }
+
   async resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext
@@ -152,7 +164,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
         })
       ),
       vscode.languages.onDidChangeDiagnostics(() =>
-        this.refresh(webviewView.webview)
+        void this.refresh(webviewView.webview)
       ),
       vscode.window.onDidChangeActiveTextEditor((editor) => {
         if (this.skipNextEditorChange) {
@@ -163,7 +175,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
           if (this.mode === "locked") {
             this.mode = "cursor";
           }
-          this.refresh(webviewView.webview);
+          void this.refresh(webviewView.webview);
         }
       }),
       vscode.window.onDidChangeTextEditorSelection((event) => {
@@ -179,12 +191,12 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
           this.mode = "cursor";
         }
         if (this.mode === "cursor") {
-          this.refresh(webviewView.webview);
+          void this.refresh(webviewView.webview);
         }
       }),
       webviewView.onDidChangeVisibility(() => {
         if (webviewView.visible) {
-          this.refresh(webviewView.webview);
+          void this.refresh(webviewView.webview);
         }
       })
     );
@@ -279,22 +291,26 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
     );
   }
 
-  private createViewModel(items: FormattedDiagnostic[]): SidebarViewModel {
+  private async createViewModel(
+    items: FormattedDiagnostic[],
+  ): Promise<SidebarViewModel> {
     const pinned =
       this.pinnedError === null
         ? null
-        : createSidebarDiagnosticModel(this.pinnedError);
+        : await createSidebarDiagnosticModel(this.pinnedError);
 
-    const diagnostics = items.map((item) => {
-      const note =
-        this.pinnedError !== null && isSameDiagnostic(this.pinnedError, item)
-          ? "This item is pinned on top."
-          : undefined;
+    const diagnostics = await Promise.all(
+      items.map((item) => {
+        const note =
+          this.pinnedError !== null && isSameDiagnostic(this.pinnedError, item)
+            ? "This item is pinned on top."
+            : undefined;
 
-      return note === undefined
-        ? createSidebarDiagnosticModel(item)
-        : createSidebarDiagnosticModel(item, { note });
-    });
+        return note === undefined
+          ? createSidebarDiagnosticModel(item)
+          : createSidebarDiagnosticModel(item, { note });
+      }),
+    );
 
     return {
       pinned,
@@ -309,7 +325,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       return;
     }
 
-    const model = this.createViewModel(this.getActiveDiagnosticItems());
+    const model = await this.createViewModel(this.getActiveDiagnosticItems());
     const modelKey = JSON.stringify(model);
     if (modelKey === this.lastModelKey) {
       logger.trace("skipping side panel refresh because the model did not change");

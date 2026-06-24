@@ -24,6 +24,9 @@
  *   text: string;
  * } | {
  *   kind: "inlineCode";
+ *   language: string | null;
+ *   multiline: boolean;
+ *   presentation: SidebarCodePresentation | null;
  *   text: string;
  * } | {
  *   kind: "link";
@@ -32,16 +35,35 @@
  * }} SidebarInlineNode
  *
  * @typedef {{
+ *   color: string | null;
+ *   fontStyle: number;
+ *   text: string;
+ * }} SidebarHighlightedToken
+ *
+ * @typedef {{
+ *   tokens: SidebarHighlightedToken[];
+ * }} SidebarHighlightedLine
+ *
+ * @typedef {{
+ *   backgroundColor: string | null;
+ *   foregroundColor: string | null;
+ *   language: string | null;
+ *   lines: SidebarHighlightedLine[];
+ * }} SidebarCodePresentation
+ *
+ * @typedef {{
  *   kind: "paragraph";
  *   lines: SidebarInlineNode[][];
  * } | {
  *   kind: "codeBlock";
  *   code: string;
  *   language: string | null;
+ *   presentation: SidebarCodePresentation | null;
  * } | {
  *   kind: "typeBlock";
  *   code: string;
  *   language: string | null;
+ *   presentation: SidebarCodePresentation | null;
  * } | {
  *   kind: "list";
  *   items: SidebarInlineNode[][];
@@ -345,6 +367,7 @@ function appendLayoutBlocks(container, blocks) {
           createCodeBlockElement(
             block.code,
             block.kind === "typeBlock" ? "type-code-container" : "",
+            block.presentation,
           ),
         );
         return;
@@ -379,12 +402,14 @@ function appendLayoutBlocks(container, blocks) {
 /**
  * @param {string} codeText
  * @param {string} [extraClassName]
+ * @param {SidebarCodePresentation | null} [presentation]
  */
-function createCodeBlockElement(codeText, extraClassName = "") {
+function createCodeBlockElement(codeText, extraClassName = "", presentation = null) {
   const codeContainer = document.createElement("div");
   codeContainer.className = ["code-container", extraClassName]
     .filter(Boolean)
     .join(" ");
+  applyCodePresentationStyles(codeContainer, presentation);
 
   const copyButton = document.createElement("button");
   copyButton.className = "copy-button";
@@ -396,8 +421,7 @@ function createCodeBlockElement(codeText, extraClassName = "") {
   codeContainer.appendChild(copyButton);
 
   const pre = document.createElement("pre");
-  const code = document.createElement("code");
-  code.textContent = codeText;
+  const code = createCodeElement(codeText, presentation);
   pre.appendChild(code);
   codeContainer.appendChild(pre);
 
@@ -415,8 +439,10 @@ function createInlineNodesFragment(nodes) {
         fragment.append(node.text);
         return;
       case "inlineCode": {
-        const code = document.createElement("code");
-        code.textContent = node.text;
+        const code = createCodeElement(node.text, node.presentation);
+        code.className = node.multiline
+          ? "inline-rich-code inline-rich-code-multiline"
+          : "inline-rich-code";
         fragment.appendChild(code);
         return;
       }
@@ -433,6 +459,73 @@ function createInlineNodesFragment(nodes) {
   });
 
   return fragment;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {SidebarCodePresentation | null} presentation
+ */
+function applyCodePresentationStyles(element, presentation) {
+  if (presentation?.backgroundColor) {
+    element.style.backgroundColor = presentation.backgroundColor;
+  }
+  if (presentation?.foregroundColor) {
+    element.style.color = presentation.foregroundColor;
+  }
+}
+
+/**
+ * @param {SidebarHighlightedToken} token
+ * @returns {HTMLSpanElement}
+ */
+function createHighlightedTokenElement(token) {
+  const span = document.createElement("span");
+  span.className = "highlighted-code-token";
+  span.textContent = token.text;
+  if (token.color) {
+    span.style.color = token.color;
+  }
+  if ((token.fontStyle & 1) !== 0) {
+    span.style.fontStyle = "italic";
+  }
+  if ((token.fontStyle & 2) !== 0) {
+    span.style.fontWeight = "700";
+  }
+  if ((token.fontStyle & 4) !== 0) {
+    span.style.textDecoration = "underline";
+  }
+  return span;
+}
+
+/**
+ * @param {string} codeText
+ * @param {SidebarCodePresentation | null} presentation
+ * @returns {HTMLElement}
+ */
+function createCodeElement(codeText, presentation) {
+  const code = document.createElement("code");
+  applyCodePresentationStyles(code, presentation);
+
+  if (presentation === null) {
+    code.textContent = codeText;
+    return code;
+  }
+
+  presentation.lines.forEach((line, lineIndex) => {
+    if (lineIndex > 0) {
+      code.appendChild(document.createTextNode("\n"));
+    }
+
+    if (line.tokens.length === 0) {
+      return;
+    }
+
+    line.tokens.forEach((token) => {
+      code.appendChild(createHighlightedTokenElement(token));
+    });
+  });
+
+  return code;
 }
 
 /**

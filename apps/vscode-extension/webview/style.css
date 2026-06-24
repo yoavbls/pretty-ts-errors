@@ -34,6 +34,7 @@ pre {
   border-radius: 14px;
   background: var(--vscode-textCodeBlock-background) !important;
   line-height: 1.55;
+  tab-size: 4;
 }
 
 code,
@@ -173,6 +174,22 @@ pre code {
   background: var(--vscode-textCodeBlock-background);
 }
 
+.inline-rich-code {
+  white-space: break-spaces;
+}
+
+.inline-rich-code-multiline {
+  display: inline-block;
+  width: 100%;
+  margin: 0.45rem 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.24));
+  border-radius: 12px;
+  background: var(--vscode-textCodeBlock-background);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .diagnostic-list {
   display: grid;
   gap: 6px;
@@ -213,6 +230,13 @@ pre code {
     --vscode-editorHoverWidget-background,
     var(--vscode-textCodeBlock-background)
   );
+}
+
+.type-code-container pre,
+.type-code-container code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .code-container pre {

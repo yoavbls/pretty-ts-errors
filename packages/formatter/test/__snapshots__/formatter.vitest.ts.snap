@@ -12,36 +12,36 @@ exports[`formatter > prettifies mock error message: errorWithLongType 1`] = `
 "Property  \`isFlying\`  is missing in type: 
 \`\`\`type
 {
-  animal: {
-    __typename?: "Animal" | undefined
-    id: string
-    name: string
-    age: number
-    isAlived: boolean
-    /* 8 more */
-    attributes:
-      | { ...; }
-      | /* 3 more */
-      | { ...; }
-  }
+    animal: {
+        __typename?: "Animal" | undefined
+        id: string
+        name: string
+        age: number
+        isAlived: boolean
+        /* 8 more */
+        attributes:
+            | { ...; }
+            | /* 3 more */
+            | { ...; }
+    }
 }
 \`\`\`
  but required in type: 
 \`\`\`type
 {
-  animal: {
-    __typename?: "Animal" | undefined
-    id: string
-    name: string
-    age: number
-    isAlived: boolean
-    isFlying: boolean
-    /* 8 more */
-    attributes:
-      | { ...; }
-      | /* 3 more */
-      | { ...; }
-  }
+    animal: {
+        __typename?: "Animal" | undefined
+        id: string
+        name: string
+        age: number
+        isAlived: boolean
+        isFlying: boolean
+        /* 8 more */
+        attributes:
+            | { ...; }
+            | /* 3 more */
+            | { ...; }
+    }
 }
 \`\`\`
 ."
@@ -56,48 +56,60 @@ exports[`formatter > prettifies mock error message: errorWithParamsDestructuring
 "Argument of type: 
 \`\`\`type
 {
-  $ref: null
-  ref: (ref: any) => any
-  columns: (
-    | { label: string; prop: string }
-    | {
-        label: string
-        formatter: ({ ip_type }: any) => any
-      }
-    | {
-        actions: {
-          label: string
-          disabled: ({ contract_id }: any) => boolean
-          handler({ contract_id }: any): void
-        }[]
-      }
-  )[]
-  /* 4 more */
-  load(): Promise<...>
+    $ref: null
+    ref: (ref: any) => any
+    columns: (
+        | { label: string; prop: string }
+        | {
+              label: string
+              formatter: ({
+                  ip_type,
+              }: any) => any
+          }
+        | {
+              actions: {
+                  label: string
+                  disabled: ({
+                      contract_id,
+                  }: any) => boolean
+                  handler({
+                      contract_id,
+                  }: any): void
+              }[]
+          }
+    )[]
+    /* 4 more */
+    load(): Promise<...>
 }
 \`\`\`
  is not assignable to parameter of type \`VTableConfig\`.
   Property  \`data\`  is missing in type: 
 \`\`\`type
 {
-  $ref: null
-  ref: (ref: any) => any
-  columns: (
-    | { label: string; prop: string }
-    | {
-        label: string
-        formatter: ({ ip_type }: any) => any
-      }
-    | {
-        actions: {
-          label: string
-          disabled: ({ contract_id }: any) => boolean
-          handler({ contract_id }: any): void
-        }[]
-      }
-  )[]
-  /* 4 more */
-  load(): Promise<...>
+    $ref: null
+    ref: (ref: any) => any
+    columns: (
+        | { label: string; prop: string }
+        | {
+              label: string
+              formatter: ({
+                  ip_type,
+              }: any) => any
+          }
+        | {
+              actions: {
+                  label: string
+                  disabled: ({
+                      contract_id,
+                  }: any) => boolean
+                  handler({
+                      contract_id,
+                  }: any): void
+              }[]
+          }
+    )[]
+    /* 4 more */
+    load(): Promise<...>
 }
 \`\`\`
  but required in type \`VTableConfig\`."
@@ -118,19 +130,21 @@ exports[`formatter > prettifies mock error message: errorWithTruncatedType2 1`] 
 "Type: 
 \`\`\`type
 {
-  "!top": string[]
-  "xsl:declaration": {
-    attrs: {
-      "default-collation": null
-      "exclude-result-prefixes": null
-      "extension-element-prefixes": null
-      "use-when": null
-      "xpath-default-namespace": null
+    "!top": string[]
+    "xsl:declaration": {
+        attrs: {
+            "default-collation": null
+            "exclude-result-prefixes": null
+            "extension-element-prefixes": null
+            "use-when": null
+            "xpath-default-namespace": null
+        }
     }
-  }
-  "xsl:instruction": { ...; }
-  /* 49 more */
-  "xsl:literal-result-element": {}
+    "xsl:instruction": {
+        ...;
+    }
+    /* 49 more */
+    "xsl:literal-result-element": {}
 }
 \`\`\`
  is missing the following properties from type  \`GraphQLSchema\`: <ul><li>description</li><li>extensions</li><li>astNode</li><li>extensionASTNodes</li></ul>and 21 more."
@@ -139,14 +153,20 @@ exports[`formatter > prettifies mock error message: errorWithTruncatedType2 1`] 
 exports[`formatter > prettifies mock error message: leftSideAritmeticError 1`] = `"The left-hand side of an arithmetic operation must be of type \`any\`, \`number\`, \`bigint\` or an enum type."`;
 
 exports[`formatter > prettifies mock error message: missingPropertyError 1`] = `
-"Property  \`user\`  is missing in type \`{ person: { username: string; email: string } }\` but required in type: 
+"Property  \`user\`  is missing in type: 
 \`\`\`type
 {
-  user: {
-    name: string
-    email: \`\${string}@\${string}.\${string}\`
-    age: number
-  }
+    person: { username: string; email: string }
+}
+\`\`\`
+ but required in type: 
+\`\`\`type
+{
+    user: {
+        name: string
+        email: \`\${string}@\${string}.\${string}\`
+        age: number
+    }
 }
 \`\`\`
 ."
@@ -164,17 +184,23 @@ exports[`formatter > prettifies mock error message: ts1360Error 1`] = `
 "Property  \`a\`  is missing in type: 
 \`\`\`type
 {
-  b: { name: string; icon: undefined }
-  c: { name: string; icon: undefined }
-  d: { name: string; icon: undefined }
-  e: { name: string; icon: undefined }
-  f: { ...; }
-  g: { ...; }
-  h: ...
-  ...
+    b: { name: string; icon: undefined }
+    c: { name: string; icon: undefined }
+    d: { name: string; icon: undefined }
+    e: { name: string; icon: undefined }
+    f: { ...; }
+    g: { ...; }
+    h: ...
+    ...
 }
 \`\`\`
- but required in type \`{ a: { name: string; icon: undefined } }\`."
+ but required in type: 
+\`\`\`type
+{
+    a: { name: string; icon: undefined }
+}
+\`\`\`
+."
 `;
 
 exports[`formatter > prettifies mock error message: ts1378Error 1`] = `"Top-level \`await\` expressions are only allowed when the  \`module\`  option is set to  \`es2022\` ,  \`esnext\` ,  \`system\` ,  \`node16\` , or  \`nodenext\` , and the  \`target\`  option is set to  \`es2017\`  or higher."`;
@@ -189,24 +215,32 @@ exports[`formatter > prettifies mock error message: ts2322ErrorWithPrivateProper
 "Type: 
 \`\`\`type
 Ref<{
-  name: string
-  readonly type: "json"
-  mm: <T extends Convertible = Convertible>(px: T) => T
-  px: <T extends Convertible = Convertible>(mm: T) => T
-  /* 18 more */
-  toJson: () => string
+    name: string
+    readonly type: "json"
+    mm: <T extends Convertible = Convertible>(
+        px: T,
+    ) => T
+    px: <T extends Convertible = Convertible>(
+        mm: T,
+    ) => T
+    /* 18 more */
+    toJson: () => string
 }>
 \`\`\`
  is not assignable to type \`Ref<MpcdiConfiguration>\`.
   Type: 
 \`\`\`type
 {
-  name: string
-  readonly type: "json"
-  mm: <T extends Convertible = Convertible>(px: T) => T
-  px: <T extends Convertible = Convertible>(mm: T) => T
-  /* 18 more */
-  toJson: () => string
+    name: string
+    readonly type: "json"
+    mm: <T extends Convertible = Convertible>(
+        px: T,
+    ) => T
+    px: <T extends Convertible = Convertible>(
+        mm: T,
+    ) => T
+    /* 18 more */
+    toJson: () => string
 }
 \`\`\`
  is missing the following properties from type  \`MpcdiConfiguration\`: <ul><li>ratio</li><li>#overlaps</li><li>download</li></ul>"

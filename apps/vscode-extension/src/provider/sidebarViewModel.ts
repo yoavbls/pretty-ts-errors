@@ -1,9 +1,20 @@
 import type { Range } from "vscode";
 import type {
   DiagnosticBlockNode,
+  DiagnosticCodeBlockNode,
+  DiagnosticInlineNode,
+  DiagnosticLinkNode,
+  DiagnosticPropertyListNode,
+  DiagnosticTextNode,
   DiagnosticTranslationContentModel,
+  DiagnosticTypeBlockNode,
 } from "../diagnosticRichContent";
 import type { FormattedDiagnostic } from "../formattedDiagnosticsStore";
+import { formatSidebarInlineType } from "./sidebarInlineTypeFormatter";
+import {
+  highlightSidebarCode,
+  type SidebarCodePresentation,
+} from "./sidebarSyntaxHighlighter";
 
 type SidebarCommandAction = {
   kind: "command";
@@ -32,14 +43,52 @@ export type SidebarActionModel =
   | SidebarLinkAction
   | SidebarCopyAction;
 
+export interface SidebarInlineCodeNode {
+  kind: "inlineCode";
+  language: string | null;
+  multiline: boolean;
+  presentation: SidebarCodePresentation | null;
+  text: string;
+}
+
+export type SidebarInlineNode =
+  | DiagnosticTextNode
+  | DiagnosticLinkNode
+  | SidebarInlineCodeNode;
+
+export interface SidebarParagraphNode {
+  kind: "paragraph";
+  lines: SidebarInlineNode[][];
+}
+
+export interface SidebarListNode {
+  kind: "list";
+  items: SidebarInlineNode[][];
+}
+
+export interface SidebarCodeBlockNode extends DiagnosticCodeBlockNode {
+  presentation: SidebarCodePresentation | null;
+}
+
+export interface SidebarTypeBlockNode extends DiagnosticTypeBlockNode {
+  presentation: SidebarCodePresentation | null;
+}
+
+export type SidebarBlockNode =
+  | SidebarParagraphNode
+  | SidebarListNode
+  | SidebarCodeBlockNode
+  | SidebarTypeBlockNode
+  | DiagnosticPropertyListNode;
+
 export interface SidebarTranslationModel {
   code: number;
-  blocks: DiagnosticBlockNode[];
+  blocks: SidebarBlockNode[];
   rawError: string;
 }
 
 export interface SidebarDiagnosticModel {
-  body: DiagnosticBlockNode[];
+  body: SidebarBlockNode[];
   code: number | null;
   message: string;
   title: string;
@@ -91,10 +140,79 @@ function getCodeNumber(code: FormattedDiagnostic["lspDiagnostic"]["code"]) {
   return typeof code === "number" ? code : null;
 }
 
-export function createSidebarDiagnosticModel(
+async function mapInlineNodeForSidebar(
+  node: DiagnosticInlineNode,
+): Promise<SidebarInlineNode> {
+  switch (node.kind) {
+    case "text":
+    case "link":
+      return node;
+    case "inlineCode": {
+      const { multiline, text } = formatSidebarInlineType(node.text);
+      const language = multiline ? "type" : null;
+      const presentation =
+        language === null
+          ? null
+          : await highlightSidebarCode(text, language);
+
+      return {
+        kind: "inlineCode",
+        language,
+        multiline,
+        presentation,
+        text,
+      };
+    }
+  }
+}
+
+async function mapInlineNodeLinesForSidebar(
+  lines: DiagnosticInlineNode[][],
+): Promise<SidebarInlineNode[][]> {
+  return Promise.all(
+    lines.map((line) => Promise.all(line.map((node) => mapInlineNodeForSidebar(node)))),
+  );
+}
+
+async function mapBlockForSidebar(
+  block: DiagnosticBlockNode,
+): Promise<SidebarBlockNode> {
+  switch (block.kind) {
+    case "paragraph":
+      return {
+        kind: "paragraph",
+        lines: await mapInlineNodeLinesForSidebar(block.lines),
+      } satisfies SidebarParagraphNode;
+    case "list":
+      return {
+        kind: "list",
+        items: await mapInlineNodeLinesForSidebar(block.items),
+      } satisfies SidebarListNode;
+    case "codeBlock":
+      return {
+        ...block,
+        presentation: await highlightSidebarCode(block.code, block.language),
+      } satisfies SidebarCodeBlockNode;
+    case "typeBlock":
+      return {
+        ...block,
+        presentation: await highlightSidebarCode(block.code, block.language),
+      } satisfies SidebarTypeBlockNode;
+    case "propertyList":
+      return block;
+  }
+}
+
+async function mapBlocksForSidebar(
+  blocks: DiagnosticBlockNode[],
+): Promise<SidebarBlockNode[]> {
+  return Promise.all(blocks.map((block) => mapBlockForSidebar(block)));
+}
+
+export async function createSidebarDiagnosticModel(
   diagnostic: FormattedDiagnostic,
   options?: { note?: string },
-): SidebarDiagnosticModel {
+): Promise<SidebarDiagnosticModel> {
   const code = getCodeNumber(diagnostic.lspDiagnostic.code);
   const actions: SidebarActionModel[] = [
     {
@@ -130,18 +248,20 @@ export function createSidebarDiagnosticModel(
     });
   }
 
-  const translations: SidebarTranslationModel[] = diagnostic.layout.translations.map(
-    (translation: DiagnosticTranslationContentModel) => {
-      return {
-        blocks: translation.blocks,
-        code: translation.code,
-        rawError: translation.rawError,
-      };
-    },
+  const translations: SidebarTranslationModel[] = await Promise.all(
+    diagnostic.layout.translations.map(
+      async (translation: DiagnosticTranslationContentModel) => {
+        return {
+          blocks: await mapBlocksForSidebar(translation.blocks),
+          code: translation.code,
+          rawError: translation.rawError,
+        };
+      },
+    ),
   );
 
   const model: SidebarDiagnosticModel = {
-    body: diagnostic.layout.body,
+    body: await mapBlocksForSidebar(diagnostic.layout.body),
     code,
     message: diagnostic.lspDiagnostic.message,
     title: diagnostic.layout.title,

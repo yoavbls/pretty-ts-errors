@@ -24,6 +24,7 @@
         "thirdParty": true,
         "esbuildOptions": {
           "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+          "mainFields": ["module", "main"],
           "banner": {
             "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
           }
@@ -35,6 +36,7 @@
           "minify": true,
           "esbuildOptions": {
             "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+            "mainFields": ["module", "main"],
             "banner": {
               "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
             },
@@ -66,6 +68,7 @@
         "thirdParty": true,
         "esbuildOptions": {
           "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+          "mainFields": ["module", "main"],
           "banner": {
             "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
           },

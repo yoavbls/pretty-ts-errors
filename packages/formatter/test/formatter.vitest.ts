@@ -52,7 +52,8 @@ describe("formatter", (context) => {
     );
     expect(result).toContain("```type");
     expect(result).toContain("name: string");
-    expect(result).toContain("street: string; city: string; country: string");
+    expect(result).toContain("street: string");
+    expect(result).toContain("country: string");
   });
 
   it("prettifies type with params destructuring", async () => {
@@ -63,6 +64,17 @@ describe("formatter", (context) => {
         { throwOnError: true }
       )
     ).resolves.toBeTypeOf("string");
+  });
+
+  it("formats complex types with stronger wrapping and four-space indentation", async () => {
+    const formatted = await formatType(
+      d`{ user: { name: string; email: \`\${string}@\${string}.\${string}\`; age: number; address: { street: string; city: string; country: string; }; }; }`,
+      { throwOnError: true }
+    );
+
+    expect(formatted).toContain("\n    user: {\n");
+    expect(formatted).toContain("\n        name: string\n");
+    expect(formatted).toContain("address: {\n");
   });
 
   it("prettifies truncated type", async () => {
