@@ -36,6 +36,7 @@ export interface SidebarTranslationModel {
 }
 
 export interface SidebarDiagnosticModel {
+  bodyMarkdown: string;
   code: number | null;
   message: string;
   actions: SidebarActionModel[];
@@ -122,6 +123,7 @@ export function createSidebarDiagnosticModel(
   }
 
   const model: SidebarDiagnosticModel = {
+    bodyMarkdown: diagnostic.bodyMarkdown,
     code,
     message: diagnostic.lspDiagnostic.message,
     actions,

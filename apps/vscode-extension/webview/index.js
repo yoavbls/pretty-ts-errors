@@ -26,6 +26,7 @@
  * }} SidebarTranslationModel
  *
  * @typedef {{
+ *   bodyMarkdown: string;
  *   code: number | null;
  *   message: string;
  *   actions: SidebarActionModel[];
@@ -186,23 +187,10 @@ function createDiagnosticCard(diagnostic) {
     card.appendChild(note);
   }
 
-  const codeContainer = document.createElement("div");
-  codeContainer.className = "code-container";
-
-  const copyButton = document.createElement("button");
-  copyButton.className = "copy-button";
-  copyButton.type = "button";
-  copyButton.title = "Copy error message";
-  copyButton.dataset.copyContent = diagnostic.message;
-  copyButton.appendChild(createCodicon("codicon-copy"));
-  codeContainer.appendChild(copyButton);
-
-  const pre = document.createElement("pre");
-  const code = document.createElement("code");
-  code.textContent = diagnostic.message;
-  pre.appendChild(code);
-  codeContainer.appendChild(pre);
-  card.appendChild(codeContainer);
+  const messageSection = document.createElement("section");
+  messageSection.className = "diagnostic-message-section";
+  appendMarkdownBlocks(messageSection, diagnostic.bodyMarkdown);
+  card.appendChild(messageSection);
 
   if (diagnostic.translations.length > 0) {
     card.appendChild(
@@ -244,6 +232,44 @@ function createTranslationsSection(translations, originalMessage) {
   });
 
   return section;
+}
+
+/**
+ * @param {HTMLElement} container
+ * @param {string} markdown
+ */
+function appendMarkdownBlocks(container, markdown) {
+  const tokens = markdown
+    .split(/((?:`{3,})[^\n]*\n[\s\S]*?\n(?:`{3,}))/gu)
+    .filter(Boolean);
+
+  tokens.forEach((token) => {
+    const fenceMatch = /^(?<fence>`{3,})(?<language>[^\n]*)\n(?<code>[\s\S]*?)\n\k<fence>$/u.exec(
+      token,
+    );
+    if (fenceMatch?.groups) {
+      const codeContainer = document.createElement("div");
+      codeContainer.className = "code-container";
+
+      const copyButton = document.createElement("button");
+      copyButton.className = "copy-button";
+      copyButton.type = "button";
+      copyButton.title = "Copy code block";
+      copyButton.dataset.copyContent = fenceMatch.groups.code;
+      copyButton.appendChild(createCodicon("codicon-copy"));
+      codeContainer.appendChild(copyButton);
+
+      const pre = document.createElement("pre");
+      const code = document.createElement("code");
+      code.textContent = fenceMatch.groups.code;
+      pre.appendChild(code);
+      codeContainer.appendChild(pre);
+      container.appendChild(codeContainer);
+      return;
+    }
+
+    appendMarkdownParagraphs(container, token);
+  });
 }
 
 /**

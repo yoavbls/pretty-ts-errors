@@ -47,6 +47,9 @@ suite("Extension Test Suite", () => {
     assert.match(hoverText, /Show in Sidebar/u);
     assert.match(hoverText, /Local explanation/u);
     assert.match(hoverText, /TS2741/u);
+    assert.match(hoverText, /```/u);
+    assert.match(hoverText, /street: string/u);
+    assert.match(hoverText, /country: string/u);
   });
 });
 

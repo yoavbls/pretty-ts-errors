@@ -7,7 +7,7 @@ import { toLspDiagnostic } from "../lspDiagnostic";
 import { SUPPORTED_DIAGNOSTIC_SOURCES } from "../supportedDiagnosticSources";
 
 export const hoverProvider: HoverProvider = {
-  provideHover(document, position, _token) {
+  async provideHover(document, position, _token) {
     const items = formattedDiagnosticsStore.get(document.uri.fsPath);
 
     if (!items) {
@@ -37,7 +37,7 @@ export const hoverProvider: HoverProvider = {
   },
 };
 
-function provideLiveDiagnosticHover(document: TextDocument, position: Position) {
+async function provideLiveDiagnosticHover(document: TextDocument, position: Position) {
   const supportedDiagnostics = languages
     .getDiagnostics(document.uri)
     .filter((diagnostic) => {
@@ -64,10 +64,14 @@ function provideLiveDiagnosticHover(document: TextDocument, position: Position) 
     return null;
   }
 
-  return {
-    range: firstDiagnostic.range,
-    contents: supportedDiagnostics.flatMap((diagnostic) => {
+  const contents = await Promise.all(
+    supportedDiagnostics.map((diagnostic) => {
       return createHoverContents(toLspDiagnostic(diagnostic));
     }),
+  );
+
+  return {
+    range: firstDiagnostic.range,
+    contents: contents.flat(),
   };
 }

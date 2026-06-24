@@ -15,7 +15,10 @@ import {
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
 import { toLspDiagnostic } from "./lspDiagnostic";
-import { createHoverContents } from "./hoverContent";
+import {
+  buildPrettyDiagnosticMessageMarkdown,
+  createHoverContents,
+} from "./hoverContent";
 
 export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
   logger.debug("registering diagnostic change listener");
@@ -124,9 +127,10 @@ async function getFormattedDiagnostic(
   });
 
   let formattedMessages = cache.get(cacheKey);
+  const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(diagnostic.message);
   if (formattedMessages === undefined) {
     logger.trace(`cache miss for diagnostic ${cacheKey}`);
-    formattedMessages = createHoverContents(lspDiagnostic);
+    formattedMessages = await createHoverContents(lspDiagnostic, { bodyMarkdown });
     if (cache.size > CACHE_SIZE_MAX) {
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
@@ -139,6 +143,7 @@ async function getFormattedDiagnostic(
   const contents = formattedMessages;
 
   return {
+    bodyMarkdown,
     range: diagnostic.range,
     contents,
     lspDiagnostic,

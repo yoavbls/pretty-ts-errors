@@ -4,6 +4,7 @@ import type { PrettyTsLspDiagnostic } from "./lspDiagnostic";
 type StoreKey = Uri["fsPath"];
 
 export interface FormattedDiagnostic {
+  bodyMarkdown: string;
   range: Range;
   contents: MarkdownString[];
   /** Original LSP diagnostic for on-demand sidebar formatting */

@@ -1,3 +1,7 @@
+import {
+  createErrorMessagePrettifier,
+  type CodeBlockFn,
+} from "@pretty-ts-errors/formatter";
 import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
 import { MarkdownString } from "vscode";
 import { enabledCommands } from "./commands/enabledCommands";
@@ -48,10 +52,49 @@ function buildRevealLink(diagnostic: PrettyTsLspDiagnostic): string | null {
   )})`;
 }
 
-function createBodyMarkdown(
+const markdownCodeBlock: CodeBlockFn = (code, language, multiLine) => {
+  const trimmedCode = code.trim();
+  if (multiLine) {
+    return `\n${createFencedCodeBlock(trimmedCode, language)}\n`;
+  }
+
+  return createInlineCodeBlock(trimmedCode);
+};
+
+const prettifyDiagnosticBody = createErrorMessagePrettifier(markdownCodeBlock);
+
+function createInlineCodeBlock(code: string): string {
+  const fence = code.includes("``") ? "```" : code.includes("`") ? "``" : "`";
+  return `${fence}${code}${fence}`;
+}
+
+function createFencedCodeBlock(code: string, language?: string): string {
+  const fence = code.includes("```") ? "````" : "```";
+  const infoString = language === undefined ? "" : language;
+  return `${fence}${infoString}\n${code}\n${fence}`;
+}
+
+function normalizeFormatterOutput(markdown: string): string {
+  return markdown.replace(/<ul>((?:<li>[\s\S]*?<\/li>)+)<\/ul>/gu, (_match, items) => {
+    const listItems = Array.from(
+      items.matchAll(/<li>([\s\S]*?)<\/li>/gu),
+      ([, content]) => `- ${content}`,
+    );
+    return `\n${listItems.join("\n")}\n`;
+  });
+}
+
+export async function buildPrettyDiagnosticMessageMarkdown(
+  message: string,
+): Promise<string> {
+  return normalizeFormatterOutput(await prettifyDiagnosticBody(message));
+}
+
+async function createBodyMarkdown(
   diagnostic: PrettyTsLspDiagnostic,
+  bodyMarkdown?: string,
   debugHeader?: string,
-): MarkdownString {
+): Promise<MarkdownString> {
   const markdown = new MarkdownString();
 
   if (debugHeader !== undefined) {
@@ -59,7 +102,9 @@ function createBodyMarkdown(
   }
 
   markdown.appendMarkdown(`**Error${codeLabel(diagnostic.code)}**\n\n`);
-  markdown.appendCodeblock(diagnostic.message, "txt");
+  markdown.appendMarkdown(
+    bodyMarkdown ?? (await buildPrettyDiagnosticMessageMarkdown(diagnostic.message)),
+  );
 
   const translations = translateDiagnosticMessage(diagnostic.message);
   if (translations.length > 0) {
@@ -108,12 +153,16 @@ function createActionsMarkdown(diagnostic: PrettyTsLspDiagnostic): MarkdownStrin
   return markdown;
 }
 
-export function createHoverContents(
+export async function createHoverContents(
   diagnostic: PrettyTsLspDiagnostic,
-  options?: { debugHeader?: string },
-): MarkdownString[] {
+  options?: { bodyMarkdown?: string; debugHeader?: string },
+): Promise<MarkdownString[]> {
   return [
-    createBodyMarkdown(diagnostic, options?.debugHeader),
+    await createBodyMarkdown(
+      diagnostic,
+      options?.bodyMarkdown,
+      options?.debugHeader,
+    ),
     createActionsMarkdown(diagnostic),
   ];
 }

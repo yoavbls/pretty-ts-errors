@@ -8,7 +8,10 @@ import {
 } from "vscode";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
 import { toLspDiagnostic } from "../lspDiagnostic";
-import { createHoverContents } from "../hoverContent";
+import {
+  buildPrettyDiagnosticMessageMarkdown,
+  createHoverContents,
+} from "../hoverContent";
 
 /**
  * Register an hover provider in debug only.
@@ -49,12 +52,17 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           debugDiagnostic.code = 1337;
 
           const lspDiagnostic = toLspDiagnostic(debugDiagnostic);
-          const contents = createHoverContents(lspDiagnostic, {
+          const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(
+            lspDiagnostic.message,
+          );
+          const contents = await createHoverContents(lspDiagnostic, {
+            bodyMarkdown,
             debugHeader: debugHoverHeader,
           });
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
             {
+              bodyMarkdown,
               range,
               contents,
               lspDiagnostic,
