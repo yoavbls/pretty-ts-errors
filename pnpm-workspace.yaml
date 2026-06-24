@@ -435,7 +435,7 @@ catalog:
   '@shikijs/types': 3.13.0
   '@types/mocha': 10.0.10
   '@types/node': 25.9.3
-  '@types/vscode': 1.120.0
+  '@types/vscode': 1.105.0
   '@types/vscode-webview': 1.57.5
   '@vitest/coverage-v8': 4.1.2
   '@vscode/codicons': 0.0.41

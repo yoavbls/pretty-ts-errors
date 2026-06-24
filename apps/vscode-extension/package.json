@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/CyberT33N/pretty-ts-errors",
   "engines": {
-    "vscode": "^1.120.0"
+    "vscode": "^1.105.1"
   },
   "extensionKind": [
     "ui",

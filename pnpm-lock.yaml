@@ -224,8 +224,8 @@ catalogs:
       specifier: 25.9.3
       version: 25.9.3
     '@types/vscode':
-      specifier: 1.120.0
-      version: 1.120.0
+      specifier: 1.105.0
+      version: 1.105.0
     '@types/vscode-webview':
       specifier: 1.57.5
       version: 1.57.5
@@ -350,7 +350,7 @@ importers:
         version: 10.0.0
       vscode-shiki-bridge:
         specifier: 'catalog:'
-        version: 0.5.2(@types/vscode@1.120.0)(shiki@3.13.0)
+        version: 0.5.2(@types/vscode@1.105.0)(shiki@3.13.0)
     devDependencies:
       '@shikijs/types':
         specifier: 'catalog:'
@@ -363,7 +363,7 @@ importers:
         version: 25.9.3
       '@types/vscode':
         specifier: 'catalog:'
-        version: 1.120.0
+        version: 1.105.0
       '@types/vscode-webview':
         specifier: 'catalog:'
         version: 1.57.5
@@ -1630,8 +1630,8 @@ packages:
   '@types/vscode-webview@1.57.5':
     resolution: {integrity: sha512-iBAUYNYkz+uk1kdsq05fEcoh8gJmwT3lqqFPN7MGyjQ3HVloViMdo7ZJ8DFIP8WOK74PjOEilosqAyxV2iUFUw==, tarball: https://registry.npmjs.org/@types/vscode-webview/-/vscode-webview-1.57.5.tgz}
 
-  '@types/vscode@1.120.0':
-    resolution: {integrity: sha512-feaT4Rst+FkTch5zz/ZbNCxoIvo55YU80Be2kiL7OJcod4+CUYf2lUBPdIJzozNnSEMq1VRTGrWEcCGFB3fBmA==, tarball: https://registry.npmjs.org/@types/vscode/-/vscode-1.120.0.tgz}
+  '@types/vscode@1.105.0':
+    resolution: {integrity: sha512-Lotk3CTFlGZN8ray4VxJE7axIyLZZETQJVWi/lYoUVQuqfRxlQhVOfoejsD2V3dVXPSbS15ov5ZyowMAzgUqcw==, tarball: https://registry.npmjs.org/@types/vscode/-/vscode-1.105.0.tgz}
 
   '@typescript-eslint/eslint-plugin@8.61.1':
     resolution: {integrity: sha512-ZPlVl3PB3et/59Ne0fv/sci6ZXz4T4Hp4nTJ56i/Y0gR89ARb+KphojTq6j+56E5PIezmOIOOWyY+aWQFd+IkQ==, tarball: https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.61.1.tgz}
@@ -5214,7 +5214,7 @@ snapshots:
 
   '@types/vscode-webview@1.57.5': {}
 
-  '@types/vscode@1.120.0': {}
+  '@types/vscode@1.105.0': {}
 
   '@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.5.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
@@ -7541,9 +7541,9 @@ snapshots:
 
   vscode-languageserver-types@3.18.0: {}
 
-  vscode-shiki-bridge@0.5.2(@types/vscode@1.120.0)(shiki@3.13.0):
+  vscode-shiki-bridge@0.5.2(@types/vscode@1.105.0)(shiki@3.13.0):
     dependencies:
-      '@types/vscode': 1.120.0
+      '@types/vscode': 1.105.0
       fast-plist: 0.1.3
       jsonc-parser: 3.3.1
       shiki: 3.13.0
@@ -7645,7 +7645,7 @@ time:
   '@types/mocha@10.0.10': '2024-11-20T18:38:25.531Z'
   '@types/node@25.9.3': '2026-06-10T22:15:10.607Z'
   '@types/vscode-webview@1.57.5': '2024-01-30T22:04:14.566Z'
-  '@types/vscode@1.120.0': '2026-05-13T23:47:36.171Z'
+  '@types/vscode@1.105.0': '2025-10-09T18:02:42.858Z'
   '@vitest/coverage-v8@4.1.2': '2026-03-26T14:37:07.834Z'
   '@vscode/codicons@0.0.41': '2025-10-08T14:41:29.534Z'
   '@vscode/test-electron@3.0.0': '2026-06-08T18:19:54.566Z'
