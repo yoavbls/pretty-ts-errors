@@ -11,13 +11,13 @@
   "exclude": ["src/test/**"],
   "references": [
     {
-      "path": "../../packages/vscode-formatter/tsconfig.lib.json"
-    },
-    {
       "path": "../../packages/utils/tsconfig.lib.json"
     },
     {
       "path": "../../packages/formatter/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/error-translator/tsconfig.lib.json"
     }
   ]
 }

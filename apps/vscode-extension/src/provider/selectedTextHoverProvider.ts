@@ -1,16 +1,14 @@
-import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   Diagnostic,
   DiagnosticSeverity,
   ExtensionContext,
   ExtensionMode,
-  MarkdownString,
   languages,
   window,
 } from "vscode";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
-import { enabledCommands } from "../commands/enabledCommands";
 import { toLspDiagnostic } from "../lspDiagnostic";
+import { createHoverContents } from "../hoverContent";
 
 /**
  * Register an hover provider in debug only.
@@ -51,24 +49,20 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
           debugDiagnostic.code = 1337;
 
           const lspDiagnostic = toLspDiagnostic(debugDiagnostic);
-
-          const markdown = new MarkdownString(
-            debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
-          );
-
-          markdown.isTrusted = { enabledCommands };
-          markdown.supportHtml = true;
+          const contents = createHoverContents(lspDiagnostic, {
+            debugHeader: debugHoverHeader,
+          });
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
             {
               range,
-              contents: [markdown],
+              contents,
               lspDiagnostic,
             },
           ]);
 
           return {
-            contents: [markdown],
+            contents,
           };
         },
       }
@@ -76,12 +70,4 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = [
-  '<span style="color:#f96363;">',
-  '  <span class="codicon codicon-debug"></span>',
-  "  Formatted selected text (debug only)",
-  "</span>",
-  "<br>",
-  "<hr>",
-  "<p></p>",
-].join("\n");
+const debugHoverHeader = "**Formatted selected text (debug only)**";

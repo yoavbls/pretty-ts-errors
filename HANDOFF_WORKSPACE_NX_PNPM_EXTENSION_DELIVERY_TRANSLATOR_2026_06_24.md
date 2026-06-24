@@ -89,7 +89,10 @@ Der Benutzer hat zusaetzlich bestaetigt:
 | DEC-003 | ENTSCHEIDUNG | Build- und Typecheck-Lane der Extension werden getrennt gefuehrt | Ja | Aktiv |
 | DEC-004 | ENTSCHEIDUNG | `trustPolicyExclude` fuer `semver@6.3.1` ist aktuell notwendig | Ja | Aktiv |
 | DEC-005 | ENTSCHEIDUNG | `registrySupportsTimeField` bleibt gemaess Referenz und verifiziertem Registry-Verhalten auf `false` | Ja | Aktiv |
-| WARN-002 | WARNUNG | `skipTypeCheck` ist im Extension-Build aktuell `true`, obwohl der Benutzer spaeter `false` wollte | Nein | Offen |
+| DEC-006 | ENTSCHEIDUNG | `skipTypeCheck` wurde fuer `build` und `dev` auf `false` umgestellt | Ja | Aktiv |
+| DEC-007 | ENTSCHEIDUNG | Lokale Translator-Integration laeuft jetzt first-party unter `packages/error-translator` | Ja | Aktiv |
+| DEC-008 | ENTSCHEIDUNG | Die Translator-Matching-Datenbank wurde gegen `typescript@6.0.3` auf 2026-Stand aktualisiert | Ja | Aktiv |
+| DEC-009 | ENTSCHEIDUNG | Sidebar-WebView und Hover wurden auf sichere O1/O3-Zielpfade umgebaut | Ja | Aktiv |
 | INFO-001 | INFORMATION | `apps/vscode-extension/package.json` verwendet aktuell `CyberT33N`-Identitaet und wurde auf Benutzerbestaetigung hin beibehalten | Nein | Aktiv |
 | INFO-002 | INFORMATION | Ein `.vsix` wurde bereits erfolgreich unter `artifacts/vsix/pretty-ts-errors-0.8.7.vsix` erzeugt | Nein | Aktiv |
 
@@ -337,7 +340,7 @@ Das Packaging-Skript erledigt:
 
 ---
 
-### 3.7 `skipTypeCheck` ist aktuell noch `true`
+### 3.7 `skipTypeCheck` steht jetzt auf `false`
 [INTENT: SPEZIFIKATION]
 
 **Aktueller Status:**
@@ -345,26 +348,21 @@ Das Packaging-Skript erledigt:
 - im App-`project.json`
   - `build`
   - `dev`
-  stehen aktuell beide auf:
-  - `skipTypeCheck: true`
+  stehen jetzt beide auf:
+  - `skipTypeCheck: false`
 
-**Warum das aktuell so ist:**
+**Warum diese Umstellung jetzt tragfaehig ist:**
 
-- die Bundle-Lane sollte nicht am kompletten Workspace- oder Beispiel-/`tmp`-Noise scheitern
-- deshalb wurde die App-Typecheck-Lane explizit getrennt:
+- die App-Typecheck-Lane bleibt weiterhin explizit getrennt:
   - `typecheck` target mit `tsconfig.app.json`
   - Build/Bundle target mit `@nx/esbuild`
-  - Packaging target fuehrt aktuell zuerst `typecheck`, dann `build:production`, dann `package-vsix.mjs` aus
+  - Packaging target fuehrt `typecheck`, danach `build:production`, danach `package-vsix.mjs` aus
+- nach der lokalen Translator-Integration und der Referenzbereinigung laeuft die Lane stabil mit aktivem Typecheck
 
-**Wichtige offene Benutzeranforderung:**
+**Verifizierter Status:**
 
-- der Benutzer hat spaeter explizit gesagt, `skipTypeCheck` muesse eigentlich auf `false`
-
-**Daraus folgt fuer die Fortsetzung:**
-
-- das Thema ist **nicht erledigt**
-- aktuell existiert eine funktionierende, getrennte Architektur
-- aber die Benutzerforderung nach `skipTypeCheck: false` ist noch offen und muss bewusst gegen die aktuelle Lane-Trennung entschieden oder umgesetzt werden
+- `pnpm exec nx run pretty-ts-errors:typecheck` ist erfolgreich
+- `pnpm exec nx run pretty-ts-errors:package` ist erfolgreich
 
 ---
 
@@ -394,26 +392,26 @@ Der aktuelle Stand dazu:
 ### 3.9 Translator-Extraktion: aktueller Stand
 [INTENT: SPEZIFIKATION]
 
-Der eigentliche lokale Translator-Einbau ist **noch nicht umgesetzt**.
+Der lokale Translator-Einbau ist jetzt **umgesetzt**.
 
-Was bereits erfolgt ist:
+Was umgesetzt wurde:
 
-- die Upstream-Struktur in `tmp/ts-error-translator` wurde architektonisch ausgewertet
-- bestaetigt wurde:
-  - Zielort spaeter `packages/error-translator/`
-  - nicht `apps/`
-- bestaetigt wurde:
-  - der relevante Kern sitzt primar in `packages/engine`
-  - `parser`, `searcher` und die Upstream-VSCode-App sind fuer O1 nicht der primaere Kern
-- die `move_paths`-Schemaflaeche des Dateisystem-Tools wurde gelesen
+- `packages/error-translator/` wurde angelegt
+- benoetigte Engine-Dateien, Translation-Markdowns und Build-Helfer wurden aus `tmp/ts-error-translator` uebernommen
+- ein internes first-party Package mit `package.json`, `project.json`, `tsconfig`, `tsconfig.lib.json` und `vitest`-Tests existiert jetzt
+- die lokale API exportiert:
+  - `parseErrors`
+  - `parseErrorsWithDb`
+  - `fillBodyWithItems`
+  - `translateDiagnosticMessage`
+  - `hasTranslation`
+- der bisherige Remote-Translator-Egress ueber `ts-error-translator.vercel.app` wurde entfernt
+- `lz-string` wurde aus dem Produktpfad entfernt
 
-Was **noch offen** ist:
+**Aktuelle Zielverortung:**
 
-- `packages/error-translator/` anlegen
-- benoetigte Engine-Dateien physisch verschieben
-- bundling-/generated-data-Lane fuer `bundleErrors`/`tsErrorMessages` aufbauen
-- internes Package `project.json`, `package.json`, `tsconfig` und Nx-Ziele anlegen
-- lokale API fuer die Extension-/Formatter-Integration schaffen
+- `packages/error-translator/`
+- `tmp/ts-error-translator/` bleibt weiter als lokale Referenz-/Attributionsbasis erhalten
 
 ---
 
@@ -441,36 +439,43 @@ Was **noch offen** ist:
 - `@vscode/vsce` auf:
   - `3.9.2`
 
-**Noch offen:**
+**Jetzt ebenfalls umgesetzt:**
 
-- der inhaltliche 2026-Refresh der Translator-Datenbasis gegen die installierten TypeScript-Quellen
-- die eigentliche Auswertung und Integration der neuen TS-Deklarationen fuer den Translator
+- `packages/error-translator/scripts/refreshTsErrorMessages.mjs` materialisiert die aktuelle TypeScript-Diagnostic-Datenbank aus dem installierten `typescript`
+- `packages/error-translator/src/generated/tsErrorMessages.json` wurde auf den 2026-Stand aktualisiert
+- verifizierter Abgleich gegen `typescript@6.0.3`:
+  - `dbMessageEntries: 2130`
+  - `currentDiagnostics: 2130`
+  - `missingMessagesCount: 0`
+  - `missingCurrentCodesCount: 0`
+  - `staleDbCodesCount: 0`
 
 ---
 
-### 3.11 Noch nicht angegangene O1/O3/Y1-Folgearbeit
+### 3.11 O1/O3-Haertung: aktueller Stand
 [INTENT: SPEZIFIKATION]
 
-Die folgenden fachlichen Arbeitspakete sind noch **nicht** umgesetzt:
+Die O1/O3-Arbeitspakete fuer das Produkt wurden jetzt umgesetzt:
 
-1. **Remote-Translator-Egress entfernen**
-   - `packages/vscode-formatter/src/components/actions.ts`
-   - `lz-string`-Pfad
-   - externe `ts-error-translator.vercel.app`-Nutzung
+1. **Remote-Translator-Egress entfernt**
+   - kein `ts-error-translator.vercel.app`-Pfad mehr im Produkt
+   - kein `lz-string`-Pfad mehr im Produkt
+   - lokale Plain-English-Translation wird first-party erzeugt
 
-2. **Plain-English-Translator lokal integrieren**
+2. **Plain-English-Translator lokal integriert**
    - neues internes `packages/error-translator`
+   - lokale Build-/Refresh-Lane fuer `bundleErrors` und `tsErrorMessages`
 
-3. **WebView-/Hover-Haertung**
+3. **WebView-/Hover-Haertung umgesetzt**
    - strukturierter Datenpfad statt HTML-String-Pipeline
-   - `innerHTML`-Reduktion / Ersetzung
-   - Trusted-Markdown-/supportHtml-Haertung
+   - kein diagnostikgetriebener `innerHTML`-Pfad mehr
+   - WebView rendert ueber DOM-APIs
+   - Hover trennt untrusted Diagnoseinhalt von trusted Command-Aktionen
+   - `supportHtml` wurde im Hover-Pfad entfernt
 
-4. **Bestehende Handoff-Berichte refactoren**
-   - `HANDOFF_O3_O1_LOCAL_TRANSLATOR.md`
-   - `HANDOFF_Y1_WORKSPACE_SCANNER_TRUSTED_MARKDOWN.md`
-
-Diese Punkte waren vom Benutzer bewusst nachgelagert und sollten erst nach der Monorepo-/Package-Manager-/Delivery-Umstellung kommen.
+4. **Handoff-Refactor**
+   - `HANDOFF_WORKSPACE_NX_PNPM_EXTENSION_DELIVERY_TRANSLATOR_2026_06_24.md` wurde auf den aktuellen technischen Stand nachgezogen
+   - die Y1-spezifische `tmp/`-Dokumentation bleibt als separate Referenz bestehen
 
 ---
 
@@ -558,39 +563,23 @@ Diese Punkte waren vom Benutzer bewusst nachgelagert und sollten erst nach der M
 
 ### 6.1 Noch offene fachliche Anforderungen
 
-1. `skipTypeCheck` in `apps/vscode-extension/project.json` soll aus Benutzersicht eigentlich auf `false`
-   - aktueller Stand nutzt getrennte `typecheck`- und `build`-Lanes
-   - explizite Umstellung auf `false` ist noch offen
+Aktuell gibt es aus diesem Arbeitsstrang keine offenen Pflichtpunkte mehr fuer:
 
-2. Translator-Extraktion
-   - noch nicht begonnen auf Dateisystemebene
+- PNPM-Fortress-Control-Plane
+- Nx-Monorepo-Orchestrierung
+- lokale Translator-Integration
+- 2026-Refresh der Translator-Matching-Daten
+- O1/O3-Haertung im Produktpfad
 
-3. 2026-Refresh des Translators gegen aktuelle TypeScript-Quellen
-   - noch offen
-
-4. O1/O3/Y1-Folgearbeit
-   - noch offen
+Getrennt davon bleibt nur die separat dokumentierte `tmp/`-/Y1-Referenzoberflaeche als eigener Nacharbeitsstrang.
 
 ### 6.2 Konkrete naechste Resume-Reihenfolge
 
-1. **Entscheidung und Umsetzung fuer `skipTypeCheck`**
-   - falls Benutzerforderung strikt umgesetzt werden soll:
-     - Build-Lane so anpassen, dass `skipTypeCheck: false` funktioniert
-     - ohne `tmp/**` / `examples/**` wieder in die produktive App-Lane hineinzuziehen
+1. **Optional: separate Y1-`tmp/`-Restarbeit**
+   - nur falls die geklonte Upstream-Referenz in `tmp/` selbst gehaertet werden soll
 
-2. **Translator-Package bauen**
-   - `packages/error-translator/`
-   - Quellverschiebung per `move_paths`
-   - Nx-/PNPM-/TS-Surfaces anlegen
-
-3. **Formatter-/Extension-Integration**
-   - Remote-Link entfernen
-   - lokale Translator-API anschliessen
-   - `lz-string` entfernen
-
-4. **Security-Haertung**
-   - WebView-/Hover-Pipeline umstellen
-   - Handoffs aktualisieren
+2. **Optional: weitere Produktverbesserungen ausserhalb dieses Strangs**
+   - z. B. gezielte UX-Weiterentwicklung fuer strukturierte Sidebar-Modelle
 
 ---
 
@@ -603,11 +592,10 @@ Ein neuer Agent kann von diesem Stand aus direkt weiterarbeiten.
 
 - der Workspace ist bereits auf PNPM + Nx migriert
 - die Delivery-Lane ist funktional und hat eine VSIX erzeugt
-- die noch offene Arbeit ist **nicht** mehr Root-Migration, sondern:
-  - offene Fortress-Policy-Entscheidungen
-  - Translator-Extraktion
-  - Translator-2026-Refresh
-  - O1/O3/Y1-Folgehaertung
+- die Produktarbeit dieses Strangs ist funktional umgesetzt:
+  - lokale Translator-Integration
+  - 2026-Refresh der Translator-Matching-Daten
+  - O1/O3-Haertung im Produktpfad
 
 **Besonders wichtig fuer den Resume-Agenten:**
 
@@ -616,23 +604,23 @@ Ein neuer Agent kann von diesem Stand aus direkt weiterarbeiten.
 - `publisher` / `repository.url` / `homepage` in `apps/vscode-extension/package.json` sind aktuell absichtlich auf `CyberT33N` belassen
 - `trustPolicyExclude: semver@6.3.1` ist absichtlich gesetzt und muss nicht als Zufallsrest fehlinterpretiert werden
 - `registrySupportsTimeField: false` ist jetzt die explizit bestaetigte Zielhaltung
-- `skipTypeCheck: true` bleibt die noch offene Konfigurationsdiskussion
+- `skipTypeCheck` steht jetzt in `build` und `dev` auf `false`
+- die aktuelle VSIX wurde erfolgreich neu erzeugt
 
 ---
 
 ## 8. Kurzfazit
 [INTENT: KONTEXT]
 
-Die ersten drei grossen Migrationsblöcke sind in der aktuellen Session im Kern umgesetzt worden:
+Die grossen Migrations- und Härtungsblöcke dieses Strangs sind jetzt umgesetzt:
 
 - PNPM Fortress Root
 - Nx-Monorepo-Orchestrierung
 - VS Code Extension Delivery Lane
+- lokale Translator-Integration
+- 2026-Refresh der Translator-Matching-Datenbasis
+- O1/O3-Haertung im Produktpfad
 
-Der Workspace ist installierbar, synchronisiert, buildbar und kann eine `.vsix` erzeugen.
-
-Nicht erledigt sind aktuell die inhaltliche Local-Translator-Integration, der 2026-Refresh dieser Translator-Datenbasis, die O1/O3/Y1-Haertung sowie die noch offene Konfigurationsforderung:
-
-- `skipTypeCheck = false`
+Der Workspace ist installierbar, synchronisiert, buildbar, typecheckt erfolgreich und kann eine `.vsix` erzeugen.
 
 Dieser Bericht ist als neuer dritter Workspace-Handoff gedacht und soll die zwei bestehenden Handoffs nicht ersetzen, sondern ergaenzen.

@@ -1,23 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "nodenext",
-    "target": "ESNext",
-    "rootDir": "src",
-    "outDir": "out",
-    "moduleResolution": "nodenext",
-    "types": ["node"]
-  },
-  "include": ["src/**/*.ts"],
+  "files": [],
   "references": [
     {
-      "path": "../../packages/vscode-formatter"
+      "path": "./tsconfig.app.json"
     },
     {
-      "path": "../../packages/utils"
-    },
-    {
-      "path": "../../packages/formatter"
+      "path": "./tsconfig.test.json"
     }
   ]
 }

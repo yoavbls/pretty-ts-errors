@@ -4,7 +4,7 @@
   "type": "module",
   "publisher": "CyberT33N",
   "description": "Make TypeScript errors prettier and more human-readable in VSCode",
-  "version": "0.8.7",
+  "version": "1.0.0",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
       "activitybar": [
         {
           "id": "prettyTsErrors",
-          "title": "Pretty TypeScript Errors",
+          "title": "Pretty TypeScript Errors [Secured]",
           "icon": "./assets/ribbon.svg"
         }
       ]
@@ -69,26 +69,26 @@
       {
         "command": "prettyTsErrors.revealSelection",
         "title": "Reveal the given selection",
-        "category": "Pretty TS Errors",
+        "category": "Pretty TypeScript Errors [Secured]",
         "enablement": "!isCommandPanel"
       },
       {
         "command": "prettyTsErrors.showErrorInSidebar",
         "title": "Show Error in Sidebar",
-        "category": "Pretty TS Errors",
+        "category": "Pretty TypeScript Errors [Secured]",
         "icon": "./assets/ribbon.svg",
         "enablement": "!isCommandPanel"
       },
       {
         "command": "prettyTsErrors.pinError",
         "title": "Pin Error",
-        "category": "Pretty TS Errors",
+        "category": "Pretty TypeScript Errors [Secured]",
         "enablement": "!isCommandPanel"
       },
       {
         "command": "prettyTsErrors.unpinError",
         "title": "Unpin Error",
-        "category": "Pretty TS Errors",
+        "category": "Pretty TypeScript Errors [Secured]",
         "enablement": "!isCommandPanel"
       }
     ],
@@ -132,9 +132,9 @@
     "yaml": "catalog:"
   },
   "dependencies": {
+    "@pretty-ts-errors/error-translator": "workspace:*",
     "@pretty-ts-errors/formatter": "workspace:*",
     "@pretty-ts-errors/utils": "workspace:*",
-    "@pretty-ts-errors/vscode-formatter": "workspace:*",
     "shiki": "catalog:",
     "vscode-languageclient": "catalog:",
     "vscode-shiki-bridge": "catalog:"

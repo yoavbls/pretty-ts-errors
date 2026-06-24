@@ -12,21 +12,6 @@ body {
   padding: 0 12px;
 }
 
-/* Tables from identSentences */
-#content table {
-  width: 100%;
-}
-
-#content table td:first-child {
-  white-space: nowrap;
-}
-
-#content table td:last-child {
-  width: 100%;
-  max-width: 0;
-  word-break: break-word;
-}
-
 h1,
 h2,
 h3,
@@ -91,6 +76,76 @@ pre code {
 
 .copy-button:hover {
   background: var(--vscode-button-hoverBackground);
+}
+
+.diagnostic-card {
+  padding: 4px 0 12px;
+}
+
+.diagnostic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.diagnostic-title {
+  color: #f96363;
+  font-weight: 600;
+}
+
+.diagnostic-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-link,
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--vscode-icon-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.action-link:hover,
+.action-button:hover,
+.unpin-button:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.12));
+}
+
+.diagnostic-note {
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+  margin: 0 0 8px;
+}
+
+.sidebar-empty-state {
+  color: var(--vscode-descriptionForeground);
+}
+
+.translation-section {
+  padding-top: 12px;
+}
+
+.translation-card {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 6px;
+}
+
+.translation-title {
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 #content a {

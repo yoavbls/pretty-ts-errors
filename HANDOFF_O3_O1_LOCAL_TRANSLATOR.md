@@ -62,6 +62,28 @@ Das Dokument ist HCOA-ready und so strukturiert, dass ein neuer Agent in einem f
 
 ---
 
+## 1.1 Status-Delta nach Umsetzung
+[INTENT: KONTEXT]
+
+Der urspruengliche Handoff beschreibt den Zielzustand und den damals offenen O1/O3-Befund. Seitdem wurde der Produktpfad in `pretty-ts-errors` weitergezogen.
+
+**Aktueller Stand im Produkt-Workspace:**
+
+- der Remote-Translator-Pfad zu `ts-error-translator.vercel.app` wurde entfernt
+- `lz-string` wurde aus dem Produktpfad entfernt
+- die lokale first-party Translator-Integration lebt jetzt unter `packages/error-translator`
+- `packages/error-translator/src/generated/tsErrorMessages.json` wurde gegen `typescript@6.0.3` aktualisiert
+- die Sidebar-WebView rendert jetzt ueber ein strukturiertes Modell und DOM-APIs statt ueber `innerHTML`
+- der Hover-Pfad trennt untrusted Diagnoseinhalt von trusted Command-Aktionen und verwendet kein `supportHtml` mehr fuer den Diagnoseblock
+
+**Wichtig fuer Leser dieses Dokuments:**
+
+- die darunterliegenden O1/O3-Beschreibungen bleiben als Architektur- und Audit-Referenz weiterhin wertvoll
+- die dort beschriebenen "Ist-Zustand"-Probleme sind fuer den aktuellen Produktpfad jedoch nicht mehr in derselben Form aktuell
+- `tmp/ts-error-translator` bleibt weiterhin nur die lokale Upstream-Referenz- und Attributionsbasis
+
+---
+
 ## 2. Informationsregister (INHALT-Einheiten)
 [INTENT: REFERENZ]
 

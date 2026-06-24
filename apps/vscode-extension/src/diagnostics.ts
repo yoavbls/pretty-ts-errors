@@ -1,5 +1,4 @@
 import { has } from "@pretty-ts-errors/utils";
-import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -14,8 +13,8 @@ import {
   type FormattedDiagnostic,
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
-import { enabledCommands } from "./commands/enabledCommands";
 import { toLspDiagnostic } from "./lspDiagnostic";
+import { createHoverContents } from "./hoverContent";
 
 /**
  * The list of diagnostic sources that pretty-ts-errors supports
@@ -80,7 +79,7 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
 const CACHE_SIZE_MAX = 100;
 
 /**
- * A local cache that maps TS diagnostics as `string` to their formatted `MarkdownString` counter part.
+ * A local cache keyed by diagnostic identity so noisy re-emits do not rebuild hover markdown.
  * @see https://github.com/CyberT33N/pretty-ts-errors/pull/62
  *
  * One reason this cache is critical is because the TypeScript Language Features extension is very noisy and will constantly push all diagnostics for a file,
@@ -90,33 +89,34 @@ const CACHE_SIZE_MAX = 100;
  * TODO: create a proper LRU cache, to prevent exceeding the cache size being a bottleneck
  * @see https://github.com/CyberT33N/pretty-ts-errors/issues/104
  */
-const cache = new Map<string, MarkdownString>();
+const cache = new Map<string, MarkdownString[]>();
 
 async function getFormattedDiagnostic(
   diagnostic: Diagnostic
 ): Promise<FormattedDiagnostic> {
   // The formatter consumes LSP diagnostics, so keep the VS Code -> LSP conversion as a local first-party boundary.
   const lspDiagnostic = toLspDiagnostic(diagnostic);
+  const cacheKey = JSON.stringify({
+    code: lspDiagnostic.code ?? null,
+    message: diagnostic.message,
+    range: lspDiagnostic.range,
+  });
 
-  let formattedMessage = cache.get(diagnostic.message);
-  if (!formattedMessage) {
-    const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
-    const markdownString = new MarkdownString(formattedDiagnostic);
-
-    markdownString.isTrusted = { enabledCommands };
-    markdownString.supportHtml = true;
-
-    formattedMessage = markdownString;
+  let formattedMessages = cache.get(cacheKey);
+  if (formattedMessages === undefined) {
+    formattedMessages = createHoverContents(lspDiagnostic);
     if (cache.size > CACHE_SIZE_MAX) {
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
     }
-    cache.set(diagnostic.message, formattedMessage);
+    cache.set(cacheKey, formattedMessages);
   }
+
+  const contents = formattedMessages;
 
   return {
     range: diagnostic.range,
-    contents: [formattedMessage],
+    contents,
     lspDiagnostic,
   };
 }

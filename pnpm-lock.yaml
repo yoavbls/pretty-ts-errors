@@ -333,15 +333,15 @@ importers:
 
   apps/vscode-extension:
     dependencies:
+      '@pretty-ts-errors/error-translator':
+        specifier: workspace:*
+        version: link:../../packages/error-translator
       '@pretty-ts-errors/formatter':
         specifier: workspace:*
         version: link:../../packages/formatter
       '@pretty-ts-errors/utils':
         specifier: workspace:*
         version: link:../../packages/utils
-      '@pretty-ts-errors/vscode-formatter':
-        specifier: workspace:*
-        version: link:../../packages/vscode-formatter
       shiki:
         specifier: 'catalog:'
         version: 3.13.0
