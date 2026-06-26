@@ -12,7 +12,7 @@ function getLogger(): LogOutputChannel {
   if (instance !== null) {
     return instance;
   }
-  instance = window.createOutputChannel("Pretty TypeScript Errors", {
+  instance = window.createOutputChannel("Pretty TypeScript Errors [Secured]", {
     log: true,
   });
   return instance;

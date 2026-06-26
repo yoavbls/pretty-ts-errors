@@ -4,31 +4,20 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "watch - apps/vscode-extension",
+      "label": "watch - pretty-ts-errors",
       "type": "shell",
-      "command": "npm run watch --silent",
+      "command": "pnpm exec nx run pretty-ts-errors:dev",
       "options": {
-        "cwd": "${workspaceFolder}/apps/vscode-extension"
+        "cwd": "${workspaceFolder}"
       },
       "problemMatcher": {
         "owner": "esbuild",
         "fileLocation": "autoDetect",
-        "pattern": [
-          {
-            "regexp": "^✘ \\[ERROR\\] (.*)$",
-            "message": 1
-          },
-          {
-            "regexp": "^\\s*(.*):(\\d+):(\\d+):$",
-            "file": 1,
-            "line": 2,
-            "column": 3
-          }
-        ],
+        "pattern": [],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "^\\[watch\\] build started$",
-          "endsPattern": "^\\[watch\\] build finished$"
+          "beginsPattern": "^> nx run pretty-ts-errors:dev$",
+          "endsPattern": "^\\[ watch \\] build succeeded, watching for changes\\.\\.\\.$"
         }
       },
       "isBackground": true,
@@ -42,9 +31,12 @@
       }
     },
     {
-      "type": "npm",
-      "script": "watch-tests",
-      "path": "apps/vscode-extension",
+      "label": "watch-tests - pretty-ts-errors",
+      "type": "shell",
+      "command": "pnpm exec nx run pretty-ts-errors:watch-tests",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": "$tsc-watch",
       "isBackground": true,
       "presentation": {
@@ -55,7 +47,10 @@
     },
     {
       "label": "tasks: watch-tests",
-      "dependsOn": ["watch - apps/vscode-extension", "npm: watch-tests"],
+      "dependsOn": [
+        "watch - pretty-ts-errors",
+        "watch-tests - pretty-ts-errors"
+      ],
       "problemMatcher": []
     }
   ]

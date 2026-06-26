@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { enabledCommands } from "../commands/enabledCommands";
+import { logger } from "../logger";
 
 /**
  * @see https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample
@@ -36,10 +37,31 @@ export class MarkdownWebviewProvider {
     };
   }
 
-  createOnDidReceiveMessage() {
+  createOnDidReceiveMessage(onReady?: () => void) {
     return (message: { command: string; [key: string]: unknown }) => {
       if (message && message.command) {
         switch (message.command) {
+          case "ready": {
+            logger.debug("sidebar webview reported ready");
+            onReady?.();
+            break;
+          }
+          case "log": {
+            const level =
+              message["level"] === "error" ||
+              message["level"] === "warn" ||
+              message["level"] === "info" ||
+              message["level"] === "debug" ||
+              message["level"] === "trace"
+                ? message["level"]
+                : "info";
+            const text =
+              typeof message["text"] === "string"
+                ? message["text"]
+                : "webview emitted a log message without text";
+            logger[level](`[webview] ${text}`);
+            break;
+          }
           case "notify": {
             if (typeof message["text"] === "string") {
               vscode.window.showInformationMessage(message["text"]);
@@ -53,14 +75,13 @@ export class MarkdownWebviewProvider {
 
   async getWebviewContent(
     webview: vscode.Webview,
-    content: string,
     classList: string[] = []
   ): Promise<string> {
     const template = await this.webviewHtmlTemplate;
     const html = this.patchCspSafeAttrs(template, webview);
     return html.replace(
       '<div id="content"></div>',
-      `<div id="content" class="${classList.join(" ")}">${content}</div>`
+      `<div id="content" class="${classList.join(" ")}"></div>`
     );
   }
 
@@ -95,13 +116,11 @@ export class MarkdownWebviewProvider {
           content
             .replaceAll(
               "style-src http://localhost:8080",
-              // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
-              `style-src ${webview.cspSource} 'unsafe-inline'`
+              `style-src ${webview.cspSource}`
             )
             .replaceAll(
               "script-src http://localhost:8080",
-              // TODO: remove `unsafe-inline` if vscode ever fixes their styles and api injection
-              `script-src ${webview.cspSource} 'unsafe-inline'`
+              `script-src ${webview.cspSource}`
             )
             .replaceAll(
               "font-src http://localhost:8080",

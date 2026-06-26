@@ -1,16 +1,22 @@
 {
   "private": true,
   "name": "@pretty-ts-errors/utils",
+  "version": "0.1.0",
+  "type": "module",
   "files": [
     "dist/**"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -p ."
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
   "devDependencies": {},
   "dependencies": {
-    "ts-dedent": "^2.2.0"
+    "ts-dedent": "catalog:"
   }
 }

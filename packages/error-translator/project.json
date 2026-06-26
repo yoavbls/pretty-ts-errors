@@ -1,0 +1,53 @@
+{
+  "name": "@pretty-ts-errors/error-translator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/error-translator/src",
+  "projectType": "library",
+  "tags": ["scope:packages", "type:library"],
+  "targets": {
+    "refresh-diagnostics-db": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "command": "node scripts/refreshTsErrorMessages.mjs"
+      }
+    },
+    "refresh-contract-data": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "commands": [
+          "node scripts/refreshTsErrorMessages.mjs",
+          "node scripts/bundleErrors.mjs"
+        ],
+        "parallel": false
+      }
+    },
+    "bundle-data": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "command": "node scripts/bundleErrors.mjs"
+      }
+    },
+    "validate-contract-data": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "packages/error-translator",
+        "command": "node scripts/validateContractData.mjs"
+      }
+    },
+    "build": {
+      "...": true,
+      "dependsOn": ["validate-contract-data", "..."],
+      "options": {
+        "...": true,
+        "assets": ["packages/error-translator/src/generated/*.json"]
+      }
+    }
+  }
+}

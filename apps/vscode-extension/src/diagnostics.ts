@@ -1,148 +1,50 @@
 import { has } from "@pretty-ts-errors/utils";
-import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
   MarkdownString,
-  window,
   Uri,
   type Diagnostic,
 } from "vscode";
-import {
-  createConverter,
-  type Converter,
-} from "vscode-languageclient/lib/common/codeConverter";
+import { SUPPORTED_DIAGNOSTIC_SOURCES } from "./supportedDiagnosticSources";
+import { SUPPORTED_LANGUAGE_IDS } from "./supportedLanguageIds";
+import { createDiagnosticRichContentModel } from "./diagnosticRichContent";
 import { hoverProvider } from "./provider/hoverProvider";
 import {
   formattedDiagnosticsStore,
   type FormattedDiagnostic,
 } from "./formattedDiagnosticsStore";
 import { logger } from "./logger";
-import { enabledCommands } from "./commands/enabledCommands";
-
-/**
- * The list of diagnostic sources that pretty-ts-errors supports
- */
-const supportedDiagnosticSources = [
-  "ts",
-  "ts-plugin",
-  "deno-ts",
-  "js",
-  "glint",
-];
+import { toLspDiagnostic } from "./lspDiagnostic";
+import {
+  buildPrettyDiagnosticMessageMarkdown,
+  createHoverContents,
+} from "./hoverContent";
 
 export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
-  const converter = createConverter();
+  logger.debug("registering diagnostic change listener");
+  void syncCurrentDiagnostics();
+
   context.subscriptions.push(
     languages.onDidChangeDiagnostics(async (e) => {
       await logger.measure("onDidChangeDiagnostics", async () => {
         for (const uri of e.uris) {
-          await logger.measure(
-            `diagnostics for: ${uri.toString(true)}`,
-            async () => {
-              const diagnostics = languages.getDiagnostics(uri);
-              const supportedDiagnostics = diagnostics.filter(
-                (diagnostic) =>
-                  diagnostic.source &&
-                  has(supportedDiagnosticSources, diagnostic.source)
-              );
-
-              const items: FormattedDiagnostic[] = await Promise.all(
-                supportedDiagnostics.map((diagnostic) =>
-                  getFormattedDiagnostic(diagnostic, converter)
-                )
-              );
-
-              if (items.length === 0) {
-                logger.trace(
-                  `no diagnostics for ${uri.toString(true)}, removing from store`
-                );
-                formattedDiagnosticsStore.delete(uri.fsPath);
-              } else {
-                logger.trace(
-                  `storing ${items.length} formatted diagnostics for ${uri.toString(true)}`
-                );
-                formattedDiagnosticsStore.set(uri.fsPath, items);
-              }
-
-              if (items.length > 0) {
-                ensureHoverProviderIsRegistered(uri, context);
-              }
-            }
-          );
+          await updateDiagnosticsForUri(uri);
         }
       });
     })
   );
+
+  registerHoverProviders(context);
 }
 
-/**
- * To prevent infinite memory consumption use a max size for the cache
- *
- * TODO: consider making this configurable to the end user with a sensible `min` and `max`
- */
-const CACHE_SIZE_MAX = 100;
-
-/**
- * A local cache that maps TS diagnostics as `string` to their formatted `MarkdownString` counter part.
- * @see https://github.com/yoavbls/pretty-ts-errors/pull/62
- *
- * One reason this cache is critical is because the TypeScript Language Features extension is very noisy and will constantly push all diagnostics for a file,
- * even if there were no actual changes.
- * @see https://github.com/yoavbls/pretty-ts-errors/issues/139#issuecomment-3401279357
- *
- * TODO: create a proper LRU cache, to prevent exceeding the cache size being a bottleneck
- * @see https://github.com/yoavbls/pretty-ts-errors/issues/104
- */
-const cache = new Map<string, MarkdownString>();
-
-async function getFormattedDiagnostic(
-  diagnostic: Diagnostic,
-  converter: Converter
-): Promise<FormattedDiagnostic> {
-  // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
-  // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
-  const lspDiagnostic = converter.asDiagnostic(diagnostic);
-
-  let formattedMessage = cache.get(diagnostic.message);
-  if (!formattedMessage) {
-    const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
-    const markdownString = new MarkdownString(formattedDiagnostic);
-
-    markdownString.isTrusted = { enabledCommands };
-    markdownString.supportHtml = true;
-
-    formattedMessage = markdownString;
-    if (cache.size > CACHE_SIZE_MAX) {
-      const firstCacheKey = cache.keys().next().value!;
-      cache.delete(firstCacheKey);
-    }
-    cache.set(diagnostic.message, formattedMessage);
-  }
-
-  return {
-    range: diagnostic.range,
-    contents: [formattedMessage],
-    lspDiagnostic,
-  };
-}
-
-/**
- * A set to prevent registering duplicate hover providers.
- */
-const registeredLanguages = new Set<string>();
-
-/**
- * Ensure a hover provider is registered for any visible editors where pretty-ts-errors has a formatted diagnostic
- */
-function ensureHoverProviderIsRegistered(uri: Uri, context: ExtensionContext) {
-  const editor = window.visibleTextEditors.find(
-    (editor) => editor.document.uri.toString() === uri.toString()
+function registerHoverProviders(context: ExtensionContext) {
+  logger.debug(
+    `registering hover providers for ${SUPPORTED_LANGUAGE_IDS.length} supported language ids`
   );
-  const languageId = editor?.document.languageId;
-  if (languageId && !registeredLanguages.has(languageId)) {
-    logger.debug(`registering hover provider for language id: ${languageId}`);
-    registeredLanguages.add(languageId);
+
+  for (const languageId of SUPPORTED_LANGUAGE_IDS) {
+    logger.trace(`registering hover provider for language id: ${languageId}`);
     context.subscriptions.push(
       languages.registerHoverProvider(
         {
@@ -153,3 +55,112 @@ function ensureHoverProviderIsRegistered(uri: Uri, context: ExtensionContext) {
     );
   }
 }
+
+async function syncCurrentDiagnostics() {
+  const diagnosticsByUri = languages.getDiagnostics();
+  logger.debug(
+    `syncing current diagnostics for ${diagnosticsByUri.length} known document(s)`
+  );
+
+  for (const [uri] of diagnosticsByUri) {
+    await updateDiagnosticsForUri(uri);
+  }
+}
+
+async function updateDiagnosticsForUri(uri: Uri) {
+  await logger.measure(`diagnostics for: ${uri.toString(true)}`, async () => {
+    const diagnostics = languages.getDiagnostics(uri);
+    const supportedDiagnostics = diagnostics.filter(
+      (diagnostic) =>
+        diagnostic.source &&
+        has(SUPPORTED_DIAGNOSTIC_SOURCES, diagnostic.source)
+    );
+
+    logger.trace(
+      `found ${diagnostics.length} total diagnostics and ${supportedDiagnostics.length} supported diagnostics for ${uri.toString(true)}`
+    );
+
+    const items: FormattedDiagnostic[] = await Promise.all(
+      supportedDiagnostics.map((diagnostic) => getFormattedDiagnostic(uri, diagnostic))
+    );
+
+    if (items.length === 0) {
+      logger.trace(`no diagnostics for ${uri.toString(true)}, removing from store`);
+      formattedDiagnosticsStore.delete(uri.fsPath);
+    } else {
+      logger.trace(
+        `storing ${items.length} formatted diagnostics for ${uri.toString(true)}`
+      );
+      formattedDiagnosticsStore.set(uri.fsPath, items);
+    }
+  });
+}
+
+/**
+ * To prevent infinite memory consumption use a max size for the cache
+ *
+ * TODO: consider making this configurable to the end user with a sensible `min` and `max`
+ */
+const CACHE_SIZE_MAX = 100;
+
+/**
+ * A local cache keyed by diagnostic identity so noisy re-emits do not rebuild hover markdown.
+ * @see https://github.com/CyberT33N/pretty-ts-errors/pull/62
+ *
+ * One reason this cache is critical is because the TypeScript Language Features extension is very noisy and will constantly push all diagnostics for a file,
+ * even if there were no actual changes.
+ * @see https://github.com/CyberT33N/pretty-ts-errors/issues/139#issuecomment-3401279357
+ *
+ * TODO: create a proper LRU cache, to prevent exceeding the cache size being a bottleneck
+ * @see https://github.com/CyberT33N/pretty-ts-errors/issues/104
+ */
+const cache = new Map<string, MarkdownString[]>();
+
+async function getFormattedDiagnostic(
+  uri: Uri,
+  diagnostic: Diagnostic
+): Promise<FormattedDiagnostic> {
+  // The formatter consumes LSP diagnostics, so keep the VS Code -> LSP conversion as a local first-party boundary.
+  const lspDiagnostic = toLspDiagnostic(diagnostic);
+  const cacheKey = JSON.stringify({
+    code: lspDiagnostic.code ?? null,
+    message: diagnostic.message,
+    range: lspDiagnostic.range,
+    uri: uri.toString(),
+  });
+
+  let formattedMessages = cache.get(cacheKey);
+  const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(diagnostic.message);
+  const layout = createDiagnosticRichContentModel(
+    lspDiagnostic.code,
+    diagnostic.message,
+    bodyMarkdown,
+  );
+  if (formattedMessages === undefined) {
+    logger.trace(`cache miss for diagnostic ${cacheKey}`);
+    formattedMessages = await createHoverContents(lspDiagnostic, {
+      bodyMarkdown,
+      documentUri: uri.toString(),
+      layout,
+    });
+    if (cache.size > CACHE_SIZE_MAX) {
+      const firstCacheKey = cache.keys().next().value!;
+      cache.delete(firstCacheKey);
+    }
+    cache.set(cacheKey, formattedMessages);
+  } else {
+    logger.trace(`cache hit for diagnostic ${cacheKey}`);
+  }
+
+  const contents = formattedMessages;
+
+  return {
+    bodyMarkdown,
+    documentUri: uri,
+    layout,
+    range: diagnostic.range,
+    contents,
+    lspDiagnostic,
+  };
+}
+

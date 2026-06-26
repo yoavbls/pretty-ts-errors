@@ -1,4 +1,3 @@
-import { compressToEncodedURIComponent } from "lz-string";
 import { Diagnostic, Range } from "vscode-languageserver-types";
 import { d } from "@pretty-ts-errors/utils";
 
@@ -38,15 +37,6 @@ export const copyErrorLink = (message: Diagnostic["message"]) => {
   return d /*html*/ `
     <a title="Copy error to clipboard" href="command:prettyTsErrors.copyError?${args}">
       <span class="codicon codicon-copy">
-      </span>
-    </a>`;
-};
-
-export const errorMessageTranslationLink = (message: Diagnostic["message"]) => {
-  const encodedMessage = compressToEncodedURIComponent(message);
-  return d /*html*/ `
-    <a title="See translation" href="https://ts-error-translator.vercel.app/?error=${encodedMessage}">
-      <span class="codicon codicon-globe">
       </span>
     </a>`;
 };

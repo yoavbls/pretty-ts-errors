@@ -1,0 +1,7 @@
+{
+  "name": "@pretty-ts-errors/utils",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/utils/src",
+  "projectType": "library",
+  "tags": ["scope:packages", "type:library"]
+}

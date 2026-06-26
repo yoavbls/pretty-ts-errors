@@ -1,15 +1,18 @@
-import { d } from "@pretty-ts-errors/utils";
-import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
 import {
+  Diagnostic,
+  DiagnosticSeverity,
   ExtensionContext,
   ExtensionMode,
-  MarkdownString,
   languages,
   window,
 } from "vscode";
-import { createConverter } from "vscode-languageclient/lib/common/codeConverter";
 import { formattedDiagnosticsStore } from "../formattedDiagnosticsStore";
-import { enabledCommands } from "../commands/enabledCommands";
+import { createDiagnosticRichContentModel } from "../diagnosticRichContent";
+import { toLspDiagnostic } from "../lspDiagnostic";
+import {
+  buildPrettyDiagnosticMessageMarkdown,
+  createHoverContents,
+} from "../hoverContent";
 
 /**
  * Register an hover provider in debug only.
@@ -20,7 +23,6 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
     return;
   }
 
-  const converter = createConverter();
   context.subscriptions.push(
     languages.registerHoverProvider(
       {
@@ -42,31 +44,42 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
             return null;
           }
 
-          const lspDiagnostic = converter.asDiagnostic({
-            message,
+          const debugDiagnostic = new Diagnostic(
             range,
-            severity: 0,
-            source: "ts",
-            code: 1337,
-          });
-
-          const markdown = new MarkdownString(
-            debugHoverHeader + (await prettifyDiagnosticForHover(lspDiagnostic))
+            message,
+            DiagnosticSeverity.Error
           );
+          debugDiagnostic.source = "ts";
+          debugDiagnostic.code = 1337;
 
-          markdown.isTrusted = { enabledCommands };
-          markdown.supportHtml = true;
+          const lspDiagnostic = toLspDiagnostic(debugDiagnostic);
+          const bodyMarkdown = await buildPrettyDiagnosticMessageMarkdown(
+            lspDiagnostic.message,
+          );
+          const layout = createDiagnosticRichContentModel(
+            lspDiagnostic.code,
+            lspDiagnostic.message,
+            bodyMarkdown,
+          );
+          const contents = await createHoverContents(lspDiagnostic, {
+            debugHeader: debugHoverHeader,
+            documentUri: document.uri.toString(),
+            layout,
+          });
 
           formattedDiagnosticsStore.set(document.uri.fsPath, [
             {
+              bodyMarkdown,
+              documentUri: document.uri,
+              layout,
               range,
-              contents: [markdown],
+              contents,
               lspDiagnostic,
             },
           ]);
 
           return {
-            contents: [markdown],
+            contents,
           };
         },
       }
@@ -74,12 +87,4 @@ export function registerSelectedTextHoverProvider(context: ExtensionContext) {
   );
 }
 
-const debugHoverHeader = d /*html*/ `
-  <span style="color:#f96363;">
-    <span class="codicon codicon-debug"></span>
-    Formatted selected text (debug only)
-  </span>
-  <br>
-  <hr>
-  <p></p>
-`;
+const debugHoverHeader = "**Formatted selected text (debug only)**";

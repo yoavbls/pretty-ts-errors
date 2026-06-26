@@ -1,0 +1,490 @@
+###############################################################################
+# pnpm-workspace.yaml -- PNPM 11 Monorepo Supply-Chain Fortress
+#
+# Surface contract:
+# - pnpm-workspace.yaml: repo-local non-sensitive PNPM policy
+# - package.json: exact Node.js + pnpm toolchain pinning
+# - .npmrc / auth.ini: auth-local tokens + certificates only
+#
+# IMPORTANT:
+# - This file centralizes the shared Fortress baseline and the monorepo delta.
+# - Auth- and registry-secrets never belong here.
+###############################################################################
+
+########################################
+# Supply-chain fortress posture
+########################################
+
+# `minimumReleaseAge`
+# Simple: Delays the adoption of freshly published versions.
+# Details: The Fortress baseline is 7 days, not 24 hours. The goal is maximum
+# caution against compromised or retracted releases.
+# Example: A version published today only becomes installable on the 8th day.
+minimumReleaseAge: 10080
+
+# `minimumReleaseAgeIgnoreMissingTime`
+# Simple: Disables fail-open on missing publish time metadata.
+# Details: If the registry does not supply a `time` value, resolution must
+# fail rather than silently losing the protective effect.
+# Example: A mirror without a `time` field blocks resolution until the issue is clarified.
+minimumReleaseAgeIgnoreMissingTime: false
+
+# `minimumReleaseAgeStrict`
+# Simple: Enforces that PNPM aborts hard if versions are too young.
+# Details: Without this setting, PNPM might fall back to an overly fresh version
+# in case of doubt. This is unacceptable for Fortress governance.
+# Example: If no version old enough matches, the install ends with an error.
+minimumReleaseAgeStrict: true
+
+# `minimumReleaseAgeExclude`
+# Simple: Defines exceptions from the age gate.
+# Details: In the Fortress baseline, the list remains explicitly empty so that no
+# convenience approvals for "hot" releases are permitted.
+# Example: `[]` signals that there are no approved immediate exceptions.
+minimumReleaseAgeExclude: []
+
+# `trustPolicy`
+# Simple: Blocks versions whose trust level has decreased compared to previous releases.
+# Details: This reduces the risk of accidentally accepting a less trustworthy
+# follow-up release.
+# Example: A package with a trust downgrade will not be installed.
+trustPolicy: no-downgrade
+
+# `trustPolicyExclude`
+# Simple: Defines exact version-pinned exceptions from the trust policy.
+# Details: The Fortress baseline normally keeps this list explicitly empty so
+# that no hidden trust exceptions exist. This workspace currently carries one
+# reviewed break-glass exception for `semver@6.3.1`.
+# Why this exception exists: `@nx/js@23.0.0` pulls `@babel/core@7.29.7`, and
+# that consumer declares `semver: ^6.3.1`. The trust-downgrade reference owner
+# requires an exact override first only when a contract-compatible repair exists.
+# Why we do NOT use `overrides` here: within the relevant `6.3.x` line, the only
+# candidates are `6.3.0` and `6.3.1`. `6.3.0` is below the consumer contract
+# floor `^6.3.1`, so there is no allowed same-line patch repair candidate.
+# Scope and removal rule: keep the waiver pinned to this one exact version only,
+# re-check it whenever Nx or Babel moves, and remove it as soon as upstream ships
+# a trust-compliant graph.
+# Example: `semver@6.3.1` waives only that blocked version, not the whole package family.
+trustPolicyExclude:
+  - semver@6.3.1
+
+# `blockExoticSubdeps`
+# Simple: Forbids Git or tarball sources in transitive dependencies.
+# Details: Only direct dependencies may use exotic sources; transitive
+# sources must originate from controlled registries.
+# Example: A transitive `https://...tgz` dependency is rejected.
+blockExoticSubdeps: true
+
+# `strictDepBuilds`
+# Simple: Requires explicit decisions for dependency build scripts.
+# Details: A new `postinstall` in a dependency must not run silently,
+# but must be reviewed and approved.
+# Example: A package with a new install script fails until evaluated in `allowBuilds`.
+strictDepBuilds: true
+
+# `allowBuilds`
+# Simple: Defines the explicit allow/deny list for dependency build scripts.
+# Details: Only the bundle-first VSIX delivery path and the explicitly approved
+# toolchain packages may execute install/build scripts.
+# Example: `esbuild: true` allows `esbuild`, `nx: true` allows the reviewed
+# Nx postinstall path, `keytar: false` forbids `keytar`.
+allowBuilds:
+  "@vscode/vsce-sign": false
+  esbuild: true
+  keytar: false
+  nx: true
+
+# `dangerouslyAllowAllBuilds`
+# Simple: Opens up blanket-wide build script execution.
+# Details: In a Fortress architecture, this value always remains `false`.
+# Example: `true` would be a deliberate security breach and is forbidden here.
+dangerouslyAllowAllBuilds: false
+
+########################################
+# Registry and transport trust
+########################################
+
+# `registries`
+# Simple: Defines the approved registry destinations.
+# Details: This repository currently resolves through the public npm registry.
+# Example: `default` points to the registry approved for this install domain.
+registries:
+  default: https://registry.npmjs.org/
+
+# `strictSsl`
+# Simple: Enforces TLS certificate verification for registry access.
+# Details: This is the minimum hardening against MITM and faulty certificate chains.
+# Example: A registry with an invalid certificate will not be accepted.
+strictSsl: true
+
+########################################
+# Toolchain enforcement
+########################################
+
+# `nodeVersion`
+# Simple: Defines the root engine baseline for dependency checks.
+# Details: This is the control-plane engine-gate surface, not a blanket equality
+# target for every package-local runtime contract.
+# Example: A dependency that requires Node 27 is rejected by the root policy.
+nodeVersion: 26.2.0
+
+# `engineStrict`
+# Simple: Makes engine checks hard instead of advisory.
+# Details: This ensures no dependencies can be introduced that violate the
+# approved runtime line.
+# Example: A package with `engines.node: >=27` fails immediately.
+engineStrict: true
+
+# `pmOnFail`
+# Simple: Aborts if the running pnpm version does not match exactly.
+# Details: The Fortress posture is `error`, not `download`. The toolchain must
+# be pre-provisioned and approved.
+# Example: pnpm `11.1.0` is blocked against a repo with `11.7.0`.
+pmOnFail: error
+
+# `runtimeOnFail`
+# Simple: Aborts if a declared runtime surface is not present or matching.
+# Details: Here too, fail-closed applies instead of automatic fetching.
+# Example: A runner without the approved declared runtime is stopped.
+runtimeOnFail: error
+
+########################################
+# Lockfile and resolution discipline
+########################################
+
+# `lockfile`
+# Simple: Enforces the use of a lockfile.
+# Details: A Fortress repo never operates without a deterministic lockfile.
+# Example: `false` would be an architectural error here.
+lockfile: true
+
+# `preferFrozenLockfile`
+# Simple: Prefers headless, unchanged installations.
+# Details: CI and regulated workflows should not resolve silently if the
+# lockfile already describes the desired graph.
+# Example: A manifest change without a lockfile update leads to an error.
+preferFrozenLockfile: true
+
+# `lockfileIncludeTarballUrl`
+# Simple: Saves tarball sources directly in the lockfile.
+# Details: This improves traceability and auditability of origin.
+# Example: The lockfile explicitly shows which artifact endpoint the package originates from.
+lockfileIncludeTarballUrl: true
+
+# `resolutionMode`
+# Simple: Selects the PNPM resolution strategy.
+# Details: `time-based` reduces the risk of subdependency hijacking because
+# transitive updates remain tied in time to direct dependency releases.
+# Example: A direct dep update only pulls in temporally matching subdeps.
+resolutionMode: time-based
+
+# `registrySupportsTimeField`
+# Simple: Enables optimized time metadata support for compatible registries.
+# Details: This value remains `false` until the full metadata path used by this
+# install domain is proven to deliver the required `time` field consistently.
+# Example: Resolution falls back to the safer compatibility path instead of assuming registry support.
+registrySupportsTimeField: false
+
+########################################
+# Manifest save policy
+########################################
+
+# `saveExact`
+# Simple: Saves newly added dependency versions as exact versions instead of ranges.
+# Details: This prevents caret or tilde ranges from being written during `pnpm add`
+# and keeps every new manifest entry pinned to an explicitly approved version.
+# Example: `pnpm add lodash@4.17.21` writes `4.17.21` instead of `^4.17.21`.
+saveExact: true
+
+# `savePrefix`
+# Simple: Defines the version prefix for newly saved specs.
+# Details: An empty string keeps the serialized spec prefix-free and reinforces
+# the exact-version save policy established by `saveExact: true`.
+# Example: `1.2.3` instead of `^1.2.3`.
+savePrefix: ""
+
+########################################
+# Workspace topology
+########################################
+
+# `packages`
+# Simple: Defines which directories are part of the monorepo in the first place.
+# Details: These globs form the governance boundary for filters, recursion,
+# the shared lockfile, and workspace ownership.
+# Example: `apps/*` includes all direct child packages under `apps/`.
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tooling/*"
+  - "!**/test/**"
+
+# `includeWorkspaceRoot`
+# Simple: Keeps the root project out of recursive commands by default.
+# Details: This ensures the root remains the control plane and is not accidentally
+# treated like a leaf package.
+# Example: `false` means that `pnpm -r test` will not automatically run in the root.
+includeWorkspaceRoot: false
+
+# `sharedWorkspaceLockfile`
+# Simple: Enforces a shared lockfile for the entire monorepo.
+# Details: This reduces uncontrolled drift between packages and centralizes review
+# and auditing.
+# Example: All packages are governed via a root `pnpm-lock.yaml`.
+sharedWorkspaceLockfile: true
+
+# `disallowWorkspaceCycles`
+# Simple: Abruptly aborts the installation process in case of workspace cycles.
+# Details: Cycles complicate topological ordering, build order, and root-cause analysis.
+# Example: A package `a` must not point back to `b` and back via workspace dependencies.
+disallowWorkspaceCycles: true
+
+# `failIfNoMatch`
+# Simple: Causes filter operations to fail if no package is matched.
+# Details: This prevents silent green runs that actually did nothing.
+# Example: `pnpm --filter missing-package test` ends with an error instead of a silent no-op.
+failIfNoMatch: true
+
+########################################
+# Workspace ownership and save policy
+########################################
+
+# `linkWorkspacePackages`
+# Simple: Prevents implicit local linking when ranges happen to match.
+# Details: Local ownership must be explicit via `workspace:`, not via
+# a convenient implicit side effect.
+# Example: `"foo": "^1.0.0"` must not be silently resolved locally instead of from the registry.
+linkWorkspacePackages: false
+
+# `preferWorkspacePackages`
+# Simple: Does NOT automatically prefer local packages over the registry.
+# Details: Here too, it is about explicit rather than implicit ownership.
+# Example: A local copy is only used if `workspace:` deliberately requests it.
+preferWorkspacePackages: false
+
+# `saveWorkspaceProtocol`
+# Simple: Saves local workspace dependencies with an explicit `workspace:` prefix.
+# Details: `true` plus `savePrefix: ''` writes exact local ownership into the manifest.
+# Example: `workspace:1.2.3` instead of an unclear `^1.2.3`.
+saveWorkspaceProtocol: true
+
+# `injectWorkspacePackages`
+# Simple: Prevents hard workspace injection by default.
+# Details: Injected dependencies are only permitted in genuine peer graph special cases,
+# not as a default.
+# Example: A package with deviating peer contexts is targeted for opt-in injection later.
+injectWorkspacePackages: false
+
+# `dedupeInjectedDeps`
+# Simple: Deduplicates injected dependencies when peer-wise safe.
+# Details: This is not a relaxation, but rather reduces unnecessary duplicates in special cases.
+# Example: Identical peer contexts lead to a reusable instance.
+dedupeInjectedDeps: true
+
+########################################
+# Dependency layout and anti-hoisting
+########################################
+
+# `nodeLinker`
+# Simple: Selects the installation model for Node dependencies.
+# Details: `isolated` is the strictest general default choice for correct
+# dependency isolation.
+# Example: The project only sees declared dependencies.
+nodeLinker: isolated
+
+# `enableGlobalVirtualStore`
+# Simple: Prevents cross-project global virtual store usage.
+# Details: A Fortress policy avoids implicit cross-project sharing paths
+# and the associated `NODE_PATH` complexity.
+# Example: Dependencies are materialized project-locally rather than via a global virtual store.
+enableGlobalVirtualStore: false
+
+# `hoist`
+# Simple: Disables hidden hoisting globally.
+# Details: The Fortress baseline is no hoisting unless forced by concrete evidence to the contrary.
+# Example: Undeclared dependencies remain inaccessible.
+hoist: false
+
+# `hoistPattern`
+# Simple: Does not allow hoisting exceptions by default.
+# Details: An empty array is the fail-closed baseline; exceptions are
+# added later minimally and based on evidence.
+# Example: Only after a validated tooling error is a single pattern included.
+hoistPattern: []
+
+# `publicHoistPattern`
+# Simple: Prevents root-visible hoisting for application code.
+# Details: This ensures phantom dependencies are not exported to the visible root path.
+# Example: Application code cannot see an undeclared transitive dependency via the root.
+publicHoistPattern: []
+
+# `shamefullyHoist`
+# Simple: Prevents blanket-wide public hoisting.
+# Details: This setting always remains `false` in a Fortress architecture.
+# Example: A flat root layout similar to npm/Yarn Classic is not created.
+shamefullyHoist: false
+
+# `virtualStoreDir`
+# Simple: Sets the project-local virtual store path.
+# Details: `.pnpm` shortens paths and makes the store path explicitly visible.
+# Example: `node_modules/.pnpm` is relocated to `.pnpm`.
+virtualStoreDir: .pnpm
+
+# `virtualStoreDirMaxLength`
+# Simple: Limits the length of directory names in the virtual store.
+# Details: `60` is the conservative Windows-safe limit.
+# Example: Very long package names are shortened in the store layout.
+virtualStoreDirMaxLength: 60
+
+# `verifyStoreIntegrity`
+# Simple: Verifies store contents before linking.
+# Details: Modified files in the content-addressable store are not silently accepted.
+# Example: A tampered store artifact is caught during the integrity check.
+verifyStoreIntegrity: true
+
+# `strictStorePkgContentCheck`
+# Simple: Verifies if name, version, and content match in the store.
+# Details: This protects against registries that deliver identical content under different
+# package identities.
+# Example: An inconsistent store entry is not accepted.
+strictStorePkgContentCheck: true
+
+# `hoistWorkspacePackages`
+# Simple: Prevents workspace packages from being pulled into hoisting paths.
+# Details: Local packages should be resolved via clean ownership, not via
+# hoisted visibility.
+# Example: Workspace packages remain at their explicit resolution path.
+hoistWorkspacePackages: false
+
+########################################
+# Peer dependency governance
+########################################
+
+# `autoInstallPeers`
+# Simple: Prevents automatic installation of missing peers.
+# Details: Peer decisions must be made explicitly in the manifest.
+# Example: A missing `react-dom` is not silently added.
+autoInstallPeers: false
+
+# `strictPeerDependencies`
+# Simple: Makes peer conflicts hard instead of advisory.
+# Details: This prevents runtime surprises caused by soft peer deviations.
+# Example: An invalid peer tree leads directly to an error.
+strictPeerDependencies: true
+
+# `resolvePeersFromWorkspaceRoot`
+# Simple: Unifies peer resolution via the root.
+# Details: This ensures workspace packages use the same root peers instead of divergent
+# shadow versions.
+# Example: Multiple packages resolve `eslint` against the same root version.
+resolvePeersFromWorkspaceRoot: true
+
+# `peerDependencyRules`
+# Simple: Keeps blanket exceptions for peers closed.
+# Details: Empty lists and maps mean: no general relaxation, no
+# implicit approvals, no `allowAny` shortcut.
+# Example: A later exception is only added selectively for a leaf->peer pair.
+peerDependencyRules:
+  ignoreMissing: []
+  allowAny: []
+
+########################################
+# Graph repair and explicit policy
+########################################
+
+# `overrides`
+# Simple: Allows later, targeted transitive pins or removals.
+# Details: The approved intervention below constrains only the problematic
+# `parse-semver -> semver` edge used by official `@vscode/vsce`.
+# Example: `foo@1.0.0>bar: "2.0.0"` pins one reviewed repair.
+overrides:
+  parse-semver@1.1.1>semver: 5.7.1
+
+# `ignoreCompatibilityDb`
+# Simple: Disables implicit automatic manifest patches from the compatibility database.
+# Details: This increases auditability because the repo is not silently influenced by
+# external patch logic.
+# Example: Missing dependency metadata must be deliberately handled via `packageExtensions`.
+ignoreCompatibilityDb: true
+
+# `updateNotifier`
+# Simple: Disables automatic update notifications.
+# Details: This reduces unplanned network/noise signals and keeps upgrades within the
+# controlled governance process.
+# Example: Contributors do not receive spontaneous pnpm upgrade notifications in daily work.
+updateNotifier: false
+
+# `packageConfigs`
+# Simple: Replaces per-subproject `.npmrc` for package-specific deviations.
+# Details: The array remains empty until there is a genuinely necessary and reviewed
+# special rule per package.
+# Example: A legacy package could target `savePrefix: "~"` later.
+packageConfigs: []
+
+########################################
+# Central version approval
+########################################
+
+# `catalog`
+# Simple: Central catalog of approved version states.
+# Details: Exact versions live here and manifests consume them via `catalog:`.
+# Example: `typescript: 5.7.2` is an approved exact version state.
+catalog:
+  "@nx/esbuild": 23.0.0
+  "@nx/js": 23.0.0
+  "@eslint/js": 10.0.1
+  "@shikijs/types": 3.13.0
+  "@types/mocha": 10.0.10
+  "@types/node": 25.9.3
+  "@types/vscode": 1.105.0
+  "@types/vscode-webview": 1.57.5
+  "@vitest/coverage-v8": 4.1.2
+  "@vscode/codicons": 0.0.41
+  "@vscode/vsce": 3.9.2
+  "@vscode/test-electron": 3.0.0
+  esbuild: 0.28.1
+  eslint: 10.5.0
+  glob: 13.0.6
+  globals: 16.4.0
+  mocha: 12.0.0-beta-10
+  nx: 23.0.0
+  prettier: 3.6.2
+  shiki: 3.13.0
+  ts-dedent: 2.2.0
+  typescript: 6.0.3
+  typescript-eslint: 8.61.1
+  vitest: 4.1.2
+  vscode-languageclient: 10.0.0
+  vscode-languageserver-types: 3.17.5
+  vscode-uri: 3.1.0
+  yaml: 2.9.0
+  "@nx/eslint": 23.0.0
+  "@nx/vitest": 23.0.0
+  "@nx/web": 23.0.0
+
+# `catalogMode`
+# Simple: Enforces that new dependencies cannot bypass the catalog.
+# Details: `strict` makes the catalog the single source of truth in the monorepo.
+# Example: `pnpm add lodash@latest` fails if `lodash` is not appropriately listed in the catalog.
+catalogMode: strict
+
+# `cleanupUnusedCatalogs`
+# Simple: Cleans up unused catalog entries.
+# Details: This reduces governance clutter and prevents obsolete approval remnants.
+# Example: Removed packages do not remain as dead entries in the catalog.
+cleanupUnusedCatalogs: true
+
+########################################
+# Script safety
+########################################
+
+# `enablePrePostScripts`
+# Simple: Disables implicit `pre*`/`post*` hooks.
+# Details: Script chaining should be explicit, not happen silently in the background.
+# Example: `pnpm build` does not automatically execute `prebuild` and `postbuild`.
+enablePrePostScripts: false
+
+# `verifyDepsBeforeRun`
+# Simple: Enforces up-to-date dependencies before `pnpm run` and `pnpm exec`.
+# Details: `error` prevents working with stale `node_modules`.
+# Example: After a manifest change, `pnpm test` blocks until install is run again.
+verifyDepsBeforeRun: error

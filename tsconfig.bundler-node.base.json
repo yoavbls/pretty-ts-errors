@@ -1,0 +1,37 @@
+{
+  /**
+   * Bundler-first Node-hosted application role template for leaves whose source
+   * runs in a Node-like environment but whose JavaScript output is delegated to
+   * a bundler rather than emitted directly by TypeScript.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy baseline and reopen only the semantics that
+   * are genuinely shared across bundler-first Node-hosted app leaves.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Keep the authored ESM posture expected by bundler-first leaves.
+     */
+    "module": "ESNext",
+
+    /**
+     * Preserve bundler-aware package resolution semantics on this role.
+     */
+    "moduleResolution": "Bundler",
+
+    /**
+     * Bundler-first Node-hosted leaves normally delegate emitted JavaScript to
+     * the bundler rather than producing runtime files via `tsc`.
+     */
+    "noEmit": true,
+
+    /**
+     * Open only the Node ambient surface for this runtime role.
+     */
+    "types": ["node"]
+  }
+}

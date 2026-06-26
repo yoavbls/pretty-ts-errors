@@ -1,4 +1,4 @@
-import { has, invert, objectKeys } from "@pretty-ts-errors/utils";
+import { has } from "@pretty-ts-errors/utils";
 
 const parentheses = {
   "(": ")",
@@ -6,11 +6,18 @@ const parentheses = {
   "[": "]",
 } as const;
 
-const openParentheses = objectKeys(parentheses);
-const closeParentheses = Object.values(parentheses);
+type OpenParenthesis = keyof typeof parentheses;
+
+const openParentheses = ["(", "{", "["] as const;
+const closeParentheses = [")", "}", "]"] as const;
+const invertedParentheses = {
+  ")": "(",
+  "}": "{",
+  "]": "[",
+} as const;
 
 export function addMissingParentheses(type: string): string {
-  const openStack: (typeof openParentheses)[number][] = [];
+  const openStack: OpenParenthesis[] = [];
   const missingClosingChars: string[] = [];
 
   for (const char of type) {
@@ -20,7 +27,7 @@ export function addMissingParentheses(type: string): string {
       const lastOpen = openStack[openStack.length - 1];
       if (lastOpen === undefined || parentheses[lastOpen] !== char) {
         // Add the correct opening character before the current closing character
-        openStack.push(invert(parentheses)[char]);
+        openStack.push(invertedParentheses[char]);
       } else {
         openStack.pop();
       }
@@ -29,9 +36,11 @@ export function addMissingParentheses(type: string): string {
 
   // Add the missing closing characters at the end of the string
   while (openStack.length > 0) {
-    const openChar = openStack.pop()!;
-    const closingChar = parentheses[openChar];
-    missingClosingChars.push(closingChar);
+    const openChar = openStack.pop();
+    if (openChar !== undefined) {
+      const closingChar = parentheses[openChar];
+      missingClosingChars.push(closingChar);
+    }
   }
 
   let validType = type;

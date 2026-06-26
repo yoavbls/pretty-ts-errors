@@ -1,0 +1,25 @@
+{
+  /**
+   * Bundler-first web role template for browser-facing leaves.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy baseline and reopen only the browser-facing
+   * semantics that belong to bundler-first web leaves.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Reopen browser libs only on web leaves.
+     */
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ES2021.String"],
+
+    /**
+     * Bundler-first web leaves usually delegate final JavaScript output to the
+     * bundler instead of the TypeScript compiler.
+     */
+    "noEmit": true
+  }
+}

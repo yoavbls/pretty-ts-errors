@@ -1,6 +1,6 @@
 # Pretty TypeScript Error formatter
 
-The formatting package of [pretty-ts-errors](https://github.com/yoavbls/pretty-ts-errors)
+The formatting package of [pretty-ts-errors](https://github.com/CyberT33N/pretty-ts-errors)
 
 # Usage
 

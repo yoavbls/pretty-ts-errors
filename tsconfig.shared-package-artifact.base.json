@@ -1,0 +1,36 @@
+{
+  /**
+   * Specialized role template for runtime-bearing shared packages that are
+   * delivered as unbundled package artifacts from the monorepo.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Start from the generic buildable library producer contract and narrow it to
+   * the stronger package-artifact delivery truth.
+   */
+  "extends": "./tsconfig.lib.base.json",
+
+  "compilerOptions": {
+    /**
+     * Package artifacts must be validated against native Node artifact truth.
+     */
+    "module": "NodeNext",
+
+    /**
+     * Node-valid artifact semantics are mandatory on this lane.
+     */
+    "moduleResolution": "NodeNext",
+
+    /**
+     * Raw TypeScript extension imports stay closed on the artifact lane.
+     */
+    "allowImportingTsExtensions": false,
+
+    /**
+     * Package artifacts rely on direct `.js` authoring truth instead of rewrite
+     * magic at the workspace contract layer.
+     */
+    "rewriteRelativeImportExtensions": false
+  }
+}

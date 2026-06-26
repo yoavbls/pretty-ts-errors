@@ -1,13 +1,17 @@
 import { MarkdownString, Range, Uri } from "vscode";
-import type { Diagnostic } from "vscode-languageserver-types";
+import type { DiagnosticRichContentModel } from "./diagnosticRichContent";
+import type { PrettyTsLspDiagnostic } from "./lspDiagnostic";
 
 type StoreKey = Uri["fsPath"];
 
 export interface FormattedDiagnostic {
+  bodyMarkdown: string;
+  documentUri: Uri;
+  layout: DiagnosticRichContentModel;
   range: Range;
   contents: MarkdownString[];
   /** Original LSP diagnostic for on-demand sidebar formatting */
-  lspDiagnostic: Diagnostic;
+  lspDiagnostic: PrettyTsLspDiagnostic;
 }
 
 /**

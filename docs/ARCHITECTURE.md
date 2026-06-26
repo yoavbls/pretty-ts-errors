@@ -3,7 +3,7 @@
 This document explains how **pretty-ts-errors** is structured and how the VS Code extension works at runtime.
 
 > !NOTE
-> Keep in mind that this document is kept minimal to avoid being out of sync with development. If critical information is missing, feel free to open a [discussion](https://github.com/yoavbls/pretty-ts-errors/discussions) or [PR](https://github.com/yoavbls/pretty-ts-errors/pulls).
+> Keep in mind that this document is kept minimal to avoid being out of sync with development. If critical information is missing, feel free to open a [discussion](https://github.com/CyberT33N/pretty-ts-errors/discussions) or [PR](https://github.com/CyberT33N/pretty-ts-errors/pulls).
 
 ## `/`
 

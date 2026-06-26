@@ -1,0 +1,122 @@
+{
+  "name": "pretty-ts-errors",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/vscode-extension/src",
+  "projectType": "application",
+  "tags": ["scope:apps", "type:application", "runtime:embedded"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{workspaceRoot}/apps/vscode-extension/dist"],
+      "options": {
+        "main": "apps/vscode-extension/src/extension.ts",
+        "outputPath": "apps/vscode-extension/dist",
+        "tsConfig": "apps/vscode-extension/tsconfig.app.json",
+        "bundle": true,
+        "declaration": false,
+        "platform": "node",
+        "format": ["esm"],
+        "target": "esnext",
+        "external": ["vscode"],
+        "sourcemap": true,
+        "minify": false,
+        "skipTypeCheck": false,
+        "thirdParty": true,
+        "esbuildOptions": {
+          "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+          "mainFields": ["module", "main"],
+          "banner": {
+            "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
+          }
+        }
+      },
+      "configurations": {
+        "production": {
+          "sourcemap": false,
+          "minify": true,
+          "esbuildOptions": {
+            "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+            "mainFields": ["module", "main"],
+            "banner": {
+              "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
+            },
+            "define": {
+              "process.env.NODE_ENV": "\"production\""
+            }
+          }
+        }
+      }
+    },
+    "dev": {
+      "executor": "@nx/esbuild:esbuild",
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "main": "apps/vscode-extension/src/extension.ts",
+        "outputPath": "apps/vscode-extension/dist",
+        "tsConfig": "apps/vscode-extension/tsconfig.app.json",
+        "bundle": true,
+        "declaration": false,
+        "platform": "node",
+        "format": ["esm"],
+        "target": "esnext",
+        "external": ["vscode"],
+        "sourcemap": true,
+        "minify": false,
+        "watch": true,
+        "skipTypeCheck": false,
+        "thirdParty": true,
+        "esbuildOptions": {
+          "inject": ["apps/vscode-extension/scripts/process-shim.js"],
+          "mainFields": ["module", "main"],
+          "banner": {
+            "js": "import { createRequire as __prettyTsErrorsCreateRequire } from 'node:module'; const require = __prettyTsErrorsCreateRequire(import.meta.url);"
+          },
+          "define": {
+            "process.env.NODE_ENV": "\"development\""
+          }
+        }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "cwd": "apps/vscode-extension",
+        "command": "pnpm exec tsc -p tsconfig.test.json && node ./out/test/runTest.js"
+      }
+    },
+    "compile-tests": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/vscode-extension",
+        "command": "pnpm exec tsc -p tsconfig.test.json"
+      }
+    },
+    "watch-tests": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "cwd": "apps/vscode-extension",
+        "command": "pnpm exec tsc -p tsconfig.test.json -w"
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec nx run pretty-ts-errors:typecheck && pnpm exec nx run pretty-ts-errors:build:production && node apps/vscode-extension/scripts/package-vsix.mjs"
+      }
+    },
+    "webview": {
+      "executor": "@nx/web:file-server",
+      "cache": false,
+      "continuous": true,
+      "options": {
+        "host": "localhost",
+        "port": 8080,
+        "staticFilePath": "apps/vscode-extension/webview"
+      }
+    }
+  }
+}

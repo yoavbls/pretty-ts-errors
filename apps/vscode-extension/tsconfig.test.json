@@ -1,0 +1,54 @@
+{
+  /**
+   * Thin compiled test-harness leaf for the VS Code extension integration tests.
+   * This lane deliberately reopens emit because the mocha/electron harness runs
+   * compiled JavaScript files from `out/`.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the generic runtime test-consumer role and override only the local
+   * facts required by this specific compiled test harness.
+   */
+  "extends": "../../tsconfig.test.base.json",
+
+  "compilerOptions": {
+    /**
+     * This harness validates under native Node ESM semantics instead of the
+     * bundler-first app lane.
+     */
+    "module": "NodeNext",
+
+    /**
+     * The test harness resolves modules under native Node semantics as well.
+     */
+    "moduleResolution": "NodeNext",
+
+    /**
+     * Unlike the generic non-emitting test role, this harness must write actual
+     * JavaScript files that are executed by the VS Code test runner.
+     */
+    "noEmit": false,
+
+    /**
+     * Open only the ambient test globals required by this specific mocha lane.
+     */
+    "types": ["node", "mocha"],
+
+    /**
+     * The compiled test harness writes into a dedicated non-committed output
+     * lane separate from app runtime and validation artifacts.
+     */
+    "outDir": "out",
+
+    /**
+     * The test harness leaf alone knows its concrete source root.
+     */
+    "rootDir": "src"
+  },
+
+  /**
+   * The compiled harness lane covers test-owned TypeScript sources only.
+   */
+  "include": ["src/test/**/*.ts"]
+}

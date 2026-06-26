@@ -1,0 +1,48 @@
+{
+  /**
+   * Generic buildable-library role template for workspace leaves whose final
+   * truth is a declaration-capable producer surface.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy single source of truth so strictness,
+   * module defaults, and shared package-resolution semantics stay centralized.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Buildable library leaves must participate in the project-reference graph.
+     */
+    "composite": true,
+
+    /**
+     * Buildable producer leaves emit declaration surfaces by default.
+     */
+    "declaration": true,
+
+    /**
+     * Preserve declaration maps so cross-project editor navigation remains
+     * intact on the producer lane.
+     */
+    "declarationMap": true,
+
+    /**
+     * Reopen emit at the role-template layer for buildable producer leaves.
+     * Concrete output paths remain leaf-local facts.
+     */
+    "noEmit": false,
+
+    /**
+     * Keep the generic library lane conservative and validation-first unless a
+     * narrower artifact lane explicitly changes the delivery contract.
+     */
+    "emitDeclarationOnly": true,
+
+    /**
+     * Internal-only declarations must not leak through public producer surfaces.
+     */
+    "stripInternal": true
+  }
+}

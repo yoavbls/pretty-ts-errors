@@ -1,15 +1,24 @@
 {
+  /**
+   * Root coordination surface for the VS Code extension leaf.
+   * This file owns references only and does not become a runtime or
+   * validation lane itself.
+   */
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "nodenext",
-    "target": "ES2022",
-    "rootDir": "src",
-    "outDir": "out",
-    "moduleResolution": "nodenext"
-  },
-  "include": ["src/**/*.ts"],
+
+  /**
+   * The coordination surface owns no files directly.
+   */
+  "files": [],
+
+  /**
+   * Register the validation-facing project-reference surface explicitly.
+   * The runtime and test lanes are consumed directly by their owning targets,
+   * while the coordination surface stays focused on Nx/TypeScript typechecking.
+   */
   "references": [
-    { "path": "../../packages/utils" },
-    { "path": "../../packages/vscode-formatter" }
+    {
+      "path": "./tsconfig.typecheck.json"
+    }
   ]
 }

@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "lib": ["ES2022", "ES2021.String"],
-    "baseUrl": ".",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext", "ES2021.String"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,

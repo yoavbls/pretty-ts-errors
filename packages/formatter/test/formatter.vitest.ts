@@ -14,7 +14,9 @@ import * as errorMessageMocks from "./errorMessageMocks";
 
 // Simple stub that marks code blocks without any rendering logic
 const stubCodeBlock: CodeBlockFn = (code, language, multiLine) => {
-  if (multiLine) return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+  if (multiLine) {
+    return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+  }
   return `\`${code}\``;
 };
 
@@ -39,6 +41,21 @@ describe("formatter", (context) => {
     );
   });
 
+  it("formats missing-property diagnostics as a structured list", async () => {
+    const result = await prettifyErrorMessage(
+      "Type '{ email: \"usr@usr.io\"; }' is missing the following properties from type '{ name: string; email: `${string}@${string}.${string}`; age: number; address: { street: string; city: string; country: string; }; }': name, age, address"
+    );
+
+    expect(result).toContain("is missing the following properties from type");
+    expect(result).toContain(
+      "<ul><li>name</li><li>age</li><li>address</li></ul>"
+    );
+    expect(result).toContain("```type");
+    expect(result).toContain("name: string");
+    expect(result).toContain("street: string");
+    expect(result).toContain("country: string");
+  });
+
   it("prettifies type with params destructuring", async () => {
     await expect(
       formatType(
@@ -47,6 +64,17 @@ describe("formatter", (context) => {
         { throwOnError: true }
       )
     ).resolves.toBeTypeOf("string");
+  });
+
+  it("formats complex types with stronger wrapping and four-space indentation", async () => {
+    const formatted = await formatType(
+      d`{ user: { name: string; email: \`\${string}@\${string}.\${string}\`; age: number; address: { street: string; city: string; country: string; }; }; }`,
+      { throwOnError: true }
+    );
+
+    expect(formatted).toContain("\n    user: {\n");
+    expect(formatted).toContain("\n        name: string\n");
+    expect(formatted).toContain("address: {\n");
   });
 
   it("prettifies truncated type", async () => {

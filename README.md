@@ -1,8 +1,8 @@
-<a href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors" style="display: none;">
+<a href="https://marketplace.visualstudio.com/items?itemName=CyberT33N.pretty-ts-errors" style="display: none;">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/icon.png" width="140">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/icon.png" width="140">
-    <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/empty.png" alt="Logo">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/icon.png" width="140">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/icon.png" width="140">
+    <img src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/empty.png" alt="Logo">
   </picture>
 </a>
 
@@ -10,10 +10,10 @@
 
 <b>Make TypeScript errors prettier and human-readable in VSCode.</b>
 
-[![GitHub stars](https://img.shields.io/github/stars/yoavbls/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/yoavbls/pretty-ts-errors/stargazers/)
-[![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7?logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/yoavbls/pretty-ts-errors)](https://github.com/yoavbls/pretty-ts-errors/blob/main/LICENSE)&nbsp;[![Visual Studio Code](https://img.shields.io/visual-studio-marketplace/i/yoavbls.pretty-ts-errors)](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
-<a href="https://github.com/yoavbls/pretty-ts-errors/discussions/43#user-content-jetbrains-support"><img src="https://cdn.icon-icons.com/icons2/2530/PNG/512/jetbrains_webstorm_button_icon_151873.png" height="20" alt="Webstorm logo"></a>
-[![Cursor](https://img.shields.io/badge/Cursor-000000?logo=cursor)](https://open-vsx.org/extension/yoavbls/pretty-ts-errors)
+[![GitHub stars](https://img.shields.io/github/stars/CyberT33N/pretty-ts-errors.svg?style=social&label=Star)](https://GitHub.com/CyberT33N/pretty-ts-errors/stargazers/)
+[![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7?logo=visualstudiocode&logoColor=white)](https://marketplace.visualstudio.com/items?itemName=CyberT33N.pretty-ts-errors)&nbsp;[![GitHub license](https://badgen.net/github/license/CyberT33N/pretty-ts-errors)](https://github.com/CyberT33N/pretty-ts-errors/blob/main/LICENSE)&nbsp;[![Visual Studio Code](https://img.shields.io/visual-studio-marketplace/i/CyberT33N.pretty-ts-errors)](https://marketplace.visualstudio.com/items?itemName=CyberT33N.pretty-ts-errors)
+<a href="https://github.com/CyberT33N/pretty-ts-errors/discussions/43#user-content-jetbrains-support"><img src="https://cdn.icon-icons.com/icons2/2530/PNG/512/jetbrains_webstorm_button_icon_151873.png" height="20" alt="Webstorm logo"></a>
+[![Cursor](https://img.shields.io/badge/Cursor-000000?logo=cursor)](https://open-vsx.org/extension/CyberT33N/pretty-ts-errors)
 
 TypeScript errors become messier as the complexity of types increases. At some point, TypeScript will throw on you a shitty heap of parentheses and `"..."`.
 This extension will help you understand what's going on. For example, in this relatively simple error:
@@ -23,7 +23,7 @@ This extension will help you understand what's going on. For example, in this re
 ## Watch this
 
 <a href="https://www.youtube.com/watch?v=9RM2aErJs-s" target="_blank">
- <img src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-video.png" alt="Watch theo's video" width="600" />
+ <img src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/theo-video.png" alt="Watch theo's video" width="600" />
 </a>
 
 and others from:
@@ -37,7 +37,7 @@ and [more](https://www.youtube.com/playlist?list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c
 - Syntax highlighting with your theme colors for types in error messages, supporting both light and dark themes
 - A button that leads you to the relevant type declaration next to the type in the error message
 - A button that navigates you to the error at [typescript.tv](http://typescript.tv), where you can find a detailed explanation, sometimes with a video
-- A button that navigates you to [ts-error-translator](https://ts-error-translator.vercel.app/), where you can read the error in plain English
+- A local plain-English translation for supported TypeScript errors directly in the sidebar
 
 ## Supports
 
@@ -50,10 +50,224 @@ and [more](https://www.youtube.com/playlist?list=PL0rc4JAdEsVpOriHzlAG7KUnhKIK9c
 ## Installation
 
 ```
-code --install-extension yoavbls.pretty-ts-errors
+code --install-extension CyberT33N.pretty-ts-errors
 ```
 
-Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+Or simply by searching for `pretty-ts-errors` in the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=CyberT33N.pretty-ts-errors)
+
+## Development with Nx
+
+This workspace is managed with `Nx` and `pnpm`.
+
+### Prerequisites
+
+```bash
+pnpm install
+pnpm exec nx show projects
+```
+
+Current Nx projects in this workspace:
+
+- `pretty-ts-errors`
+- `@pretty-ts-errors/error-translator`
+- `@pretty-ts-errors/vscode-formatter`
+- `@pretty-ts-errors/formatter`
+- `@pretty-ts-errors/utils`
+
+### Build the application
+
+Build the VS Code extension together with its dependent libraries:
+
+```bash
+pnpm exec nx build pretty-ts-errors
+```
+
+Build the production bundle:
+
+```bash
+pnpm exec nx build pretty-ts-errors --configuration=production
+```
+
+Package the production build as a `.vsix`:
+
+```bash
+pnpm exec nx package pretty-ts-errors
+```
+
+### Run the application in watch mode
+
+```bash
+pnpm exec nx dev pretty-ts-errors
+```
+
+Preview the standalone webview during development:
+
+```bash
+pnpm exec nx webview pretty-ts-errors
+```
+
+### Typecheck, lint, and test the application
+
+```bash
+pnpm exec nx typecheck pretty-ts-errors
+pnpm exec nx lint pretty-ts-errors
+pnpm exec nx test pretty-ts-errors
+```
+
+Compile the extension test suite only:
+
+```bash
+pnpm exec nx run pretty-ts-errors:compile-tests
+```
+
+Watch the extension test TypeScript compilation:
+
+```bash
+pnpm exec nx run pretty-ts-errors:watch-tests
+```
+
+### Error translator package
+
+Validate the checked-in TypeScript diagnostic contract data:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:validate-contract-data
+```
+
+Refresh the full translator contract data after a deliberate TypeScript upgrade:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:refresh-contract-data
+```
+
+Refresh only the diagnostic matcher database:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:refresh-diagnostics-db
+```
+
+Rebuild only the bundled translation data:
+
+```bash
+pnpm exec nx run @pretty-ts-errors/error-translator:bundle-data
+```
+
+Build, lint, and test the translator package:
+
+```bash
+pnpm exec nx build @pretty-ts-errors/error-translator
+pnpm exec nx lint @pretty-ts-errors/error-translator
+pnpm exec nx test @pretty-ts-errors/error-translator
+```
+
+### Shared packages
+
+Build the shared packages individually:
+
+```bash
+pnpm exec nx build @pretty-ts-errors/utils
+pnpm exec nx build @pretty-ts-errors/formatter
+pnpm exec nx build @pretty-ts-errors/vscode-formatter
+pnpm exec nx build @pretty-ts-errors/error-translator
+```
+
+Run the package watch builds:
+
+```bash
+pnpm exec nx dev @pretty-ts-errors/utils
+pnpm exec nx dev @pretty-ts-errors/formatter
+pnpm exec nx dev @pretty-ts-errors/vscode-formatter
+```
+
+Typecheck the shared packages:
+
+```bash
+pnpm exec nx typecheck @pretty-ts-errors/utils
+pnpm exec nx typecheck @pretty-ts-errors/formatter
+pnpm exec nx typecheck @pretty-ts-errors/vscode-formatter
+pnpm exec nx typecheck @pretty-ts-errors/error-translator
+pnpm exec nx typecheck pretty-ts-errors
+```
+
+Lint the shared packages:
+
+```bash
+pnpm exec nx lint @pretty-ts-errors/utils
+pnpm exec nx lint @pretty-ts-errors/formatter
+pnpm exec nx lint @pretty-ts-errors/vscode-formatter
+pnpm exec nx lint @pretty-ts-errors/error-translator
+pnpm exec nx lint pretty-ts-errors
+```
+
+Run the library test suites:
+
+```bash
+pnpm exec nx test @pretty-ts-errors/formatter
+pnpm exec nx test @pretty-ts-errors/vscode-formatter
+pnpm exec nx test @pretty-ts-errors/error-translator
+```
+
+Watch the library tests:
+
+```bash
+pnpm exec nx test @pretty-ts-errors/formatter --watch
+pnpm exec nx test @pretty-ts-errors/vscode-formatter --watch
+```
+
+Run the library coverage targets:
+
+```bash
+pnpm exec nx test @pretty-ts-errors/formatter --coverage
+pnpm exec nx test @pretty-ts-errors/vscode-formatter --coverage
+```
+
+Preview and publish the public libraries:
+
+```bash
+pnpm exec nx release --dry-run
+pnpm exec nx release publish
+```
+
+### Workspace commands
+
+Format the whole workspace:
+
+```bash
+pnpm exec nx format:write --all
+```
+
+Check formatting without writing changes:
+
+```bash
+pnpm exec nx format:check --all
+```
+
+Synchronize Nx project references:
+
+```bash
+pnpm exec nx sync
+pnpm exec nx sync:check
+```
+
+### Useful run-many examples
+
+Build all packages and the application in one command:
+
+```bash
+pnpm exec nx run-many -t build --projects=@pretty-ts-errors/utils,@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
+
+Run all currently defined test targets in one command:
+
+```bash
+pnpm exec nx run-many -t test --projects=@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
+
+Run all current lint targets in one command:
+
+```bash
+pnpm exec nx run-many -t lint --projects=@pretty-ts-errors/utils,@pretty-ts-errors/formatter,@pretty-ts-errors/error-translator,@pretty-ts-errors/vscode-formatter,pretty-ts-errors
+```
 
 #### How to hide the original errors and make the types copyable
 
@@ -71,28 +285,28 @@ Follow the instructions [there](./docs/hide-original-errors.md). unfortunately, 
 
 <a href="https://www.youtube.com/live/Zze1y2iZ3bQ?si=Yj1Qw2S8FbGbTA5c&t=11589">
   <picture>
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/js-nation.png?raw=true" alt="Winning the Productivity Booster category at JSNation 2023">
+    <img width="400" src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/js-nation.png?raw=true" alt="Winning the Productivity Booster category at JSNation 2023">
   </picture>
 </a>
 <a href="https://twitter.com/tannerlinsley/status/1647982562026090496">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/tanner-dark.png#gh-light-mode-only">
-     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/tanner-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/tanner-dark.png#gh-dark-mode-only" alt="Tanner's tweet">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/tanner-dark.png#gh-light-mode-only">
+     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/tanner-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/tanner-dark.png#gh-dark-mode-only" alt="Tanner's tweet">
   </picture>
 </a>
 <a href="https://twitter.com/t3dotgg/status/1647759462709747713">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only" alt="Theo's tweet">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/theo-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/theo-dark.png#gh-dark-mode-only" alt="Theo's tweet">
   </picture>
 </a>
 <a href="https://twitter.com/johnsoncodehk/status/1646214711204286465">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/johnson-dark.png#gh-dark-mode-only">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/johnson-light.png#gh-light-mode-only">
-    <img width="400" src="https://raw.githubusercontent.com/yoavbls/pretty-ts-errors/main/assets/mentions/johnson-dark.png#gh-dark-mode-only" alt="Johnson's tweet">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/johnson-dark.png#gh-dark-mode-only">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/johnson-light.png#gh-light-mode-only">
+    <img width="400" src="https://raw.githubusercontent.com/CyberT33N/pretty-ts-errors/main/assets/mentions/johnson-dark.png#gh-dark-mode-only" alt="Johnson's tweet">
   </picture>
 </a>
 
@@ -142,5 +356,5 @@ on things that I can't be doing myself like adding support to the extension for 
 
 ## Contribution
 
-Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/yoavbls/pretty-ts-errors/discussions/43)
+Help by upvoting or commenting on issues we need to be resolved [here](https://github.com/CyberT33N/pretty-ts-errors/discussions/43)
 Any other contribution is welcome. Feel free to open any issue / PR you think.

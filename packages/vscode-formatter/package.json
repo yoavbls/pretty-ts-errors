@@ -1,6 +1,7 @@
 {
   "name": "@pretty-ts-errors/vscode-formatter",
   "version": "0.1.0",
+  "type": "module",
   "description": "Pretty TypeScript Errors Formatter for VSCode hovers",
   "files": [
     "src/**",
@@ -8,38 +9,36 @@
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsdown  src/index.ts --format cjs,esm --dts",
-    "dev": "tsdown src/index.ts --format cjs,esm --dts --watch",
-    "lint": "tsc -p . --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "publish": "npm run build && npm publish --access public"
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yoavbls/pretty-ts-errors.git"
+    "url": "git+https://github.com/CyberT33N/pretty-ts-errors.git"
   },
   "keywords": [
     "typescript",
     "errors"
   ],
-  "author": "yoavbls",
+  "author": "CyberT33N",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yoavbls/pretty-ts-errors/issues"
+    "url": "https://github.com/CyberT33N/pretty-ts-errors/issues"
   },
-  "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
+  "homepage": "https://github.com/CyberT33N/pretty-ts-errors#readme",
   "devDependencies": {
-    "tsdown": "^0.15.6",
-    "vitest": "^4.1.2"
+    "@vitest/coverage-v8": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
-    "@pretty-ts-errors/formatter": "*",
-    "@pretty-ts-errors/utils": "*",
-    "lz-string": "^1.5.0",
-    "vscode-languageserver-types": "^3.17.5",
-    "vscode-uri": "^3.1.0"
+    "@pretty-ts-errors/error-translator": "workspace:*",
+    "@pretty-ts-errors/formatter": "workspace:*",
+    "@pretty-ts-errors/utils": "workspace:*",
+    "vscode-languageserver-types": "catalog:",
+    "vscode-uri": "catalog:"
   }
 }

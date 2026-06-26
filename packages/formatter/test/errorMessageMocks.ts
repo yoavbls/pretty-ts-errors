@@ -15,7 +15,7 @@ Type '{ person: { 'first-name': string; }; }' is not assignable to type 'string'
 `;
 
 /**
- * Formatting error from this issue: https://github.com/yoavbls/pretty-ts-errors/issues/20
+ * Formatting error from this issue: https://github.com/CyberT33N/pretty-ts-errors/issues/20
  */
 export const errorWithMethodsWordInIt = d`
 The 'this' context of type 'ElementHandle<Node>' is not assignable to method's 'this' of type 'ElementHandle<Element>'.

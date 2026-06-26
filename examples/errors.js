@@ -35,6 +35,30 @@ const getPerson = () => ({
 });
 
 /**
+ * Plural-form hover example:
+ * should trigger "is missing the following properties from type ..."
+ * with a richer inline object shape for direct visual comparison.
+ *
+ * @type {{
+ *   user: {
+ *     name: string;
+ *     email: `${string}@${string}.${string}`;
+ *     age: number;
+ *     address: {
+ *       street: string;
+ *       city: string;
+ *       country: string;
+ *     };
+ *   };
+ * }}
+ */
+const pluralHoverExample = {
+  user: {
+    email: "usr@usr.io",
+  },
+};
+
+/**
  * @typedef {Object} JSAnimal
  * @property {string} name
  * @property {number} age
