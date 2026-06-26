@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/CyberT33N/pretty-ts-errors#readme",
   "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
     "vitest": "catalog:"
   },
   "dependencies": {

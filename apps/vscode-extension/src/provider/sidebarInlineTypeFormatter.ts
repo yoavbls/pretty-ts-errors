@@ -33,12 +33,7 @@ function formatComplexType(value: string): string {
     }
   };
 
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (char === undefined) {
-      continue;
-    }
-
+  for (const char of text) {
     if (quote !== null) {
       output += char;
       if (escaped) {

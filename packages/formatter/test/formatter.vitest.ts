@@ -14,7 +14,9 @@ import * as errorMessageMocks from "./errorMessageMocks";
 
 // Simple stub that marks code blocks without any rendering logic
 const stubCodeBlock: CodeBlockFn = (code, language, multiLine) => {
-  if (multiLine) return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+  if (multiLine) {
+    return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+  }
   return `\`${code}\``;
 };
 
@@ -44,9 +46,7 @@ describe("formatter", (context) => {
       "Type '{ email: \"usr@usr.io\"; }' is missing the following properties from type '{ name: string; email: `${string}@${string}.${string}`; age: number; address: { street: string; city: string; country: string; }; }': name, age, address"
     );
 
-    expect(result).toContain(
-      "is missing the following properties from type"
-    );
+    expect(result).toContain("is missing the following properties from type");
     expect(result).toContain(
       "<ul><li>name</li><li>age</li><li>address</li></ul>"
     );

@@ -21,7 +21,7 @@
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
-      "include": ["packages/**/*"],
+      "include": ["apps/**/*", "packages/**/*"],
       "options": {
         "typecheck": {
           "targetName": "typecheck"
@@ -33,14 +33,23 @@
           "watchDepsName": "watch-deps"
         }
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "include": ["packages/**/*"],
+      "options": {
+        "testTargetName": "test",
+        "testMode": "run"
+      }
     }
   ],
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true
-    },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -50,18 +59,13 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
-    },
-    "lint": {
-      "cache": true,
-      "inputs": ["default", "^production"]
-    },
-    "test": {
-      "cache": false,
-      "inputs": ["default", "^production"]
-    },
-    "dev": {
-      "cache": false
     }
+  },
+  "release": {
+    "projects": [
+      "@pretty-ts-errors/formatter",
+      "@pretty-ts-errors/vscode-formatter"
+    ]
   },
   "analytics": false
 }

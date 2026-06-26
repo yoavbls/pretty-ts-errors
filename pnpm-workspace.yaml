@@ -89,7 +89,7 @@ strictDepBuilds: true
 # Example: `esbuild: true` allows `esbuild`, `nx: true` allows the reviewed
 # Nx postinstall path, `keytar: false` forbids `keytar`.
 allowBuilds:
-  '@vscode/vsce-sign': false
+  "@vscode/vsce-sign": false
   esbuild: true
   keytar: false
   nx: true
@@ -429,18 +429,18 @@ packageConfigs: []
 # Details: Exact versions live here and manifests consume them via `catalog:`.
 # Example: `typescript: 5.7.2` is an approved exact version state.
 catalog:
-  '@nx/esbuild': 23.0.0
-  '@nx/js': 23.0.0
-  '@eslint/js': 10.0.1
-  '@shikijs/types': 3.13.0
-  '@types/mocha': 10.0.10
-  '@types/node': 25.9.3
-  '@types/vscode': 1.105.0
-  '@types/vscode-webview': 1.57.5
-  '@vitest/coverage-v8': 4.1.2
-  '@vscode/codicons': 0.0.41
-  '@vscode/vsce': 3.9.2
-  '@vscode/test-electron': 3.0.0
+  "@nx/esbuild": 23.0.0
+  "@nx/js": 23.0.0
+  "@eslint/js": 10.0.1
+  "@shikijs/types": 3.13.0
+  "@types/mocha": 10.0.10
+  "@types/node": 25.9.3
+  "@types/vscode": 1.105.0
+  "@types/vscode-webview": 1.57.5
+  "@vitest/coverage-v8": 4.1.2
+  "@vscode/codicons": 0.0.41
+  "@vscode/vsce": 3.9.2
+  "@vscode/test-electron": 3.0.0
   esbuild: 0.28.1
   eslint: 10.5.0
   glob: 13.0.6
@@ -457,6 +457,9 @@ catalog:
   vscode-languageserver-types: 3.17.5
   vscode-uri: 3.1.0
   yaml: 2.9.0
+  "@nx/eslint": 23.0.0
+  "@nx/vitest": 23.0.0
+  "@nx/web": 23.0.0
 
 # `catalogMode`
 # Simple: Enforces that new dependencies cannot bypass the catalog.

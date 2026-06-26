@@ -15,10 +15,14 @@
     }
   },
   "devDependencies": {
-    "@nx/esbuild": "catalog:",
-    "@nx/js": "catalog:",
     "@eslint/js": "catalog:",
+    "@nx/esbuild": "catalog:",
+    "@nx/eslint": "catalog:",
+    "@nx/js": "catalog:",
+    "@nx/vitest": "catalog:",
+    "@nx/web": "catalog:",
     "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
     "nx": "catalog:",

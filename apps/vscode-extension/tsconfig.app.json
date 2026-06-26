@@ -1,14 +1,37 @@
 {
-  "extends": "./tsconfig.json",
+  /**
+   * Thin bundler-first Node-hosted app leaf for the VS Code extension runtime.
+   * This file owns only local app facts and reuses the shared workspace role.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the shared bundler-first Node-hosted app contract instead of
+   * redefining runtime lane policy inside the leaf.
+   */
+  "extends": "../../tsconfig.bundler-node.base.json",
+
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ESNext",
-    "types": ["node"],
-    "noEmit": true
+    /**
+     * The app leaf alone knows its concrete source root.
+     */
+    "rootDir": "./src"
   },
+
+  /**
+   * The app runtime lane covers production-facing extension sources only.
+   */
   "include": ["src/**/*.ts", "src/globals.d.ts"],
+
+  /**
+   * Test-owned files belong to the separate test lane.
+   */
   "exclude": ["src/test/**"],
+
+  /**
+   * Project references remain leaf facts because they model this app leaf's
+   * real upstream monorepo dependency graph.
+   */
   "references": [
     {
       "path": "../../packages/utils/tsconfig.lib.json"

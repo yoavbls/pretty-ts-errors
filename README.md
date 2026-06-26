@@ -73,7 +73,6 @@ Current Nx projects in this workspace:
 - `@pretty-ts-errors/vscode-formatter`
 - `@pretty-ts-errors/formatter`
 - `@pretty-ts-errors/utils`
-- `workspace-root`
 
 ### Build the application
 
@@ -180,6 +179,16 @@ pnpm exec nx dev @pretty-ts-errors/formatter
 pnpm exec nx dev @pretty-ts-errors/vscode-formatter
 ```
 
+Typecheck the shared packages:
+
+```bash
+pnpm exec nx typecheck @pretty-ts-errors/utils
+pnpm exec nx typecheck @pretty-ts-errors/formatter
+pnpm exec nx typecheck @pretty-ts-errors/vscode-formatter
+pnpm exec nx typecheck @pretty-ts-errors/error-translator
+pnpm exec nx typecheck pretty-ts-errors
+```
+
 Lint the shared packages:
 
 ```bash
@@ -187,6 +196,7 @@ pnpm exec nx lint @pretty-ts-errors/utils
 pnpm exec nx lint @pretty-ts-errors/formatter
 pnpm exec nx lint @pretty-ts-errors/vscode-formatter
 pnpm exec nx lint @pretty-ts-errors/error-translator
+pnpm exec nx lint pretty-ts-errors
 ```
 
 Run the library test suites:
@@ -200,22 +210,22 @@ pnpm exec nx test @pretty-ts-errors/error-translator
 Watch the library tests:
 
 ```bash
-pnpm exec nx run "@pretty-ts-errors/formatter:test:watch"
-pnpm exec nx run "@pretty-ts-errors/vscode-formatter:test:watch"
+pnpm exec nx test @pretty-ts-errors/formatter --watch
+pnpm exec nx test @pretty-ts-errors/vscode-formatter --watch
 ```
 
 Run the library coverage targets:
 
 ```bash
-pnpm exec nx run "@pretty-ts-errors/formatter:test:coverage"
-pnpm exec nx run "@pretty-ts-errors/vscode-formatter:test:coverage"
+pnpm exec nx test @pretty-ts-errors/formatter --coverage
+pnpm exec nx test @pretty-ts-errors/vscode-formatter --coverage
 ```
 
-Publish the public libraries:
+Preview and publish the public libraries:
 
 ```bash
-pnpm exec nx publish @pretty-ts-errors/formatter
-pnpm exec nx publish @pretty-ts-errors/vscode-formatter
+pnpm exec nx release --dry-run
+pnpm exec nx release publish
 ```
 
 ### Workspace commands
@@ -223,20 +233,20 @@ pnpm exec nx publish @pretty-ts-errors/vscode-formatter
 Format the whole workspace:
 
 ```bash
-pnpm exec nx run workspace-root:format
+pnpm exec nx format:write --all
 ```
 
 Check formatting without writing changes:
 
 ```bash
-pnpm exec nx run "workspace-root:format:check"
+pnpm exec nx format:check --all
 ```
 
 Synchronize Nx project references:
 
 ```bash
-pnpm exec nx run workspace-root:sync
-pnpm exec nx run "workspace-root:sync:check"
+pnpm exec nx sync
+pnpm exec nx sync:check
 ```
 
 ### Useful run-many examples

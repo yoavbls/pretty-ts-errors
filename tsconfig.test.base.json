@@ -1,0 +1,26 @@
+{
+  /**
+   * Runtime test-consumer role template for test lanes that validate behavior
+   * rather than produce shipped runtime artifacts.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy baseline and reopen only the generic test
+   * environment semantics shared across runtime test lanes.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Generic runtime test lanes stay validation-first by default.
+     * Narrower leaves may reopen emit if their harness requires compiled output.
+     */
+    "noEmit": true,
+
+    /**
+     * Keep the common test ambient surface minimal and explicit.
+     */
+    "types": ["vitest/globals", "node"]
+  }
+}

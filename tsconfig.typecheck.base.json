@@ -1,0 +1,58 @@
+{
+  /**
+   * Generic validation-lane role template for monorepo leaves that must
+   * participate in graph-aware TypeScript build mode without becoming
+   * runtime JavaScript artifact producers.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy single source of truth so strictness,
+   * module policy, and package-resolution semantics stay centralized.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Validation lanes must participate in project-reference build mode.
+     * This is the core contract that Nx and `tsc --build` rely on.
+     */
+    "composite": true,
+
+    /**
+     * Build mode requires declaration-capable producer semantics on the lane.
+     * Keep declarations on so the validation graph remains type-producer valid.
+     */
+    "declaration": true,
+
+    /**
+     * Preserve declaration maps so editor navigation across project boundaries
+     * stays intact even when the lane only emits validation artifacts.
+     */
+    "declarationMap": true,
+
+    /**
+     * This lane must not stay on `noEmit: true`, because build-mode
+     * typechecking requires a real emit-capable project contract.
+     */
+    "noEmit": false,
+
+    /**
+     * Keep the lane validation-first by emitting only declarations instead of
+     * runtime JavaScript artifacts.
+     */
+    "emitDeclarationOnly": true,
+
+    /**
+     * Internal-only declarations should not leak through validation outputs.
+     * This keeps the lane aligned with a minimal public type surface.
+     */
+    "stripInternal": true,
+
+    /**
+     * Ambient globals stay closed at the generic validation template layer.
+     * Individual leaves reopen only the exact environment they need.
+     */
+    "types": []
+  }
+}

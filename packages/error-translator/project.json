@@ -42,33 +42,11 @@
       }
     },
     "build": {
-      "executor": "@nx/js:tsc",
-      "dependsOn": ["validate-contract-data", "^build"],
-      "outputs": ["{workspaceRoot}/packages/error-translator/dist"],
+      "...": true,
+      "dependsOn": ["validate-contract-data", "..."],
       "options": {
-        "main": "packages/error-translator/src/index.ts",
-        "outputPath": "packages/error-translator/dist",
-        "tsConfig": "packages/error-translator/tsconfig.lib.json",
-        "rootDir": "packages/error-translator/src",
-        "generatePackageJson": true,
-        "generateExportsField": true,
-        "clean": true,
+        "...": true,
         "assets": ["packages/error-translator/src/generated/*.json"]
-      }
-    },
-    "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "packages/error-translator",
-        "command": "pnpm exec tsc -p tsconfig.json --noEmit"
-      }
-    },
-    "test": {
-      "executor": "nx:run-commands",
-      "cache": false,
-      "options": {
-        "cwd": "packages/error-translator",
-        "command": "pnpm exec vitest run"
       }
     }
   }

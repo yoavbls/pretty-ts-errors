@@ -1,0 +1,68 @@
+{
+  /**
+   * Thin validation surface for the VS Code extension app leaf.
+   * This file owns only local facts and reuses the shared workspace
+   * typecheck role template.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the shared validation-lane contract instead of redefining compiler
+   * policy or lane semantics inside the app leaf.
+   */
+  "extends": "../../tsconfig.typecheck.base.json",
+
+  "compilerOptions": {
+    /**
+     * The app leaf alone knows its concrete source root.
+     * This belongs at the leaf and not in the shared workspace role template.
+     */
+    "rootDir": "./src",
+
+    /**
+     * Validation artifacts live in a dedicated non-committed lane that is
+     * separate from bundler output and test output.
+     */
+    "outDir": "./.cache/typecheck",
+
+    /**
+     * Keep build-mode metadata local to the validation lane so the app leaf
+     * does not mix typecheck state with runtime or test artifact surfaces.
+     */
+    "tsBuildInfoFile": "./.cache/typecheck/tsconfig.typecheck.tsbuildinfo",
+
+    /**
+     * This specific leaf needs Node ambient types for the extension runtime.
+     * The generic validation template stays closed and the leaf reopens only
+     * the environment it actually requires.
+     */
+    "types": ["node"]
+  },
+
+  /**
+   * The validation lane covers production-facing app sources only.
+   */
+  "include": ["src/**/*.ts", "src/globals.d.ts"],
+
+  /**
+   * Test-owned files belong to the separate test lane and must not be folded
+   * into the app validation surface.
+   */
+  "exclude": ["src/test/**"],
+
+  /**
+   * Project references remain leaf facts because they express this app leaf's
+   * real upstream monorepo dependency graph.
+   */
+  "references": [
+    {
+      "path": "../../packages/utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/formatter/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/error-translator/tsconfig.lib.json"
+    }
+  ]
+}

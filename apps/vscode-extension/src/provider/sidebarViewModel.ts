@@ -16,27 +16,27 @@ import {
   type SidebarCodePresentation,
 } from "./sidebarSyntaxHighlighter";
 
-type SidebarCommandAction = {
+interface SidebarCommandAction {
   kind: "command";
   command: string;
   args: unknown[];
   icon: string;
   title: string;
-};
+}
 
-type SidebarLinkAction = {
+interface SidebarLinkAction {
   kind: "link";
   href: string;
   icon: string;
   title: string;
-};
+}
 
-type SidebarCopyAction = {
+interface SidebarCopyAction {
   kind: "copy";
   value: string;
   icon: string;
   title: string;
-};
+}
 
 export type SidebarActionModel =
   | SidebarCommandAction
@@ -117,13 +117,10 @@ function serializeRange(range: Range) {
 }
 
 function createRevealAction(
-  diagnostic: FormattedDiagnostic,
+  diagnostic: FormattedDiagnostic
 ): SidebarCommandAction | null {
   const related = diagnostic.lspDiagnostic.relatedInformation?.[0];
-  if (
-    related === undefined ||
-    !related.message.includes("is declared here")
-  ) {
+  if (related === undefined || !related.message.includes("is declared here")) {
     return null;
   }
 
@@ -141,7 +138,7 @@ function getCodeNumber(code: FormattedDiagnostic["lspDiagnostic"]["code"]) {
 }
 
 async function mapInlineNodeForSidebar(
-  node: DiagnosticInlineNode,
+  node: DiagnosticInlineNode
 ): Promise<SidebarInlineNode> {
   switch (node.kind) {
     case "text":
@@ -151,9 +148,7 @@ async function mapInlineNodeForSidebar(
       const { multiline, text } = formatSidebarInlineType(node.text);
       const language = multiline ? "type" : null;
       const presentation =
-        language === null
-          ? null
-          : await highlightSidebarCode(text, language);
+        language === null ? null : await highlightSidebarCode(text, language);
 
       return {
         kind: "inlineCode",
@@ -167,15 +162,17 @@ async function mapInlineNodeForSidebar(
 }
 
 async function mapInlineNodeLinesForSidebar(
-  lines: DiagnosticInlineNode[][],
+  lines: DiagnosticInlineNode[][]
 ): Promise<SidebarInlineNode[][]> {
   return Promise.all(
-    lines.map((line) => Promise.all(line.map((node) => mapInlineNodeForSidebar(node)))),
+    lines.map((line) =>
+      Promise.all(line.map((node) => mapInlineNodeForSidebar(node)))
+    )
   );
 }
 
 async function mapBlockForSidebar(
-  block: DiagnosticBlockNode,
+  block: DiagnosticBlockNode
 ): Promise<SidebarBlockNode> {
   switch (block.kind) {
     case "paragraph":
@@ -204,14 +201,14 @@ async function mapBlockForSidebar(
 }
 
 async function mapBlocksForSidebar(
-  blocks: DiagnosticBlockNode[],
+  blocks: DiagnosticBlockNode[]
 ): Promise<SidebarBlockNode[]> {
   return Promise.all(blocks.map((block) => mapBlockForSidebar(block)));
 }
 
 export async function createSidebarDiagnosticModel(
   diagnostic: FormattedDiagnostic,
-  options?: { note?: string },
+  options?: { note?: string }
 ): Promise<SidebarDiagnosticModel> {
   const code = getCodeNumber(diagnostic.lspDiagnostic.code);
   const actions: SidebarActionModel[] = [
@@ -256,8 +253,8 @@ export async function createSidebarDiagnosticModel(
           code: translation.code,
           rawError: translation.rawError,
         };
-      },
-    ),
+      }
+    )
   );
 
   const model: SidebarDiagnosticModel = {

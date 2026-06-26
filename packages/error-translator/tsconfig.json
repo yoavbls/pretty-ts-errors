@@ -1,12 +1,26 @@
 {
+  /**
+   * Root coordination surface for the shared package leaf.
+   * This file owns references only and does not become the artifact lane itself.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy single source of truth.
+   */
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "noEmit": false,
-    "outDir": "dist",
-    "rootDir": "src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src/**/*", "src/generated/**/*.json"]
+
+  /**
+   * The coordination surface owns no files directly.
+   */
+  "files": [],
+
+  /**
+   * Register the package-artifact surface explicitly.
+   */
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
 }

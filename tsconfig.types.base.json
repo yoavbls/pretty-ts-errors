@@ -1,0 +1,26 @@
+{
+  /**
+   * Type-only validation role template for contract, schema, or compile-time
+   * verification lanes that should never produce runtime artifacts.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy baseline and reopen only the generic ambient
+   * surface shared across type-only validation lanes.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Type-only validation lanes remain pure non-emitting contracts.
+     */
+    "noEmit": true,
+
+    /**
+     * Keep the same explicit ambient test/runtime surface used by generic
+     * validation lanes unless a narrower leaf overrides it.
+     */
+    "types": ["vitest/globals", "node"]
+  }
+}

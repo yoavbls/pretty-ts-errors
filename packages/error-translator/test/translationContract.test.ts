@@ -9,27 +9,35 @@ import tsErrorMessages from "../src/generated/tsErrorMessages.json";
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
 
-const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const curatedErrorsDir = path.join(packageRoot, "vendor", "matt-pocock", "errors");
+const packageRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  ".."
+);
+const curatedErrorsDir = path.join(
+  packageRoot,
+  "vendor",
+  "matt-pocock",
+  "errors"
+);
 
-type TsDiagnostic = {
+interface TsDiagnostic {
   category: number;
   code: number;
   message: string;
-};
+}
 
-type TsErrorMessageEntry = {
+interface TsErrorMessageEntry {
   category: string;
   code: number;
-};
+}
 
-type BundleEntry = {
+interface BundleEntry {
   body: string;
   category: string;
   code: number;
   message: string;
   source: string;
-};
+}
 
 function getCategoryName(category: number): string {
   const categoryName = ts.DiagnosticCategory?.[category];
@@ -98,7 +106,7 @@ describe("translator contract", () => {
   it("keeps bundleErrors.json complete for all current TypeScript diagnostics", () => {
     const currentDiagnostics = getCurrentDiagnostics();
     const diagnosticsByCode = new Map(
-      currentDiagnostics.map((diagnostic) => [diagnostic.code, diagnostic]),
+      currentDiagnostics.map((diagnostic) => [diagnostic.code, diagnostic])
     );
     const bundle = bundleErrors as Record<string, BundleEntry>;
     const bundleEntries = Object.values(bundle).sort((left, right) => {
@@ -107,7 +115,7 @@ describe("translator contract", () => {
 
     expect(bundleEntries).toHaveLength(currentDiagnostics.length);
     expect(bundleEntries.map((entry) => entry.code)).toEqual(
-      currentDiagnostics.map((diagnostic) => diagnostic.code),
+      currentDiagnostics.map((diagnostic) => diagnostic.code)
     );
 
     bundleEntries.forEach((entry) => {
@@ -122,7 +130,7 @@ describe("translator contract", () => {
 
   it("keeps curated translation overrides aligned with current TypeScript messages", async () => {
     const currentDiagnostics = new Map(
-      getCurrentDiagnostics().map((diagnostic) => [diagnostic.code, diagnostic]),
+      getCurrentDiagnostics().map((diagnostic) => [diagnostic.code, diagnostic])
     );
     const files = (await readdir(curatedErrorsDir))
       .filter((file) => file.endsWith(".md"))
@@ -135,7 +143,10 @@ describe("translator contract", () => {
       const diagnostic = currentDiagnostics.get(code);
       expect(diagnostic).toBeDefined();
 
-      const markdown = await readFile(path.join(curatedErrorsDir, fileName), "utf8");
+      const markdown = await readFile(
+        path.join(curatedErrorsDir, fileName),
+        "utf8"
+      );
       const original = parseOriginalMessage(markdown, fileName);
 
       expect(original).toBe(diagnostic?.message);

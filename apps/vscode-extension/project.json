@@ -78,20 +78,6 @@
         }
       }
     },
-    "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "apps/vscode-extension",
-        "command": "pnpm exec tsc -p tsconfig.app.json --noEmit"
-      }
-    },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "apps/vscode-extension",
-        "command": "pnpm exec tsc -p tsconfig.app.json --noEmit"
-      }
-    },
     "test": {
       "executor": "nx:run-commands",
       "cache": false,
@@ -123,12 +109,13 @@
       }
     },
     "webview": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/web:file-server",
       "cache": false,
       "continuous": true,
       "options": {
-        "cwd": "apps/vscode-extension",
-        "command": "pnpm exec http-server ./webview -o -a localhost -p 8080"
+        "host": "localhost",
+        "port": 8080,
+        "staticFilePath": "apps/vscode-extension/webview"
       }
     }
   }

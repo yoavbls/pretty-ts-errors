@@ -31,10 +31,10 @@ export function createErrorMessagePrettifier(
   };
 }
 
-type Rule = {
+interface Rule {
   pattern: RegExp;
-  replacer: (...args: any[]) => string | Promise<string>;
-};
+  replacer: (...args: string[]) => string | Promise<string>;
+}
 
 function getRules(codeBlock: CodeBlockFn): Rule[] {
   const formatTypeScriptBlock = (code: string) => codeBlock(code, "typescript");
@@ -85,14 +85,7 @@ function getRules(codeBlock: CodeBlockFn): Rule[] {
     },
     {
       pattern: /type annotation must be ['“](.*?)['”] or ['“](.*?)['”][.]?/gi,
-      replacer: async (p1: string, p2: string, p3: string | number) => {
-        if (typeof p3 === "string") {
-          const [left, right] = await Promise.all([
-            formatTypeBlock(p1, p2, codeBlock),
-            formatTypeBlock("", p3, codeBlock),
-          ]);
-          return `${left} or ${right}`;
-        }
+      replacer: async (p1: string, p2: string) => {
         const [left, right] = await Promise.all([
           formatTypeBlock("", p1, codeBlock),
           formatTypeBlock("", p2, codeBlock),

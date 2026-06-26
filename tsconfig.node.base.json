@@ -1,0 +1,41 @@
+{
+  /**
+   * Reusable Node application role template for deployable or runtime-bearing
+   * Node leaves.
+   */
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  /**
+   * Reuse the root compiler-policy single source of truth and reopen only the
+   * Node-runtime-specific semantics required by this role.
+   */
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    /**
+     * Deployable or runtime-bearing Node leaves model native Node module truth.
+     */
+    "module": "NodeNext",
+
+    /**
+     * Native Node package-resolution semantics belong on this runtime role.
+     */
+    "moduleResolution": "NodeNext",
+
+    /**
+     * Keep raw TypeScript extension imports closed by default on the Node lane.
+     */
+    "allowImportingTsExtensions": false,
+
+    /**
+     * Node runtime leaves also prefer direct `.js` authoring truth over rewrite
+     * magic at the contract layer.
+     */
+    "rewriteRelativeImportExtensions": false,
+
+    /**
+     * Open only the Node ambient surface for this role.
+     */
+    "types": ["node"]
+  }
+}

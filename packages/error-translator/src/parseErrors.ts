@@ -36,7 +36,9 @@ function isTsErrorMessageDb(value: unknown): value is TsErrorMessageDb {
 
 function ensureTsErrorMessageDb(value: unknown): TsErrorMessageDb {
   if (!isTsErrorMessageDb(value)) {
-    throw new Error("TypeScript diagnostic matcher database has an invalid shape.");
+    throw new Error(
+      "TypeScript diagnostic matcher database has an invalid shape."
+    );
   }
 
   return value;
@@ -47,14 +49,16 @@ const tsErrorMessageDb = ensureTsErrorMessageDb(tsErrorMessages);
 function getDiagnosticMatcher(text: string): TSDiagnosticMatcher {
   const existing = DiagnosticHashMap.get(text);
 
-  if (existing) return existing;
+  if (existing) {
+    return existing;
+  }
 
   const regexSource = escapeRegExp(text).replace(escapedParameterRegex, "(.+)");
   const regexLocal = new RegExp(regexSource);
   const regexGlobal = new RegExp(regexSource, "g");
   const parameterIndexes = Array.from(
     text.matchAll(parameterRegex),
-    ([, parameterIndex]) => Number(parameterIndex),
+    ([, parameterIndex]) => Number(parameterIndex)
   );
 
   const diagnosticMatcher = {
@@ -70,7 +74,7 @@ function getDiagnosticMatcher(text: string): TSDiagnosticMatcher {
 
 function associateMatchedParameters(
   parameterIndexes: number[],
-  matchedParams: string[],
+  matchedParams: string[]
 ): (string | number)[] {
   const paramsByIndex = new Map<number, string | number>();
 
@@ -113,7 +117,7 @@ export type ParsedDiagnosticMessage = ParsedDiagnosticMatch[];
 
 export function parseErrorsWithDb(
   db: TsErrorMessageDb,
-  message: string,
+  message: string
 ): ParsedDiagnosticMessage {
   const errorMessageByKey: Record<string, ParsedDiagnosticMatch> = {};
 
@@ -146,7 +150,7 @@ export function parseErrorsWithDb(
 
       const items = associateMatchedParameters(
         parameterIndexes,
-        matchElem.match(regexLocal)?.slice(1) ?? [],
+        matchElem.match(regexLocal)?.slice(1) ?? []
       );
 
       const errorObj: ParsedDiagnosticMatch = {

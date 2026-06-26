@@ -52,7 +52,10 @@ export function tryEnsureRange(
   return { isValidRange: false };
 }
 
-type RangeLike = { start: PositionLike; end: PositionLike };
+interface RangeLike {
+  start: PositionLike;
+  end: PositionLike;
+}
 
 function isRangeLike(value: unknown): value is RangeLike {
   return (
@@ -65,7 +68,10 @@ function isRangeLike(value: unknown): value is RangeLike {
   );
 }
 
-type PositionLike = { line: number; character: number };
+interface PositionLike {
+  line: number;
+  character: number;
+}
 
 function isPositionLike(value: unknown): value is PositionLike {
   return (

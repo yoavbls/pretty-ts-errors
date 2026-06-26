@@ -12,4 +12,7 @@ tsconfig.tsbuildinfo
 coverage
 artifacts/vsix
 tmp
+.cache
+.cache/
+**/.cache/
 *.tsbuildinfo

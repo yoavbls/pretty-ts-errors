@@ -1,12 +1,24 @@
 {
+  /**
+   * Root coordination surface for the VS Code extension leaf.
+   * This file owns references only and does not become a runtime or
+   * validation lane itself.
+   */
   "extends": "../../tsconfig.base.json",
+
+  /**
+   * The coordination surface owns no files directly.
+   */
   "files": [],
+
+  /**
+   * Register the validation-facing project-reference surface explicitly.
+   * The runtime and test lanes are consumed directly by their owning targets,
+   * while the coordination surface stays focused on Nx/TypeScript typechecking.
+   */
   "references": [
     {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
+      "path": "./tsconfig.typecheck.json"
     }
   ]
 }

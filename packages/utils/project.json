@@ -3,42 +3,5 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
-  "tags": ["scope:packages", "type:library"],
-  "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{workspaceRoot}/packages/utils/dist"],
-      "options": {
-        "main": "packages/utils/src/index.ts",
-        "outputPath": "packages/utils/dist",
-        "tsConfig": "packages/utils/tsconfig.lib.json",
-        "rootDir": "packages/utils/src",
-        "generatePackageJson": true,
-        "generateExportsField": true,
-        "clean": true
-      }
-    },
-    "dev": {
-      "executor": "@nx/js:tsc",
-      "cache": false,
-      "continuous": true,
-      "options": {
-        "main": "packages/utils/src/index.ts",
-        "outputPath": "packages/utils/dist",
-        "tsConfig": "packages/utils/tsconfig.lib.json",
-        "rootDir": "packages/utils/src",
-        "generatePackageJson": true,
-        "generateExportsField": true,
-        "clean": false,
-        "watch": true
-      }
-    },
-    "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "packages/utils",
-        "command": "pnpm exec tsc -p tsconfig.json --noEmit"
-      }
-    }
-  }
+  "tags": ["scope:packages", "type:library"]
 }
