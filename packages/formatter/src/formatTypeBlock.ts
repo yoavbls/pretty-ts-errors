@@ -1,5 +1,5 @@
-import { addMissingParentheses } from "./addMissingParentheses";
-import { formatTypeWithPrettier } from "./formatTypeWithPrettier";
+import { addMissingParentheses } from "./addMissingParentheses.js";
+import { formatTypeWithPrettier } from "./formatTypeWithPrettier.js";
 
 export async function formatTypeBlock(
   prefix: string,

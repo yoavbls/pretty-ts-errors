@@ -1,5 +1,5 @@
 import { d } from "@pretty-ts-errors/utils";
-import { Diagnostic } from "vscode-languageserver-types";
+import type { Diagnostic } from "vscode-languageserver-types";
 
 export const errorTitle = (
   code: Diagnostic["code"],

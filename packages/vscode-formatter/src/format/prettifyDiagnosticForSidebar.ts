@@ -1,18 +1,18 @@
 import { createErrorMessagePrettifier } from "@pretty-ts-errors/formatter";
 import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
-import { Diagnostic } from "vscode-languageserver-types";
-import { htmlCodeBlock } from "../components/htmlCodeBlock";
+import type { Diagnostic } from "vscode-languageserver-types";
+import { htmlCodeBlock } from "../components/htmlCodeBlock.js";
 import {
   divider,
   pinErrorLink,
   copyErrorLink,
   errorCodeExplanationLink,
-} from "../components/actions";
-import { errorTitle } from "../components/errorTitle";
+} from "../components/actions.js";
+import { errorTitle } from "../components/errorTitle.js";
 import { d } from "@pretty-ts-errors/utils";
-import { embedSymbolLinks } from "./embedSymbolLinks";
-import { identSentences } from "./identSentences";
-import { renderPlainEnglishTranslations } from "./renderPlainEnglishTranslations";
+import { embedSymbolLinks } from "./embedSymbolLinks.js";
+import { identSentences } from "./identSentences.js";
+import { renderPlainEnglishTranslations } from "./renderPlainEnglishTranslations.js";
 
 const prettifyErrorMessageForSidebar =
   createErrorMessagePrettifier(htmlCodeBlock);

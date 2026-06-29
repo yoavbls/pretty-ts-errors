@@ -1,8 +1,8 @@
 import { d } from "@pretty-ts-errors/utils";
-import { miniLine } from "./miniLine";
-import { spanBreak } from "./spanBreak";
-import { CodeBlockFn } from "@pretty-ts-errors/formatter";
-import { plainCodeBlock } from "./plainCodeBlock";
+import { miniLine } from "./miniLine.js";
+import { spanBreak } from "./spanBreak.js";
+import type { CodeBlockFn } from "@pretty-ts-errors/formatter";
+import { plainCodeBlock } from "./plainCodeBlock.js";
 
 /**
  * @returns markdown string that will be rendered as a code block (`supportHtml` required)

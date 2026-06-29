@@ -1,4 +1,4 @@
-import dedent from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 export function invert<T extends Record<string, string>>(
   obj: T
@@ -21,7 +21,10 @@ export function invert<T extends Record<string, string>>(
  * d stands for dedent.
  * it allow us to indent html in template literals without affecting the output
  */
-export const d = dedent;
+export const d = (
+  templ: TemplateStringsArray | string,
+  ...values: unknown[]
+): string => dedent(templ, ...values);
 
 /**
  * Check if an array contains a string.

@@ -1,4 +1,4 @@
-import { Diagnostic } from "vscode-languageserver-types";
+import type { Diagnostic } from "vscode-languageserver-types";
 import { URI } from "vscode-uri";
 
 export function embedSymbolLinks(diagnostic: Diagnostic): Diagnostic {

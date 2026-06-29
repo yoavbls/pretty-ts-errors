@@ -1,4 +1,4 @@
 export {
   createErrorMessagePrettifier,
   type CodeBlockFn,
-} from "./errorMessagePrettifier";
+} from "./errorMessagePrettifier.js";

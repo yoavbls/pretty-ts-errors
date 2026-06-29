@@ -1,4 +1,4 @@
-import { formatTypeBlock } from "./formatTypeBlock";
+import { formatTypeBlock } from "./formatTypeBlock.js";
 
 export type CodeBlockFn = (
   code: string,

@@ -1,3 +1,3 @@
-export { prettifyDiagnosticForHover } from "./format/prettifyDiagnosticForHover";
-export { prettifyDiagnosticForSidebar } from "./format/prettifyDiagnosticForSidebar";
-export { initHighlighter } from "./components/htmlCodeBlock";
+export { prettifyDiagnosticForHover } from "./format/prettifyDiagnosticForHover.js";
+export { prettifyDiagnosticForSidebar } from "./format/prettifyDiagnosticForSidebar.js";
+export { initHighlighter } from "./components/htmlCodeBlock.js";

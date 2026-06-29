@@ -1,6 +1,8 @@
-import bundleErrors from "./generated/bundleErrors.json";
-import { fillBodyWithItems } from "./getImprovedMessage";
-import { parseErrors } from "./parseErrors";
+import bundleErrors from "./generated/bundleErrors.json" with {
+  type: "json",
+};
+import { fillBodyWithItems } from "./getImprovedMessage.js";
+import { parseErrors } from "./parseErrors.js";
 
 export type TranslationCategory = "Error" | "Message" | "Suggestion";
 export type TranslationSource = "curated" | "generated";

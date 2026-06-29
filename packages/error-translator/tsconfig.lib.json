@@ -1,15 +1,15 @@
 {
   /**
-   * Thin buildable shared package leaf for the `@pretty-ts-errors/error-translator` package.
-   * This file owns only local producer facts and reuses the shared workspace role.
+   * Thin artifact leaf for the `@pretty-ts-errors/error-translator` package as
+   * a runtime-bearing shared package delivered as an unbundled package artifact.
    */
   "$schema": "https://json.schemastore.org/tsconfig",
 
   /**
-   * Reuse the generic buildable library producer contract instead of
-   * redefining producer semantics locally.
+   * Reuse the specialized shared-package artifact role instead of redefining
+   * artifact semantics locally.
    */
-  "extends": "../../tsconfig.lib.base.json",
+  "extends": "../../tsconfig.shared-package-artifact.base.json",
 
   "compilerOptions": {
     /**
@@ -24,8 +24,8 @@
   },
 
   /**
-   * The artifact lane covers production-facing package sources and generated
-   * JSON data that belongs to the package contract.
+   * The artifact lane covers production-facing TypeScript sources and generated
+   * JSON contract data that belongs to the package API.
    */
-  "include": ["src/**/*", "src/generated/**/*.json"]
+  "include": ["src/**/*.ts", "src/generated/**/*.json"]
 }

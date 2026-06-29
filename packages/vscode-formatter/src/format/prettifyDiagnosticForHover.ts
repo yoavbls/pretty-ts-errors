@@ -1,5 +1,5 @@
 import { translateDiagnosticMessage } from "@pretty-ts-errors/error-translator";
-import { Diagnostic } from "vscode-languageserver-types";
+import type { Diagnostic } from "vscode-languageserver-types";
 import { URI } from "vscode-uri";
 
 function encodeCommandArgs(args: unknown[]): string {

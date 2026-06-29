@@ -1,4 +1,4 @@
-import { CodeBlockFn } from "@pretty-ts-errors/formatter";
+import type { CodeBlockFn } from "@pretty-ts-errors/formatter";
 
 interface Highlighter {
   codeToHtml(code: string, options: { lang: string }): string;

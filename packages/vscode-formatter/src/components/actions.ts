@@ -1,4 +1,4 @@
-import { Diagnostic, Range } from "vscode-languageserver-types";
+import type { Diagnostic, Range } from "vscode-languageserver-types";
 import { d } from "@pretty-ts-errors/utils";
 
 export const divider = `<span class="divider">|</span>`;

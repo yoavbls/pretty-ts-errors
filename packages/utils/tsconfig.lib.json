@@ -1,15 +1,15 @@
 {
   /**
-   * Thin buildable shared package leaf for the `@pretty-ts-errors/utils` package.
-   * This file owns only local producer facts and reuses the shared workspace role.
+   * Thin artifact leaf for the `@pretty-ts-errors/utils` package as a
+   * runtime-bearing shared package delivered as an unbundled package artifact.
    */
   "$schema": "https://json.schemastore.org/tsconfig",
 
   /**
-   * Reuse the generic buildable library producer contract instead of
-   * redefining producer semantics locally.
+   * Reuse the specialized shared-package artifact role instead of redefining
+   * artifact semantics locally.
    */
-  "extends": "../../tsconfig.lib.base.json",
+  "extends": "../../tsconfig.shared-package-artifact.base.json",
 
   "compilerOptions": {
     /**
@@ -24,7 +24,7 @@
   },
 
   /**
-   * The artifact lane covers production-facing package sources only.
+   * The artifact lane covers production-facing TypeScript package sources only.
    */
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts"]
 }

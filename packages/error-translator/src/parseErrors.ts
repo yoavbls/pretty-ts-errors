@@ -1,4 +1,6 @@
-import tsErrorMessages from "./generated/tsErrorMessages.json";
+import tsErrorMessages from "./generated/tsErrorMessages.json" with {
+  type: "json",
+};
 
 type TsErrorMessageDb = Record<string, { code: number }>;
 
