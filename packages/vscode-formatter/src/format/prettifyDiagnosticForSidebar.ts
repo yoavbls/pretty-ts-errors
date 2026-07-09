@@ -32,7 +32,7 @@ export async function prettifyDiagnosticForSidebar(
     ${errorTitle(
       newDiagnostic.code,
       d`${pinErrorLink(newDiagnostic.range, diagnostic.message)} ${divider}
-        ${copyErrorLink(newDiagnostic.message)} ${divider}
+        ${copyErrorLink(diagnostic.message)} ${divider}
         ${errorMessageTranslationLink(newDiagnostic.message)} ${divider}
         ${errorCodeExplanationLink(newDiagnostic.code)}`
     )}
