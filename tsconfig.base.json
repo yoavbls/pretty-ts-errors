@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "ignoreDeprecations": "6.0",
     "lib": ["ES2022", "ES2021.String"],
     "types": ["node"],
     "strict": true,
