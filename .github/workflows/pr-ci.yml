@@ -30,9 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install VSCE CLI
-        run: npm install -g @vscode/vsce
-
       - name: Check formatting
         run: npm run format:check
 
