@@ -1,4 +1,4 @@
-import dedent from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 export function objectKeys<T extends Record<string, unknown>>(
   obj: T

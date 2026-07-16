@@ -18,13 +18,18 @@
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "turbo": "^2.9.14",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0"
   },
   "name": "pretty-ts-errors-mono",
   "packageManager": "npm@10.0.0",
   "workspaces": [
     "packages/*",
     "apps/*"
-  ]
+  ],
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "@vscode/vsce-sign@2.0.9": true,
+    "keytar@7.9.0": true
+  }
 }
