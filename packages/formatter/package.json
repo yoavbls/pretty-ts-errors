@@ -33,7 +33,7 @@
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.2",
-    "tsdown": "^0.15.6",
+    "tsdown": "^0.22.8",
     "vitest": "^4.1.2"
   },
   "dependencies": {

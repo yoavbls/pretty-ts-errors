@@ -18,8 +18,9 @@
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "turbo": "^2.9.14",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.63.0"
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.64.0"
   },
   "name": "pretty-ts-errors-mono",
   "packageManager": "npm@10.0.0",
