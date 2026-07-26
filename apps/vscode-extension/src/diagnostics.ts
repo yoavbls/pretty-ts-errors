@@ -1,5 +1,8 @@
 import { has } from "@pretty-ts-errors/utils";
-import { prettifyDiagnosticForHover } from "@pretty-ts-errors/vscode-formatter";
+import {
+  getDiagnosticCacheKey,
+  prettifyDiagnosticForHover,
+} from "@pretty-ts-errors/vscode-formatter";
 import {
   ExtensionContext,
   languages,
@@ -103,8 +106,9 @@ async function getFormattedDiagnostic(
   // formatDiagnosticForHover converts message based on LSP Diagnostic type, not VSCode Diagnostic type, so it can be used in other IDEs.
   // Here we convert VSCode Diagnostic to LSP Diagnostic to make formatDiagnosticForHover recognize it.
   const lspDiagnostic = converter.asDiagnostic(diagnostic);
+  const cacheKey = getDiagnosticCacheKey(lspDiagnostic);
 
-  let formattedMessage = cache.get(diagnostic.message);
+  let formattedMessage = cache.get(cacheKey);
   if (!formattedMessage) {
     const formattedDiagnostic = await prettifyDiagnosticForHover(lspDiagnostic);
     const markdownString = new MarkdownString(formattedDiagnostic);
@@ -117,7 +121,7 @@ async function getFormattedDiagnostic(
       const firstCacheKey = cache.keys().next().value!;
       cache.delete(firstCacheKey);
     }
-    cache.set(diagnostic.message, formattedMessage);
+    cache.set(cacheKey, formattedMessage);
   }
 
   return {
