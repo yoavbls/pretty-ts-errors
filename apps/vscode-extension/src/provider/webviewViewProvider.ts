@@ -14,6 +14,7 @@ import {
 } from "../formattedDiagnosticsStore";
 import { has } from "@pretty-ts-errors/utils";
 import {
+  getDiagnosticCacheKey,
   prettifyDiagnosticForSidebar,
   initHighlighter,
 } from "@pretty-ts-errors/vscode-formatter";
@@ -81,7 +82,7 @@ export function registerWebviewViewProvider(context: ExtensionContext) {
 async function diagnosticToItem(
   formattedDiagnostic: FormattedDiagnostic
 ): Promise<DiagnosticItem> {
-  const cacheKey = formattedDiagnostic.lspDiagnostic.message;
+  const cacheKey = getDiagnosticCacheKey(formattedDiagnostic.lspDiagnostic);
   let html = sidebarHtmlCache.get(cacheKey);
   if (!html) {
     html = await prettifyDiagnosticForSidebar(
