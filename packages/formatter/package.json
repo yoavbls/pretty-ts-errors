@@ -34,7 +34,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.2",
     "tsdown": "^0.15.6",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@pretty-ts-errors/utils": "*",

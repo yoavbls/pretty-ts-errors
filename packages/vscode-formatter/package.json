@@ -33,7 +33,7 @@
   "homepage": "https://github.com/yoavbls/pretty-ts-errors#readme",
   "devDependencies": {
     "tsdown": "^0.15.6",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@pretty-ts-errors/formatter": "*",
