@@ -27,7 +27,7 @@ Search in the [issues](https://github.com/yoavbls/pretty-ts-errors/issues) and [
 
 ## Reporting Bugs
 
-Search the [open issues](https://github.com/yoavbls/pretty-ts-errors/issues) before adding your own bug report. If none exists create a [new isse](https://github.com/yoavbls/pretty-ts-errors/issues/new?template=bug_report.md) by using the `Bug Report` template.
+Search the [open issues](https://github.com/yoavbls/pretty-ts-errors/issues) before adding your own bug report. If none exists create a [new issue](https://github.com/yoavbls/pretty-ts-errors/issues/new?template=bug_report.md) by using the `Bug Report` template.
 
 Try and add enough information to allow others to reproduce the error, if possible provide code samples or a link to a repository. If a bug cannot be reproduced, it will decrease the odds of it being fixed.
 
@@ -37,7 +37,7 @@ If the bug contains visual elements (like the hover feature), also provide a scr
 
 Search in the [issues](https://github.com/yoavbls/pretty-ts-errors/issues) and [discussions](https://github.com/yoavbls/pretty-ts-errors/discussions) and feel free to add your own comments to existing requests.
 
-If none exists create a [new discussion](https://github.com/yoavbls/pretty-ts-errors/discussions/new/choose) to dicuss the requested feature or enhancement.
+If none exists create a [new discussion](https://github.com/yoavbls/pretty-ts-errors/discussions/new/choose) to discuss the requested feature or enhancement.
 
 3 of the most requested enhancements and features are grouped in tracking issues:
 
@@ -67,7 +67,7 @@ When developing it is the easiest to run the `dev` command in the root of the pa
 npm run dev
 ```
 
-This will run the `dev` task in parallel for package of the project, thus immediatly propegating changes troughout the repo. For more info on the project architecture, read [`ARCHITECTURE.md`](./docs/ARCHITECTURE.md). For more info on debugging and testing see [this section](#debugging--testing).
+This will run the `dev` task in parallel for package of the project, thus immediately propagating changes throughout the repo. For more info on the project architecture, read [`ARCHITECTURE.md`](./docs/ARCHITECTURE.md). For more info on debugging and testing see [this section](#debugging--testing).
 
 ### Issues with Local Dev Setup
 
@@ -91,7 +91,7 @@ There is no specific styleguide to adhere to, besides the `eslint` and `prettier
 
 #### Debugging
 
-See the [`.vscode/launch.json`](.vscode/launch.json) for the available debug configurations. You can use the [VS Code debugger](https://code.visualstudio.com/docs/debugtest/debugging) (default `F5` key) to start a debugging sessions. It is recommended to use `Run Extension (all extensions disabled)` to improve startup time when iterating but only loading the default extesions. Use the `Run Extension` if you want to debug the extension with all your installed extensions enabled.
+See the [`.vscode/launch.json`](.vscode/launch.json) for the available debug configurations. You can use the [VS Code debugger](https://code.visualstudio.com/docs/debugtest/debugging) (default `F5` key) to start a debugging sessions. It is recommended to use `Run Extension (all extensions disabled)` to improve startup time when iterating but only loading the default extensions. Use the `Run Extension` if you want to debug the extension with all your installed extensions enabled.
 
 > !NOTE
 > Most Themes and Programming Languages require non-default extensions and will not load when running with `Run Extension (all extensions disabled)`
