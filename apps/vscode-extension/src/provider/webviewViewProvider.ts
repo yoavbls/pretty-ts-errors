@@ -287,7 +287,7 @@ class MarkdownWebviewViewProvider implements vscode.WebviewViewProvider {
       vscode.window.onDidChangeTextEditorSelection((event) => {
         const document = event.textEditor.document;
         // this event fires often, including selecting text in output windows and terminal windows
-        // avoid doing unnessesary work, because it will cause noticable delays in the UI
+        // avoid doing unnecessary work, because it will cause noticeable delays in the UI
         if (!has(SUPPORTED_LANGUAGE_IDS, document.languageId)) {
           return;
         }
