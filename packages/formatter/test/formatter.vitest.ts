@@ -67,3 +67,37 @@ describe("formatter", (context) => {
     }
   );
 });
+
+// Attack strings from https://github.com/yoavbls/pretty-ts-errors/issues/187.
+// Each took one to several seconds when a rule retried every position.
+const attackStrings: [string, string][] = [
+  ["string literal", "\\" + "\t'\"\t".repeat(27387) + "\n"],
+  [
+    "declare module",
+    ";'declare module ”".repeat(12910) + ";”\n'declare module '“;'",
+  ],
+  [
+    "missing properties",
+    "is missing the following properties from type's".repeat(6382) + "\n",
+  ],
+  ["types and", "TYPES “".repeat(20702) + "'\nTYPES “” AND ''"],
+  ["type annotation", "TYPE ANNOTATION MUST BE “".repeat(10955) + "'"],
+  ["overload", "OVERLOAD 0 OF 0, “".repeat(12910) + "\nOVERLOAD 0 OF 0, '', "],
+  ["module or file", " " + 'FILE "P'.repeat(20702) + "\n"],
+  ["type", "E" + "MTYPE 'R".repeat(19365) + "\n"],
+  ["quoted before a keyword", " FILE“".repeat(22361) + " FILE"],
+  ["keyword", "'0" + "0".repeat(54773) + "\n“0”"],
+  ["return or operator", "RETURN “".repeat(19365) + "\nRETURN '”"],
+  ["quoted", "'" + "'0'0\x00".repeat(24503) + "\n"],
+];
+
+describe("hostile input", () => {
+  it.for(attackStrings)(
+    "prettifies the %s attack string quickly",
+    async ([_name, message], { expect }) => {
+      const start = performance.now();
+      await prettifyErrorMessage(message);
+      expect(performance.now() - start).toBeLessThan(500);
+    }
+  );
+});
