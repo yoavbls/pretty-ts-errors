@@ -5,6 +5,7 @@ import {
   languages,
   MarkdownString,
   window,
+  workspace,
   Uri,
   type Diagnostic,
 } from "vscode";
@@ -48,9 +49,6 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
               (diagnostic) => getFormattedDiagnostic(diagnostic, uri, converter)
             );
 
-            // TODO: we should check if never deleting the entries is a performance issue
-            //       probably not, since solving all diagnostics for a file should set its value to an empty collection, but we should check anyway
-            //       see: https://github.com/yoavbls/pretty-ts-errors/issues/139
             formattedDiagnosticsStore.set(uri.fsPath, items);
 
             if (items.length > 0) {
@@ -58,6 +56,24 @@ export function registerOnDidChangeDiagnostics(context: ExtensionContext) {
             }
           });
         });
+      });
+    })
+  );
+
+  // Clean up store entries when documents are closed to prevent memory leak
+  context.subscriptions.push(
+    workspace.onDidCloseTextDocument((document) => {
+      formattedDiagnosticsStore.delete(document.uri.fsPath);
+      logger.debug(`cleaned up formatted diagnostics for closed file: ${document.uri.fsPath}`);
+    })
+  );
+
+  // Clean up store entries when files are deleted
+  context.subscriptions.push(
+    workspace.onDidDeleteFiles((event) => {
+      event.files.forEach((uri) => {
+        formattedDiagnosticsStore.delete(uri.fsPath);
+        logger.debug(`cleaned up formatted diagnostics for deleted file: ${uri.fsPath}`);
       });
     })
   );
